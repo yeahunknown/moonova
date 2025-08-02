@@ -121,7 +121,13 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
     return cost.toFixed(1);
   };
 
-  const handleNext = async () => {
+  const handleNext = async (e?: React.MouseEvent) => {
+    // Prevent any form submission
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     let fieldsToValidate: (keyof TokenFormData)[] = [];
     
     if (step === 1) {
@@ -567,7 +573,10 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
           <Button
             type="button"
             variant="outline"
-            onClick={onPrevious}
+            onClick={(e) => {
+              e.preventDefault();
+              onPrevious();
+            }}
             disabled={step === 1}
             className="flex items-center transition-all duration-200 hover:scale-105"
           >
@@ -578,7 +587,10 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
           {step < 3 ? (
             <Button
               type="button"
-              onClick={handleNext}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNext(e);
+              }}
               className="bg-gradient-primary hover:opacity-90 flex items-center transition-all duration-200 hover:scale-105 shadow-glow"
             >
               Next
