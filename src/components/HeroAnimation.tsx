@@ -202,7 +202,7 @@ export function HeroAnimation() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold">gm to the moon</Button>
+            <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold">Create Token</Button>
           </motion.div>
         </motion.div>
       </div>
