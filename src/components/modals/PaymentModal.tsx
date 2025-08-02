@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CuboidIcon as Cube, Check, ChevronDown } from "lucide-react"
+import solLogo from "@/assets/sol-logo.png"
 
 interface FakePaymentModalProps {
   open: boolean
@@ -78,7 +79,10 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
               <>
                 <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-white">Select currency</h2>
-                  <div className="text-xl font-semibold text-white">{amount} SOL</div>
+                  <div className="flex items-center gap-2 text-xl font-semibold text-white">
+                    <img src={solLogo} alt="SOL" className="w-6 h-6" />
+                    {amount} SOL
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -100,7 +104,12 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-[#252525] border-[#333]">
-                          <SelectItem value="SOL" className="text-white focus:bg-[#333]">SOL</SelectItem>
+                          <SelectItem value="SOL" className="text-white focus:bg-[#333]">
+                            <div className="flex items-center gap-2">
+                              <img src={solLogo} alt="SOL" className="w-4 h-4" />
+                              SOL
+                            </div>
+                          </SelectItem>
                           <SelectItem value="USDC" className="text-white focus:bg-[#333]">USDC</SelectItem>
                         </SelectContent>
                       </Select>
@@ -113,7 +122,12 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-[#252525] border-[#333]">
-                          <SelectItem value="Solana" className="text-white focus:bg-[#333]">Solana</SelectItem>
+                          <SelectItem value="Solana" className="text-white focus:bg-[#333]">
+                            <div className="flex items-center gap-2">
+                              <img src={solLogo} alt="Solana" className="w-4 h-4" />
+                              Solana
+                            </div>
+                          </SelectItem>
                           <SelectItem value="Ethereum" className="text-white focus:bg-[#333]">Ethereum</SelectItem>
                         </SelectContent>
                       </Select>
@@ -142,7 +156,10 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
               <>
                 <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-white">Send exactly</h2>
-                  <div className="text-xl font-semibold text-white">{amount} SOL</div>
+                  <div className="flex items-center gap-2 text-xl font-semibold text-white">
+                    <img src={solLogo} alt="SOL" className="w-6 h-6" />
+                    {amount} SOL
+                  </div>
                 </div>
 
                 <div className="space-y-4">
