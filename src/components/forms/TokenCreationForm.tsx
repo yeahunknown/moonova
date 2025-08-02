@@ -572,16 +572,18 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
               </div>
 
               <div className="flex justify-center space-x-4 text-xs">
-                <span className={`px-2 py-1 rounded-full ${formData.burnable ? "bg-orange-500/20 text-orange-500" : "bg-muted text-muted-foreground"}`}>
-                  {formData.burnable ? "🔥 Burnable" : "❄️ Fixed"}
+                <span className={`px-2 py-1 rounded-full flex items-center gap-1 ${formData.burnable ? "bg-orange-500/20 text-orange-500" : "bg-muted text-muted-foreground"}`}>
+                  {formData.burnable ? <><Flame className="w-3 h-3" /> Burnable</> : <><Lock className="w-3 h-3" /> Fixed</>}
                 </span>
-                <span className={`px-2 py-1 rounded-full ${formData.mintable ? "bg-green-500/20 text-green-500" : "bg-muted text-muted-foreground"}`}>
-                  {formData.mintable ? "🪙 Mintable" : "🔒 Capped"}
+                <span className={`px-2 py-1 rounded-full flex items-center gap-1 ${formData.mintable ? "bg-green-500/20 text-green-500" : "bg-muted text-muted-foreground"}`}>
+                  {formData.mintable ? <><Coins className="w-3 h-3" /> Mintable</> : <><Lock className="w-3 h-3" /> Capped</>}
                 </span>
               </div>
 
               <div className="text-center">
-                <span className="px-3 py-1 bg-success/20 text-success rounded-full text-sm">Ready to Launch 🚀</span>
+                <span className="px-3 py-1 bg-success/20 text-success rounded-full text-sm flex items-center justify-center gap-1">
+                  <Rocket className="w-4 h-4" /> Ready to Launch
+                </span>
               </div>
 
               {formData.description && (

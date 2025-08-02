@@ -160,9 +160,9 @@ export function HeroAnimation() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, delay: 1 }}
-                        className="text-center text-sm text-muted-foreground"
+                        className="text-center text-sm text-muted-foreground flex items-center justify-center gap-1"
                       >
-                        To the moon! 🚀
+                        To the moon! <span className="inline-block">🚀</span>
                       </motion.div>
                     </div>
                   </>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,16 +17,42 @@ const Liquidity = () => {
   const [boostVisibility, setBoostVisibility] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+  // Handle pre-filled data from URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefilledTokenAddress = urlParams.get('tokenAddress');
+    const prefilledTokenName = urlParams.get('tokenName');
+    const prefilledTokenSymbol = urlParams.get('tokenSymbol');
+    
+    if (prefilledTokenAddress) setTokenAddress(prefilledTokenAddress);
+    if (prefilledTokenName) setTokenName(prefilledTokenName);
+    if (prefilledTokenSymbol) setTokenSymbol(prefilledTokenSymbol);
+  }, []);
+
   const calculateTotalPrice = () => {
     const basePrice = parseFloat(lpSize) || 0;
     const boostPrice = boostVisibility ? 0.15 : 0;
     return (basePrice + boostPrice).toFixed(2);
   };
 
-  const handleLpSizeChange = (value: string) => {
+  const handleLpSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow empty string for user to clear input
+    if (value === "") {
+      setLpSize("");
+      return;
+    }
+    // Only allow numbers and decimal point
+    if (!/^\d*\.?\d*$/.test(value)) return;
+    
     const numValue = parseFloat(value);
     if (!isNaN(numValue) && numValue >= 0.2 && numValue <= 100) {
       setLpSize(value);
+    } else if (numValue < 0.2 || numValue > 100) {
+      // Don't update state if outside range
+      return;
+    } else {
+      setLpSize(value); // Allow partial inputs like "0." or "10."
     }
   };
 
@@ -99,23 +125,17 @@ const Liquidity = () => {
                     </div>
 
                     <div>
-                      <Label>Choose LP Size</Label>
-                      <Select value={lpSize} onValueChange={handleLpSizeChange}>
-                        <SelectTrigger className="mt-2">
-                          <SelectValue placeholder="Select LP size (0.2 - 100 SOL)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0.2">0.2 SOL</SelectItem>
-                          <SelectItem value="0.5">0.5 SOL</SelectItem>
-                          <SelectItem value="1.0">1.0 SOL</SelectItem>
-                          <SelectItem value="2.0">2.0 SOL</SelectItem>
-                          <SelectItem value="5.0">5.0 SOL</SelectItem>
-                          <SelectItem value="10.0">10.0 SOL</SelectItem>
-                          <SelectItem value="25.0">25.0 SOL</SelectItem>
-                          <SelectItem value="50.0">50.0 SOL</SelectItem>
-                          <SelectItem value="100.0">100.0 SOL</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>LP Size (SOL)</Label>
+                      <Input
+                        type="text"
+                        value={lpSize}
+                        onChange={handleLpSizeChange}
+                        placeholder="Enter amount (0.2 - 100 SOL)"
+                        className="mt-2"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Minimum: 0.2 SOL • Maximum: 100 SOL
+                      </p>
                     </div>
                   </div>
 
@@ -123,7 +143,9 @@ const Liquidity = () => {
                   <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg">
                     <div>
                       <Label>Boost Token Visibility</Label>
-                      <p className="text-sm text-muted-foreground">+0.15 SOL</p>
+                      <p className="text-sm text-muted-foreground">
+                        Increases visibility on DEX token screening websites and aggregators for better discovery (+0.15 SOL)
+                      </p>
                     </div>
                     <Switch
                       checked={boostVisibility}

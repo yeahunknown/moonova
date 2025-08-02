@@ -70,24 +70,7 @@ const CreateToken = () => {
               <CardContent className="p-4 sm:p-6 lg:p-8">
                 {/* Progress Bar */}
                 <div className="mb-6 lg:mb-8">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-                    <div className="flex flex-wrap gap-2 sm:gap-4">
-                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-all duration-300 ${
-                        step >= 1 ? 'bg-gradient-primary text-white' : 'bg-secondary text-muted-foreground'
-                      }`}>
-                        Basic Info
-                      </span>
-                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-all duration-300 ${
-                        step >= 2 ? 'bg-gradient-primary text-white' : 'bg-secondary text-muted-foreground'
-                      }`}>
-                        Details
-                      </span>
-                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-all duration-300 ${
-                        step >= 3 ? 'bg-gradient-primary text-white' : 'bg-secondary text-muted-foreground'
-                      }`}>
-                        Advanced
-                      </span>
-                    </div>
+                  <div className="flex justify-between items-center mb-4">
                     <span className="text-xs sm:text-sm text-muted-foreground">{Math.round(progressPercentage)}% Complete</span>
                   </div>
                   <div className="relative">
@@ -96,6 +79,38 @@ const CreateToken = () => {
                       className="absolute top-0 left-0 h-2 bg-gradient-primary rounded-full transition-all duration-500 ease-out shadow-glow"
                       style={{ width: `${progressPercentage}%` }}
                     />
+                    
+                    {/* Step indicators positioned over the progress bar */}
+                    <div className="absolute top-1/2 left-0 w-full flex justify-between -translate-y-1/2 pointer-events-none">
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                        step >= 1 ? 'bg-gradient-primary border-primary text-white shadow-glow' : 'bg-background border-muted-foreground text-muted-foreground'
+                      }`}>
+                        1
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                        step >= 2 ? 'bg-gradient-primary border-primary text-white shadow-glow' : 'bg-background border-muted-foreground text-muted-foreground'
+                      }`}>
+                        2
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                        step >= 3 ? 'bg-gradient-primary border-primary text-white shadow-glow' : 'bg-background border-muted-foreground text-muted-foreground'
+                      }`}>
+                        3
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Step labels */}
+                  <div className="flex justify-between mt-4 text-xs sm:text-sm">
+                    <span className={`transition-all duration-300 ${step >= 1 ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                      Basic Info
+                    </span>
+                    <span className={`transition-all duration-300 ${step >= 2 ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                      Details
+                    </span>
+                    <span className={`transition-all duration-300 ${step >= 3 ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                      Advanced
+                    </span>
                   </div>
                 </div>
 
