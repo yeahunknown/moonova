@@ -37,9 +37,11 @@ export function WithdrawLiquidityModal({ open, onOpenChange, onWithdrawSuccess }
         <DialogContent className="p-0 gap-0 bg-[#1e1e1e] border-[#2a2a2a] max-w-md rounded-xl overflow-hidden">
           <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Cube className="h-6 w-6 text-white" />
-                <span className="text-white font-medium">PGPAY</span>
+              <div className="flex items-center">
+                <svg width="120" height="30" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <text x="0" y="50" fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif" fontSize="48" fontWeight="600" letterSpacing="1" fill="white">Paygrid</text>
+                  <rect x="0" y="58" width="140" height="4" fill="white" rx="2"/>
+                </svg>
               </div>
               <Button variant="outline" size="sm" className="rounded-full bg-white text-black hover:bg-gray-200 border-0">
                 Sign up
