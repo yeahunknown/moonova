@@ -1,61 +1,118 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Menu, X } from "lucide-react";
 import { Dialog, DialogContent, DialogPortal } from "./ui/dialog";
 import { useState } from "react";
 
 const Navigation = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showContactModal, setShowContactModal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const navItems = [
+    { path: "/", label: "Home" },
+    { path: "/create", label: "Create" },
+    { path: "/liquidity", label: "Liquidity" }
+  ];
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur-xl shadow-sm">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
+            {/* Logo */}
             <div 
-              className="flex items-center space-x-2 sm:space-x-3 cursor-pointer transition-all hover:scale-105"
+              className="flex items-center space-x-3 cursor-pointer group"
               onClick={() => navigate("/")}
             >
-              <img src="https://i.ibb.co/Nn3Jmzk8/Moonova.png" alt="Moonova" className="w-6 h-6 sm:w-8 sm:h-8" />
-              <span className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <div className="relative">
+                <img 
+                  src="https://i.ibb.co/Nn3Jmzk8/Moonova.png" 
+                  alt="Moonova" 
+                  className="w-8 h-8 transition-transform group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 Moonova
               </span>
             </div>
 
-            <div className="hidden lg:flex items-center space-x-8">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate("/")}
-                className="hover:text-primary transition-colors"
-              >
-                Home
-              </Button>
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate("/create")}
-                className="hover:text-primary transition-colors"
-              >
-                Create
-              </Button>
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate("/liquidity")}
-                className="hover:text-primary transition-colors"
-              >
-                Liquidity
-              </Button>
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-1">
+              {navItems.map((item) => (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  onClick={() => navigate(item.path)}
+                  className={`
+                    relative px-4 py-2 font-medium transition-all duration-200
+                    ${isActive(item.path) 
+                      ? "text-primary bg-primary/10" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }
+                  `}
+                >
+                  {item.label}
+                  {isActive(item.path) && (
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                  )}
+                </Button>
+              ))}
             </div>
 
-            <Button 
-              onClick={() => setShowContactModal(true)}
-              className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow text-sm sm:text-base px-3 sm:px-4 py-2 min-h-[40px]"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">Contact</span>
-              <span className="sm:hidden ml-1">Contact</span>
-            </Button>
+            {/* Right Side */}
+            <div className="flex items-center space-x-3">
+              {/* Contact Button */}
+              <Button 
+                onClick={() => setShowContactModal(true)}
+                className="bg-gradient-primary hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 text-white font-medium px-4 py-2"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="hidden sm:inline ml-2">Contact</span>
+              </Button>
+
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="lg:hidden"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+            </div>
           </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="lg:hidden mt-4 py-4 border-t border-border/50">
+              <div className="flex flex-col space-y-2">
+                {navItems.map((item) => (
+                  <Button
+                    key={item.path}
+                    variant="ghost"
+                    onClick={() => {
+                      navigate(item.path);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`
+                      justify-start font-medium transition-all duration-200
+                      ${isActive(item.path) 
+                        ? "text-primary bg-primary/10" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }
+                    `}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
