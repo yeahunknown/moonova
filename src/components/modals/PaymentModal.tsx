@@ -11,13 +11,18 @@ interface PaymentModalProps {
   onOpenChange: (open: boolean) => void
   amount?: number
   onPaymentSuccess?: () => void
+  tokenData?: {
+    name: string
+    symbol: string
+  }
 }
 
 export function PaymentModal({ 
   open, 
   onOpenChange, 
   amount = 0.1, 
-  onPaymentSuccess
+  onPaymentSuccess,
+  tokenData
 }: PaymentModalProps) {
   const [timeLeft, setTimeLeft] = useState(15 * 60) // 15 mins i tink I DONT KNO HEHEHEHEHEH
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false)
@@ -209,8 +214,8 @@ export function PaymentModal({
     // Navigate to liquidity page with pre-filled data
     const searchParams = new URLSearchParams({
       tokenAddress: generatedTokenAddress,
-      tokenName: "DRINKS", // You can pass actual token data if needed
-      tokenSymbol: "DRNKS"
+      tokenName: tokenData?.name || "",
+      tokenSymbol: tokenData?.symbol || ""
     })
     window.location.href = `/liquidity?${searchParams.toString()}`
   }

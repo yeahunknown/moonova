@@ -133,6 +133,7 @@ const CreateToken = () => {
         onOpenChange={setIsPaymentModalOpen}
         amount={parseFloat(calculateCost())}
         onPaymentSuccess={handlePaymentComplete}
+        tokenData={tokenData ? { name: tokenData.name, symbol: tokenData.symbol } : undefined}
       />
     </div>
   );
