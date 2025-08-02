@@ -130,6 +130,7 @@ const CreateToken = () => {
         onOpenChange={setIsPaymentModalOpen}
         amount={parseFloat(calculateCost())}
         onPaymentSuccess={handlePaymentComplete}
+        type="token"
         tokenData={tokenData ? { name: tokenData.name, symbol: tokenData.symbol } : undefined}
       />
     </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck, Sparkles } from "lucide-react"
+import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck } from "lucide-react"
 import { SolanaIcon } from "../SolanaIcon"
 
 interface PaymentModalProps {
@@ -11,6 +11,7 @@ interface PaymentModalProps {
   onOpenChange: (open: boolean) => void
   amount?: number
   onPaymentSuccess?: () => void
+  type?: 'token' | 'liquidity'
   tokenData?: {
     name: string
     symbol: string
@@ -22,6 +23,7 @@ export function PaymentModal({
   onOpenChange, 
   amount = 0.1, 
   onPaymentSuccess,
+  type = 'token',
   tokenData
 }: PaymentModalProps) {
   const [timeLeft, setTimeLeft] = useState(15 * 60) // 15 mins i tink I DONT KNO HEHEHEHEHEH
@@ -108,8 +110,10 @@ export function PaymentModal({
     try {
       // Dev bypass
       if (txSignature === "1337") {
-        const tokenAddr = generateTokenAddress()
-        setGeneratedTokenAddress(tokenAddr)
+        if (type === 'token') {
+          const tokenAddr = generateTokenAddress()
+          setGeneratedTokenAddress(tokenAddr)
+        }
         setCheckResult({ success: true, message: "Transaction confirmed" })
         if (onPaymentSuccess) onPaymentSuccess()
         setTimeout(() => {
@@ -124,8 +128,10 @@ export function PaymentModal({
   txSignature === "DhJaDqNH86xqSHZ3X6vTgNqMfYrpVjRYiFeaJCTH3xrbABxTmg6BrRMCa4rFhHaKamJwiBxoqPanIw71NaoqmVdia" ||
   txSignature === "82NaMakqBEqzBfVdWJxCWkbo6ScVR5ALrgMDnMfs9KyMXC7Q7E1JWRCvTC6wZ8hJAbJeoNcjqIwjNxnaoPxnwoqUd"
 ) {
-  const tokenAddr = generateTokenAddress()
-  setGeneratedTokenAddress(tokenAddr)
+  if (type === 'token') {
+    const tokenAddr = generateTokenAddress()
+    setGeneratedTokenAddress(tokenAddr)
+  }
   setCheckResult({ success: true, message: "Transaction confirmed" });
   if (onPaymentSuccess) onPaymentSuccess();
   setTimeout(() => {
@@ -196,8 +202,10 @@ export function PaymentModal({
         setIsChecking(false)
         return
       }
-      const tokenAddr = generateTokenAddress()
-      setGeneratedTokenAddress(tokenAddr)
+      if (type === 'token') {
+        const tokenAddr = generateTokenAddress()
+        setGeneratedTokenAddress(tokenAddr)
+      }
       setCheckResult({ success: true, message: "Transaction confirmed" })
       if (onPaymentSuccess) onPaymentSuccess()
       setTimeout(() => {
@@ -230,7 +238,7 @@ export function PaymentModal({
     try {
       await navigator.clipboard.writeText(generatedTokenAddress)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setTimeout(() => setCopied(false), 700)
     } catch (err) {
       console.error('Failed to copy: ', err)
     }
@@ -450,133 +458,121 @@ export function PaymentModal({
                     </div>
                   )}
                 </div>
-
-                <Button
-                  className="w-full py-6 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg"
-                  onClick={handlePayment}
-                >
-                  Proceed to the payment
-                </Button>
               </div>
 
-             <div className="p-2 flex flex-col items-center gap-1 text-xs text-gray-500 tracking-tight">
-  <a href="#" className="hover:text-white transition-colors">
-    Encrypted & Secure Payment
-  </a>
-  <p className="text-[10px] text-gray-600 text-center">
-    By paying you agree to our terms of service.
-  </p>
-  <div className="flex gap-2 mt-1">
-    <a href="#" className="bg-[#252525] p-1.5 rounded-full hover:bg-[#333]">
-      <MessageCircle className="h-4 w-4" />
-    </a>
-    <a href="#" className="bg-[#252525] p-1.5 rounded-full hover:bg-[#333]">
-      <Mail className="h-4 w-4" />
-    </a>
-  </div>
-</div>
+              <div className="bg-[#1e1e1e] p-6 space-y-4">
+                <Button
+                  className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg text-base"
+                  onClick={handlePayment}
+                  disabled={!selectedCurrency || !selectedNetwork}
+                >
+                  Pay {amount.toFixed(6)} SOL
+                </Button>
 
-
-              <div className="absolute top-4 right-4 flex gap-2">
-                <button className="bg-[#252525] p-2 rounded-full hover:bg-[#333]">
-                  <HelpCircle className="h-5 w-5 text-white" />
-                </button>
-                <button className="bg-[#252525] p-2 rounded-full hover:bg-[#333]">
-                  <Settings className="h-5 w-5 text-white" />
-                </button>
+                <div className="flex items-center justify-center gap-4 pt-4 border-t border-[#2a2a2a]">
+                  <HelpCircle className="h-4 w-4 text-gray-400" />
+                  <Settings className="h-4 w-4 text-gray-400" />
+                  <MessageCircle className="h-4 w-4 text-gray-400" />
+                  <Mail className="h-4 w-4 text-gray-400" />
+                </div>
               </div>
             </>
           )}
-        </DialogContent>
-      </DialogPortal>
-    </Dialog>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
 
-    {/* Success Modal */}
-    <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-      <DialogPortal>
-        <DialogContent className="max-w-lg bg-gradient-dark border-border/20 backdrop-blur-xl shadow-2xl overflow-hidden">
-          <div className="relative">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 bg-gradient-primary/5 animate-pulse" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-gradient-primary/20 rounded-full blur-3xl animate-pulse" />
-            
-            <div className="relative text-center space-y-8 p-8">
-              {/* Success Icon with animation */}
-              <div className="relative mx-auto">
-                <div className="w-20 h-20 mx-auto bg-gradient-primary/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-primary/30 shadow-glow animate-scale-in">
-                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-                    <Check className="w-8 h-8 text-white animate-fade-in" strokeWidth={3} />
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogPortal>
+          <DialogContent className="max-w-md p-0 border-0 bg-transparent shadow-none">
+            {type === 'token' && (
+              <div className="bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-xl p-8 backdrop-blur-sm shadow-2xl">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
+                    <Check className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Token Launched Successfully!</h3>
+                    <p className="text-muted-foreground">Your token has been created and deployed to the blockchain</p>
+                  </div>
+
+                  <div className="bg-card/30 border border-border rounded-lg p-4 space-y-3">
+                    <label className="text-sm font-medium">Token Address</label>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-muted/30 rounded-md p-3 font-mono text-sm break-all">
+                        {generatedTokenAddress}
+                      </div>
+                      <Button onClick={copyToClipboard} variant="outline" size="sm" className="h-8 w-8 p-0">
+                        {copied ? (
+                          <Check className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={handleAddLiquidity}
+                      className="bg-gradient-primary hover:opacity-90 shadow-glow"
+                    >
+                      Add Liquidity
+                    </Button>
+                    <Button variant="outline" onClick={handleCreateAnotherToken}>
+                      Create Another Token
+                    </Button>
                   </div>
                 </div>
-                <div className="absolute -top-2 -right-2">
-                  <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-                </div>
-                <div className="absolute -bottom-1 -left-1">
-                  <Sparkles className="w-4 h-4 text-primary/60 animate-pulse" style={{ animationDelay: '0.5s' }} />
-                </div>
               </div>
-              
-              {/* Title and description */}
-              <div className="space-y-3">
-                <h3 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  Token Launched Successfully!
-                </h3>
-                <p className="text-muted-foreground text-lg">
-                  Your token has been deployed to the Solana blockchain and is now live on the network.
-                </p>
-              </div>
+            )}
 
-              {/* Token Address with copy button */}
-              <div className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-border/50 shadow-elegant">
-                <p className="text-sm text-muted-foreground mb-3 font-medium">Token Address</p>
-                <div className="flex items-center gap-3 bg-background/50 p-4 rounded-lg border border-border/30">
-                  <p className="font-mono text-sm break-all text-foreground flex-1">
-                    {generatedTokenAddress}
-                  </p>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={copyToClipboard}
-                    className="p-2 h-auto hover:bg-primary/10 transition-all duration-200"
-                  >
-                    {copied ? (
-                      <CheckCheck className="w-4 h-4 text-primary animate-scale-in" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
-                    )}
-                  </Button>
-                </div>
-                {copied && (
-                  <p className="text-xs text-primary mt-2 animate-fade-in">
-                    ✓ Address copied to clipboard!
-                  </p>
-                )}
-              </div>
+            {type === 'liquidity' && (
+              <div className="bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-xl p-8 backdrop-blur-sm shadow-2xl">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
+                    <Check className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Liquidity Added Successfully!</h3>
+                    <p className="text-muted-foreground">Your liquidity has been added to the pool</p>
+                  </div>
 
-              {/* Action buttons */}
-              <div className="space-y-4 pt-2">
-                <Button 
-                  onClick={handleAddLiquidity}
-                  className="w-full bg-gradient-primary hover:opacity-90 shadow-glow text-white font-semibold py-6 text-lg hover-scale"
-                  size="lg"
-                >
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Add Liquidity
-                </Button>
-                <Button 
-                  onClick={handleCreateAnotherToken}
-                  variant="outline"
-                  className="w-full border-border/50 hover:border-primary/50 hover:bg-primary/5 py-6 text-lg transition-all duration-200"
-                  size="lg"
-                >
-                  Create Another Token
-                </Button>
+                  <div className="bg-card/30 border border-border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Check your Liquidity Portfolio to track your token's performance and manage your positions.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => {
+                        setShowSuccessModal(false)
+                        window.location.href = '/portfolio'
+                      }}
+                      className="bg-gradient-primary hover:opacity-90 shadow-glow"
+                    >
+                      Liquidity Portfolio
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setShowSuccessModal(false)
+                        window.location.href = '/liquidity'
+                      }}
+                    >
+                      Add More Liquidity
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </DialogContent>
-      </DialogPortal>
-    </Dialog>
+            )}
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
     </>
   )
 }

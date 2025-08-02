@@ -185,6 +185,7 @@ const Liquidity = () => {
         onOpenChange={setIsPaymentModalOpen}
         amount={parseFloat(calculateTotalPrice())}
         onPaymentSuccess={handlePaymentComplete}
+        type="liquidity"
       />
     </div>
   );
