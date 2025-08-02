@@ -78,7 +78,7 @@ const Liquidity = () => {
               <h1 className="text-4xl font-bold mb-4">
                 Add <span className="bg-gradient-primary bg-clip-text text-transparent">Liquidity</span>
               </h1>
-              <p className="text-muted-foreground">Create liquidity pools for your tokens</p>
+              <p className="text-muted-foreground">Create the Fuel for your Token.</p>
             </div>
 
             {/* Liquidity Form */}
