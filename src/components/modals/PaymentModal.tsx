@@ -487,7 +487,7 @@ export function PaymentModal({
         <DialogPortal>
           <DialogContent className="max-w-md p-0 border-0 bg-transparent shadow-none">
             {type === 'token' && (
-              <div className="bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-xl p-8 backdrop-blur-sm shadow-2xl">
+              <div className="bg-gradient-to-br from-purple-900/90 to-pink-900/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
                 <div className="text-center space-y-6">
                   <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
                     <Check className="w-8 h-8 text-white" />
@@ -514,14 +514,14 @@ export function PaymentModal({
                     </div>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 w-full">
                     <Button
                       onClick={handleAddLiquidity}
-                      className="bg-gradient-primary hover:opacity-90 shadow-glow"
+                      className="flex-1 bg-gradient-primary hover:opacity-90 shadow-glow"
                     >
                       Add Liquidity
                     </Button>
-                    <Button variant="outline" onClick={handleCreateAnotherToken}>
+                    <Button variant="outline" onClick={handleCreateAnotherToken} className="flex-1">
                       Create Another Token
                     </Button>
                   </div>
@@ -530,7 +530,7 @@ export function PaymentModal({
             )}
 
             {type === 'liquidity' && (
-              <div className="bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20 rounded-xl p-8 backdrop-blur-sm shadow-2xl">
+              <div className="bg-gradient-to-br from-purple-900/90 to-pink-900/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
                 <div className="text-center space-y-6">
                   <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
                     <Check className="w-8 h-8 text-white" />
@@ -547,13 +547,13 @@ export function PaymentModal({
                     </p>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 w-full">
                     <Button
                       onClick={() => {
                         setShowSuccessModal(false)
                         window.location.href = '/portfolio'
                       }}
-                      className="bg-gradient-primary hover:opacity-90 shadow-glow"
+                      className="flex-1 bg-gradient-primary hover:opacity-90 shadow-glow"
                     >
                       Liquidity Portfolio
                     </Button>
@@ -563,6 +563,7 @@ export function PaymentModal({
                         setShowSuccessModal(false)
                         window.location.href = '/liquidity'
                       }}
+                      className="flex-1"
                     >
                       Add More Liquidity
                     </Button>
