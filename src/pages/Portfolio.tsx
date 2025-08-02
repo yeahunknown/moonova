@@ -285,7 +285,11 @@ const Portfolio = () => {
                   <div className="p-8 border-b border-border/50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
-                         <div className="w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow overflow-hidden">
+                         <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-glow overflow-hidden ${
+                           tokenData.image && tokenData.image.startsWith('data:') 
+                             ? 'bg-white' 
+                             : 'bg-gradient-primary'
+                         }`}>
                            {tokenData.image && tokenData.image.startsWith('data:') ? (
                              <img src={tokenData.image} alt="Token logo" className="w-full h-full object-cover" />
                            ) : (
