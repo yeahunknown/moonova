@@ -9,12 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle } from "lucide-react";
+import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const tokenSchema = z.object({
-  name: z.string().min(2, "Token name must be at least 2 characters"),
-  symbol: z.string().min(2, "Token symbol must be at least 2 characters"),
+  name: z.string()
+    .min(2, "Token name must be at least 2 characters")
+    .max(12, "Token name must be at most 12 characters")
+    .regex(/^[A-Za-z\s]+$/, "Only letters and spaces allowed"),
+  symbol: z.string()
+    .min(2, "Token symbol must be at least 2 characters")
+    .max(12, "Token symbol must be at most 12 characters")
+    .regex(/^[A-Za-z]+$/, "Only letters allowed"),
   supply: z.string()
     .regex(/^\d+$/, "Only numbers allowed")
     .refine((val) => Number(val) <= 1000000000, "Max supply is 1,000,000,000"),
@@ -426,22 +432,34 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   );
 
   const renderStep3 = () => (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid lg:grid-cols-3 gap-8">
       <Card className="border-border bg-card/50 backdrop-blur-sm shadow-elegant">
         <CardContent className="p-8">
           <h2 className="text-2xl font-semibold mb-6 text-center">Advanced Settings</h2>
           
           <div className="space-y-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 border border-border rounded transition-all duration-200 hover:shadow-lg">
-                <Label>Burnable</Label>
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-orange-500/10 to-red-500/10">
+                <div className="flex items-center gap-3">
+                  <Flame className="h-5 w-5 text-orange-500" />
+                  <div>
+                    <Label className="text-orange-500">Burnable</Label>
+                    <p className="text-sm text-muted-foreground">Allow tokens to be permanently destroyed</p>
+                  </div>
+                </div>
                 <Switch
                   checked={formData.burnable}
                   onCheckedChange={(checked) => setValue("burnable", checked)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 border border-border rounded transition-all duration-200 hover:shadow-lg">
-                <Label>Mintable</Label>
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10">
+                <div className="flex items-center gap-3">
+                  <Coins className="h-5 w-5 text-green-500" />
+                  <div>
+                    <Label className="text-green-500">Mintable</Label>
+                    <p className="text-sm text-muted-foreground">Allow creation of new tokens</p>
+                  </div>
+                </div>
                 <Switch
                   checked={formData.mintable}
                   onCheckedChange={(checked) => setValue("mintable", checked)}
@@ -463,30 +481,39 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-center">Authority Revokes</h3>
-              <div className="flex items-center justify-between p-3 border border-border rounded transition-all duration-200 hover:shadow-lg">
-                <div>
-                  <Label>Revoke Freeze</Label>
-                  <p className="text-sm text-muted-foreground">+0.1 SOL</p>
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
+                <div className="flex items-center gap-3">
+                  <ShieldOff className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <Label className="text-blue-500">Revoke Freeze</Label>
+                    <p className="text-sm text-muted-foreground">Remove ability to freeze accounts • +0.1 SOL</p>
+                  </div>
                 </div>
                 <Switch
                   checked={formData.revokeFreezeAuth}
                   onCheckedChange={(checked) => setValue("revokeFreezeAuth", checked)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 border border-border rounded transition-all duration-200 hover:shadow-lg">
-                <div>
-                  <Label>Revoke Mint</Label>
-                  <p className="text-sm text-muted-foreground">+0.1 SOL</p>
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-purple-500/10 to-violet-500/10">
+                <div className="flex items-center gap-3">
+                  <Unlock className="h-5 w-5 text-purple-500" />
+                  <div>
+                    <Label className="text-purple-500">Revoke Mint</Label>
+                    <p className="text-sm text-muted-foreground">Remove ability to mint new tokens • +0.1 SOL</p>
+                  </div>
                 </div>
                 <Switch
                   checked={formData.revokeMintAuth}
                   onCheckedChange={(checked) => setValue("revokeMintAuth", checked)}
                 />
               </div>
-              <div className="flex items-center justify-between p-3 border border-border rounded transition-all duration-200 hover:shadow-lg">
-                <div>
-                  <Label>Revoke Metadata</Label>
-                  <p className="text-sm text-muted-foreground">+0.1 SOL</p>
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-pink-500/10 to-rose-500/10">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-5 w-5 text-pink-500" />
+                  <div>
+                    <Label className="text-pink-500">Revoke Metadata</Label>
+                    <p className="text-sm text-muted-foreground">Remove ability to update metadata • +0.1 SOL</p>
+                  </div>
                 </div>
                 <Switch
                   checked={formData.revokeMetadataAuth}
@@ -494,6 +521,66 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                 />
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Final Token Preview */}
+      <Card className="border-border bg-gradient-subtle shadow-elegant">
+        <CardContent className="p-8">
+          <h2 className="text-2xl font-semibold mb-6 text-center">Final Preview</h2>
+          
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4 justify-center">
+              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
+                {uploadedLogo ? (
+                  <img src={uploadedLogo} alt="Token logo" className="w-14 h-14 rounded-full object-cover" />
+                ) : (
+                  <Rocket className="h-8 w-8 text-white" />
+                )}
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold">{formData.name || "Your Token"}</h3>
+                <p className="text-muted-foreground">${formData.symbol || "TOKEN"}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-4">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Supply:</span>
+                <span>{formData.supply ? Number(formData.supply).toLocaleString() : "1,000,000,000"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Decimals:</span>
+                <span>{formData.decimals[0]}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Network:</span>
+                <span>Solana</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Tax:</span>
+                <span>{formData.transactionTax[0]}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Burnable:</span>
+                <span className={formData.burnable ? "text-orange-500" : "text-muted-foreground"}>{formData.burnable ? "Yes" : "No"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Mintable:</span>
+                <span className={formData.mintable ? "text-green-500" : "text-muted-foreground"}>{formData.mintable ? "Yes" : "No"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Status:</span>
+                <span className="px-3 py-1 bg-success/20 text-success rounded-full text-sm">Ready to Launch</span>
+              </div>
+            </div>
+
+            {formData.description && (
+              <div className="pt-4 border-t border-border">
+                <p className="text-sm text-muted-foreground italic">"{formData.description}"</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
