@@ -120,23 +120,26 @@ const Portfolio = () => {
 
   // Controlled 1-second updates for stats and chart
   useEffect(() => {
-    if (liquidityWithdrawn) return;
+    if (liquidityWithdrawn || isOverrideMode) return;
 
     const interval = setInterval(() => {
-      setStats(prevStats => {
-        // Very small incremental increases only
-        const increment = 0.001; // 0.1% increase
-        
-        const newStats = {
-          volume24h: prevStats.volume24h * (1 + increment + Math.random() * 0.001),
-          marketCap: prevStats.marketCap * (1 + increment + Math.random() * 0.001),
-          liquidity: prevStats.liquidity * (1 + increment * 0.5 + Math.random() * 0.0005),
-          holders: prevStats.holders + Math.floor(Math.random() * 3) + 1, // Slowly increase holders
-          currentPrice: prevStats.currentPrice * (1 + increment + Math.random() * 0.001)
-        };
-        
-        return newStats;
-      });
+      // Only update stats if not in override mode
+      if (!isOverrideMode) {
+        setStats(prevStats => {
+          // Very small incremental increases only
+          const increment = 0.001; // 0.1% increase
+          
+          const newStats = {
+            volume24h: prevStats.volume24h * (1 + increment + Math.random() * 0.001),
+            marketCap: prevStats.marketCap * (1 + increment + Math.random() * 0.001),
+            liquidity: prevStats.liquidity * (1 + increment * 0.5 + Math.random() * 0.0005),
+            holders: prevStats.holders + Math.floor(Math.random() * 3) + 1, // Slowly increase holders
+            currentPrice: prevStats.currentPrice * (1 + increment + Math.random() * 0.001)
+          };
+          
+          return newStats;
+        });
+      }
 
       // Update chart with dramatic pumps and volatile movement
       setChartData(prevChart => {
@@ -169,7 +172,7 @@ const Portfolio = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [liquidityWithdrawn]);
+  }, [liquidityWithdrawn, isOverrideMode]);
 
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
@@ -185,7 +188,7 @@ const Portfolio = () => {
             marketCap: 12660,
             liquidity: 39.29,
             holders: 223,
-            currentPrice: 0.088503
+            currentPrice: 0.0000127
           };
           
           setStats(overrideStats);
@@ -201,18 +204,18 @@ const Portfolio = () => {
             }));
           }
           
-          // Update chart to match new values
+          // Update chart to match new values with crazy pumping chart
           const newChartData = [
-            { time: '6h', price: 0.0421 },
-            { time: '5h', price: 0.0445 },
-            { time: '4h', price: 0.0512 },
-            { time: '3h', price: 0.0489 },
-            { time: '2h', price: 0.0634 },
-            { time: '1h', price: 0.0598 },
-            { time: '30m', price: 0.0712 },
-            { time: '15m', price: 0.0685 },
-            { time: '5m', price: 0.0803 },
-            { time: 'now', price: 0.088503 },
+            { time: '6h', price: 0.0000089 },
+            { time: '5h', price: 0.0000095 },
+            { time: '4h', price: 0.0000101 },
+            { time: '3h', price: 0.0000098 },
+            { time: '2h', price: 0.0000114 },
+            { time: '1h', price: 0.0000109 },
+            { time: '30m', price: 0.0000119 },
+            { time: '15m', price: 0.0000123 },
+            { time: '5m', price: 0.0000125 },
+            { time: 'now', price: 0.0000127 },
           ];
           setChartData(newChartData);
         }, 5000);
