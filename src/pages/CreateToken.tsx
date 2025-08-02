@@ -54,41 +54,41 @@ const CreateToken = () => {
     <div className="min-h-screen bg-gradient-dark">
       <Navigation />
       
-      <div className="pt-24 pb-20">
-        <div className="container mx-auto px-6">
+      <div className="pt-20 pb-12 px-4 sm:px-6">
+        <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold mb-4">
+            <div className="text-center mb-8 lg:mb-12">
+              <h1 className="text-3xl sm:text-4xl font-bold mb-4">
                 Create Your <span className="bg-gradient-primary bg-clip-text text-transparent">Token</span>
               </h1>
-              <p className="text-muted-foreground">Follow the 3-step process to launch your token</p>
+              <p className="text-muted-foreground text-sm sm:text-base">Follow the 3-step process to launch your token</p>
             </div>
 
             {/* Main Container */}
             <Card className="border-border bg-card/30 backdrop-blur-lg shadow-2xl">
-              <CardContent className="p-8">
+              <CardContent className="p-4 sm:p-6 lg:p-8">
                 {/* Progress Bar */}
-                <div className="mb-8">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex space-x-4">
-                      <span className={`text-sm font-medium px-3 py-1 rounded-full transition-all duration-300 ${
+                <div className="mb-6 lg:mb-8">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                    <div className="flex flex-wrap gap-2 sm:gap-4">
+                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-all duration-300 ${
                         step >= 1 ? 'bg-gradient-primary text-white' : 'bg-secondary text-muted-foreground'
                       }`}>
                         Basic Info
                       </span>
-                      <span className={`text-sm font-medium px-3 py-1 rounded-full transition-all duration-300 ${
+                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-all duration-300 ${
                         step >= 2 ? 'bg-gradient-primary text-white' : 'bg-secondary text-muted-foreground'
                       }`}>
                         Details
                       </span>
-                      <span className={`text-sm font-medium px-3 py-1 rounded-full transition-all duration-300 ${
+                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-all duration-300 ${
                         step >= 3 ? 'bg-gradient-primary text-white' : 'bg-secondary text-muted-foreground'
                       }`}>
-                        Advanced Settings
+                        Advanced
                       </span>
                     </div>
-                    <span className="text-sm text-muted-foreground">{Math.round(progressPercentage)}% Complete</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">{Math.round(progressPercentage)}% Complete</span>
                   </div>
                   <div className="relative">
                     <Progress value={progressPercentage} className="h-2" />

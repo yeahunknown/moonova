@@ -156,9 +156,9 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   };
 
   const renderStep1 = () => (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       <Card className="border-border bg-card/50 backdrop-blur-sm">
-        <CardContent className="p-8">
+        <CardContent className="p-6 lg:p-8">
           <h2 className="text-2xl font-semibold mb-6 text-center">Basic Information</h2>
           
           <div className="space-y-6">
@@ -241,7 +241,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
       {/* Token Preview */}
       <Card className="border-border bg-gradient-subtle shadow-elegant">
-        <CardContent className="p-8">
+        <CardContent className="p-6 lg:p-8">
           <h2 className="text-2xl font-semibold mb-6 text-center">Token Preview</h2>
           
           <div className="space-y-6">
@@ -285,8 +285,8 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
   const renderStep2 = () => (
     <Card className="border-border bg-card/50 backdrop-blur-sm max-w-2xl mx-auto shadow-elegant">
-      <CardContent className="p-8">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Token Details</h2>
+      <CardContent className="p-6 lg:p-8">
+        <h2 className="text-xl lg:text-2xl font-semibold mb-6 text-center">Token Details</h2>
         
         <div className="space-y-6">
           <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg">
@@ -432,12 +432,12 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   );
 
   const renderStep3 = () => (
-    <div className="grid lg:grid-cols-5 gap-8">
-      {/* Advanced Settings - Takes up 3 columns */}
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
+      {/* Advanced Settings - Takes up 3 columns on desktop, full width on mobile */}
       <div className="lg:col-span-3">
         <Card className="border-border bg-card/50 backdrop-blur-sm shadow-elegant">
-          <CardContent className="p-8">
-            <h2 className="text-2xl font-semibold mb-6 text-center">Advanced Settings</h2>
+          <CardContent className="p-4 sm:p-6 lg:p-8">
+            <h2 className="text-xl lg:text-2xl font-semibold mb-6 text-center">Advanced Settings</h2>
             
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
@@ -665,7 +665,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between pt-8">
+        <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 lg:pt-8">
           <Button
             type="button"
             variant="outline"
@@ -674,7 +674,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
               onPrevious();
             }}
             disabled={step === 1}
-            className="flex items-center transition-all duration-200 hover:scale-105"
+            className="flex items-center justify-center transition-all duration-200 hover:scale-105 min-h-[44px] w-full sm:w-auto"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Previous
@@ -687,7 +687,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                 e.preventDefault();
                 handleNext(e);
               }}
-              className="bg-gradient-primary hover:opacity-90 flex items-center transition-all duration-200 hover:scale-105 shadow-glow"
+              className="bg-gradient-primary hover:opacity-90 flex items-center justify-center transition-all duration-200 hover:scale-105 shadow-glow min-h-[44px] w-full sm:w-auto"
             >
               Next
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -695,7 +695,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
           ) : (
             <Button 
               type="submit"
-              className="bg-gradient-primary hover:opacity-90 shadow-glow flex items-center transition-all duration-200 hover:scale-105"
+              className="bg-gradient-primary hover:opacity-90 shadow-glow flex items-center justify-center transition-all duration-200 hover:scale-105 min-h-[44px] w-full sm:w-auto"
             >
               <Rocket className="mr-2 h-4 w-4" />
               Create Token

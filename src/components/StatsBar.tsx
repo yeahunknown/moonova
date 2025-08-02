@@ -87,9 +87,9 @@ export function StatsBar() {
   }, [])
 
   return (
-    <div className="w-full py-6 bg-card border-y border-border">
-      <div className="container">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="w-full py-4 sm:py-6 bg-card border-y border-border">
+      <div className="container px-4 sm:px-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, index) => (
             <Stat
               key={stat.id}
@@ -108,18 +108,18 @@ export function StatsBar() {
 function Stat({ icon, value, label, delay }: { icon: React.ReactNode; value: string; label: string; delay: number }) {
   return (
     <motion.div
-      className="flex flex-col items-center justify-center p-4"
+      className="flex flex-col items-center justify-center p-2 sm:p-4"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
       viewport={{ once: true }}
     >
-      <div className="flex items-center gap-2 mb-1">
-        {icon}
+      <div className="flex items-center gap-1 sm:gap-2 mb-1">
+        <div className="hidden sm:block">{icon}</div>
         <AnimatePresence mode="wait">
           <motion.span
             key={value}
-            className="text-xl md:text-2xl font-bold text-foreground"
+            className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
@@ -129,7 +129,7 @@ function Stat({ icon, value, label, delay }: { icon: React.ReactNode; value: str
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="text-xs md:text-sm text-muted-foreground">{label}</span>
+      <span className="text-xs sm:text-sm text-muted-foreground text-center leading-tight">{label}</span>
     </motion.div>
   )
 }

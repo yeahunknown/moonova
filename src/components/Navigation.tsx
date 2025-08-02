@@ -7,19 +7,19 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           <div 
-            className="flex items-center space-x-3 cursor-pointer transition-all hover:scale-105"
+            className="flex items-center space-x-2 sm:space-x-3 cursor-pointer transition-all hover:scale-105"
             onClick={() => navigate("/")}
           >
-            <img src={moonovaLogo} alt="Moonova" className="w-8 h-8" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Moonova LLC
+            <img src={moonovaLogo} alt="Moonova" className="w-6 h-6 sm:w-8 sm:h-8" />
+            <span className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Moonova
             </span>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-8">
             <Button 
               variant="ghost" 
               onClick={() => navigate("/create")}
@@ -45,9 +45,10 @@ const Navigation = () => {
 
           <Button 
             onClick={() => navigate("/create")}
-            className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow"
+            className="bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow text-sm sm:text-base px-3 sm:px-4 py-2 min-h-[40px]"
           >
-            Launch Token
+            <span className="hidden sm:inline">Launch Token</span>
+            <span className="sm:hidden">Launch</span>
           </Button>
         </div>
       </div>
