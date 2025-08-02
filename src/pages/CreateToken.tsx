@@ -32,10 +32,7 @@ const CreateToken = () => {
   };
 
   const handlePaymentComplete = () => {
-    toast({
-      title: "Token Created Successfully!",
-      description: "Your token has been deployed to the Solana blockchain.",
-    });
+    // Payment success handled by the success modal
   };
 
   const calculateCost = () => {

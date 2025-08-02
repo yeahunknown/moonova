@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle } from "lucide-react"
+import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck, Sparkles } from "lucide-react"
 import { SolanaIcon } from "../SolanaIcon"
 
 interface PaymentModalProps {
@@ -35,6 +35,7 @@ export function PaymentModal({
   const [checkResult, setCheckResult] = useState<null | { success: boolean; message: string }>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [generatedTokenAddress, setGeneratedTokenAddress] = useState("")
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -223,6 +224,16 @@ export function PaymentModal({
   const handleCreateAnotherToken = () => {
     setShowSuccessModal(false)
     window.location.href = "/create"
+  }
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedTokenAddress)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy: ', err)
+    }
   }
 
   return (
@@ -483,42 +494,84 @@ export function PaymentModal({
     {/* Success Modal */}
     <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
       <DialogPortal>
-        <DialogContent className="max-w-md bg-card border-border">
-          <div className="text-center space-y-6 p-6">
-            <div className="w-16 h-16 mx-auto bg-success/20 rounded-full flex items-center justify-center">
-              <Check className="w-8 h-8 text-success" />
-            </div>
+        <DialogContent className="max-w-lg bg-gradient-dark border-border/20 backdrop-blur-xl shadow-2xl overflow-hidden">
+          <div className="relative">
+            {/* Animated background elements */}
+            <div className="absolute inset-0 bg-gradient-primary/5 animate-pulse" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-gradient-primary/20 rounded-full blur-3xl animate-pulse" />
             
-            <div className="space-y-2">
-              <h3 className="text-2xl font-bold">Token Launched Successfully!</h3>
-              <p className="text-muted-foreground">
-                Your token has been deployed to the Solana blockchain and is ready for trading.
-              </p>
-            </div>
+            <div className="relative text-center space-y-8 p-8">
+              {/* Success Icon with animation */}
+              <div className="relative mx-auto">
+                <div className="w-20 h-20 mx-auto bg-gradient-primary/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-primary/30 shadow-glow animate-scale-in">
+                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
+                    <Check className="w-8 h-8 text-white animate-fade-in" strokeWidth={3} />
+                  </div>
+                </div>
+                <div className="absolute -top-2 -right-2">
+                  <Sparkles className="w-6 h-6 text-primary animate-pulse" />
+                </div>
+                <div className="absolute -bottom-1 -left-1">
+                  <Sparkles className="w-4 h-4 text-primary/60 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                </div>
+              </div>
+              
+              {/* Title and description */}
+              <div className="space-y-3">
+                <h3 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  Token Launched Successfully!
+                </h3>
+                <p className="text-muted-foreground text-lg">
+                  Your token has been deployed to the Solana blockchain and is now live on the network.
+                </p>
+              </div>
 
-            <div className="bg-secondary/50 rounded-lg p-4 space-y-2">
-              <p className="text-sm text-muted-foreground">Token Address:</p>
-              <p className="font-mono text-sm break-all bg-background p-2 rounded border">
-                {generatedTokenAddress}
-              </p>
-            </div>
+              {/* Token Address with copy button */}
+              <div className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-border/50 shadow-elegant">
+                <p className="text-sm text-muted-foreground mb-3 font-medium">Token Address</p>
+                <div className="flex items-center gap-3 bg-background/50 p-4 rounded-lg border border-border/30">
+                  <p className="font-mono text-sm break-all text-foreground flex-1">
+                    {generatedTokenAddress}
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={copyToClipboard}
+                    className="p-2 h-auto hover:bg-primary/10 transition-all duration-200"
+                  >
+                    {copied ? (
+                      <CheckCheck className="w-4 h-4 text-primary animate-scale-in" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
+                    )}
+                  </Button>
+                </div>
+                {copied && (
+                  <p className="text-xs text-primary mt-2 animate-fade-in">
+                    ✓ Address copied to clipboard!
+                  </p>
+                )}
+              </div>
 
-            <div className="space-y-3">
-              <Button 
-                onClick={handleAddLiquidity}
-                className="w-full bg-gradient-primary hover:opacity-90 shadow-glow"
-                size="lg"
-              >
-                Add Liquidity
-              </Button>
-              <Button 
-                onClick={handleCreateAnotherToken}
-                variant="outline"
-                className="w-full"
-                size="lg"
-              >
-                Create Another Token
-              </Button>
+              {/* Action buttons */}
+              <div className="space-y-4 pt-2">
+                <Button 
+                  onClick={handleAddLiquidity}
+                  className="w-full bg-gradient-primary hover:opacity-90 shadow-glow text-white font-semibold py-6 text-lg hover-scale"
+                  size="lg"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Add Liquidity
+                </Button>
+                <Button 
+                  onClick={handleCreateAnotherToken}
+                  variant="outline"
+                  className="w-full border-border/50 hover:border-primary/50 hover:bg-primary/5 py-6 text-lg transition-all duration-200"
+                  size="lg"
+                >
+                  Create Another Token
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
