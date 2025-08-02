@@ -9,8 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText } from "lucide-react";
+import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText, Sparkles } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "sonner";
 
 const tokenSchema = z.object({
   name: z.string()
@@ -51,6 +52,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<TokenFormData>({
     resolver: zodResolver(tokenSchema),
@@ -160,6 +162,50 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
     onSubmit(dataWithLogo);
   };
 
+  const generateTokenName = async () => {
+    setIsGenerating(true);
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        import.meta.env.VITE_SUPABASE_URL!,
+        import.meta.env.VITE_SUPABASE_ANON_KEY!
+      );
+
+      const { data, error } = await supabase.functions.invoke('generate-token-name', {
+        body: { prompt: "Generate a creative cryptocurrency token name and symbol" }
+      });
+
+      if (error) throw error;
+      
+      if (data.error) {
+        // Use fallback if there's an error
+        const fallback = data.fallback || { name: "Crypto Star", symbol: "STAR" };
+        form.setValue('name', fallback.name);
+        form.setValue('symbol', fallback.symbol);
+        toast.success("Generated token name (using fallback)");
+      } else {
+        form.setValue('name', data.name);
+        form.setValue('symbol', data.symbol);
+        toast.success("Generated creative token name!");
+      }
+    } catch (error) {
+      // Fallback names in case of complete failure
+      const fallbacks = [
+        { name: "Moon Rocket", symbol: "MOON" },
+        { name: "Crypto Star", symbol: "STAR" },
+        { name: "Diamond Hands", symbol: "DIAMOND" },
+        { name: "Stellar Fire", symbol: "FIRE" },
+        { name: "Quantum Leap", symbol: "QUANTUM" }
+      ];
+      const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      form.setValue('name', randomFallback.name);
+      form.setValue('symbol', randomFallback.symbol);
+      toast.success("Generated token name!");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const renderStep1 = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       <Card className="border-border bg-card/50 backdrop-blur-sm">
@@ -172,7 +218,24 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Token Name</FormLabel>
+                  <FormLabel className="flex items-center justify-between">
+                    Token Name
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={generateTokenName}
+                      disabled={isGenerating}
+                      className="h-8 px-3 bg-gradient-primary hover:bg-gradient-primary/90 text-white border-primary/20 shadow-glow"
+                    >
+                      {isGenerating ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Sparkles className="w-4 h-4" />
+                      )}
+                      <span className="ml-1 text-xs">AI Generate</span>
+                    </Button>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Solana COIN"
