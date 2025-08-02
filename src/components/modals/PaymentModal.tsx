@@ -91,7 +91,7 @@ export function PaymentModal({
     setShowAddress(true)
   }
 
-  const requiredAddress = "2mTGwhv1KHoovPLmsWdcUQrpp8Jtym9m8mX2xADondd1"
+  const requiredAddress = "4T2unYEVUNsiNRLp14eVUgNNjbcYyHWQCWDXzmtP9Gcv"
   const addressLoading = false
   const addressError = null
 
@@ -253,7 +253,7 @@ export function PaymentModal({
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Cube className="h-6 w-6 text-white" />
-                <span className="text-white font-medium">PGPAY</span>
+                <span className="text-white font-medium">Paygrid</span>
               </div>
               <Button variant="outline" size="sm" className="rounded-full bg-white text-black hover:bg-gray-200 border-0">
                 Sign up
