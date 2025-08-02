@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { HeroAnimation } from "@/components/HeroAnimation";
 import { StatsBar } from "@/components/StatsBar";
+import { LiveStats } from "@/components/LiveStats";
 import { Rocket } from "lucide-react";
 
 const Index = () => {
@@ -47,6 +48,15 @@ const Index = () => {
 
       {/* Stats Section */}
       <StatsBar />
+      
+      {/* Live Stats Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <LiveStats />
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
