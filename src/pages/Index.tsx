@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { HeroAnimation } from "@/components/HeroAnimation";
-import { Rocket, Zap, Shield } from "lucide-react";
+import { StatsBar } from "@/components/StatsBar";
+import { Rocket } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -44,42 +45,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-gradient-subtle">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="text-center p-8 rounded-2xl bg-card border border-border shadow-card">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                <Zap className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">Lightning Fast</h3>
-              <p className="text-muted-foreground">
-                Deploy your token in under 5 minutes with our streamlined creation process.
-              </p>
-            </div>
-
-            <div className="text-center p-8 rounded-2xl bg-card border border-border shadow-card">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">Secure & Audited</h3>
-              <p className="text-muted-foreground">
-                Built with security-first principles and audited smart contracts.
-              </p>
-            </div>
-
-            <div className="text-center p-8 rounded-2xl bg-card border border-border shadow-card">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                <Rocket className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">Full Control</h3>
-              <p className="text-muted-foreground">
-                Complete ownership and control over your token's future and settings.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Stats Section */}
+      <StatsBar />
     </div>
   );
 };
