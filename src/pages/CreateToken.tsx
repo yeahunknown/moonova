@@ -3,7 +3,7 @@ import Navigation from "@/components/Navigation";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import TokenCreationForm from "@/components/forms/TokenCreationForm";
-import { FakePaymentModal } from "@/components/modals/PaymentModal";
+import { PaymentModal } from "@/components/modals/PaymentModal";
 import { useToast } from "@/hooks/use-toast";
 
 const CreateToken = () => {
@@ -113,7 +113,7 @@ const CreateToken = () => {
       </div>
 
       {/* Payment Modal */}
-      <FakePaymentModal
+      <PaymentModal
         open={isPaymentModalOpen}
         onOpenChange={setIsPaymentModalOpen}
         amount={parseFloat(calculateCost())}
