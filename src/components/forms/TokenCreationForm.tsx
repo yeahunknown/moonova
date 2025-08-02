@@ -130,10 +130,15 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   };
 
   const handleNext = async (e?: React.MouseEvent) => {
-    // Prevent any form submission
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    // Add small delay to prevent double clicks
+    if (e?.currentTarget) {
+      (e.currentTarget as HTMLButtonElement).disabled = true;
+      setTimeout(() => {
+        (e.currentTarget as HTMLButtonElement).disabled = false;
+      }, 500);
     }
     
     let fieldsToValidate: (keyof TokenFormData)[] = [];
@@ -149,7 +154,10 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
-      onNext();
+      // Add small delay for smooth transition
+      setTimeout(() => {
+        onNext();
+      }, 100);
     }
   };
 
@@ -226,14 +234,13 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                       size="sm"
                       onClick={generateTokenName}
                       disabled={isGenerating}
-                      className="h-7 px-2 bg-gradient-primary hover:bg-gradient-primary/90 text-white border-primary/20 shadow-sm text-xs"
+                      className="h-6 px-2 bg-gradient-primary hover:bg-gradient-primary/90 text-white border-primary/20 shadow-sm text-xs"
                     >
                       {isGenerating ? (
                         <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
                         <Sparkles className="w-3 h-3" />
                       )}
-                      <span className="ml-1">AI</span>
                     </Button>
                   </FormLabel>
                   <FormControl>

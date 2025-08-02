@@ -278,110 +278,110 @@ export function PaymentModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogPortal>
-          <DialogContent className="p-0 gap-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700 max-w-md rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
-          <div className="p-6 backdrop-blur-sm">
+          <DialogContent className="p-0 gap-0 bg-[#0F0F23] border border-[#2A2D47] max-w-md rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
+          <div className="p-6 relative">
             {/* Header */}
-            <div className="border-b border-gray-700/50 pb-4 mb-6">
-              <div className="flex justify-between items-center mb-3">
+            <div className="border-b border-[#2A2D47] pb-6 mb-6">
+              <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center shadow-lg">
-                    <div className="w-4 h-4 bg-white rounded-sm"></div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="w-5 h-5 bg-white rounded-md opacity-90"></div>
                   </div>
                   <span className="ml-3 text-xl font-bold text-white">SecurePay</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-400 font-medium">SECURE</span>
+                <div className="flex items-center gap-2 bg-[#16A34A]/10 px-3 py-1 rounded-full border border-[#16A34A]/20">
+                  <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></div>
+                  <span className="text-xs text-[#22C55E] font-semibold">SECURE</span>
                 </div>
               </div>
               <div className="text-center">
                 <h2 className="text-xl font-semibold text-white mb-2">Payment Required</h2>
-                <div className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent drop-shadow-sm">{amount.toFixed(6)} SOL</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] bg-clip-text text-transparent">{amount.toFixed(6)} SOL</div>
               </div>
             </div>
 
             {/* Payment Section */}
             {showAddress ? (
-              <div className="space-y-4">
-                <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-4 shadow-lg">
+              <div className="space-y-6">
+                <div className="bg-[#1A1A3A] border border-[#2A2D47] rounded-xl p-5 shadow-lg">
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Amount</p>
-                      <p className="text-white font-mono text-sm font-medium">{amount.toFixed(6)} SOL</p>
+                      <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-2">Amount</p>
+                      <p className="text-white font-mono text-sm font-semibold">{amount.toFixed(6)} SOL</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Network</p>
-                      <p className="text-white text-sm font-medium">Solana</p>
+                      <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-2">Network</p>
+                      <p className="text-white text-sm font-semibold">Solana</p>
                     </div>
                   </div>
-                  <div className="border-t border-gray-700/50 pt-4">
-                    <p className="text-gray-400 text-xs uppercase tracking-wide mb-2">Send to address</p>
-                    <div className="bg-gray-900/80 p-3 rounded-lg border border-gray-700/50 shadow-inner">
+                  <div className="border-t border-[#2A2D47] pt-4">
+                    <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-3">Recipient Address</p>
+                    <div className="bg-[#0F0F23] p-4 rounded-lg border border-[#2A2D47] shadow-inner">
                       {addressLoading ? (
                         <div className="flex items-center gap-2">
-                          <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-4 w-4 text-[#9CA3AF]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          <span className="text-gray-400 text-sm">Loading...</span>
+                          <span className="text-[#9CA3AF] text-sm">Loading...</span>
                         </div>
                       ) : addressError ? (
-                        <div className="flex items-center gap-2 text-red-400">
+                        <div className="flex items-center gap-2 text-[#EF4444]">
                           <AlertCircle className="h-4 w-4" />
                           <span className="text-sm">Error loading address</span>
                         </div>
                       ) : (
-                        <p className="text-gray-300 font-mono text-xs break-all leading-relaxed">{requiredAddress}</p>
+                        <p className="text-[#E5E7EB] font-mono text-xs break-all leading-relaxed">{requiredAddress}</p>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <label className="text-gray-300 text-sm font-medium">Transaction Signature</label>
+                <div className="space-y-4">
+                  <label className="text-[#E5E7EB] text-sm font-semibold">Transaction Signature</label>
                   <input
                     type="text"
-                    className="w-full p-3 rounded-lg border border-gray-700 bg-gray-800/60 backdrop-blur-sm text-white placeholder-gray-500 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 shadow-inner"
+                    className="w-full p-4 rounded-xl border border-[#2A2D47] bg-[#1A1A3A] text-white placeholder-[#9CA3AF] text-sm focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all duration-200 shadow-inner"
                     placeholder="Enter your transaction signature..."
                     value={txSignature}
                     onChange={e => setTxSignature(e.target.value)}
                   />
                   <Button
-                    className="w-full py-3 bg-gradient-primary hover:bg-gradient-primary/90 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                    className="w-full py-4 bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] hover:from-[#7C3AED] hover:to-[#0891B2] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none"
                     onClick={checkTransaction}
                     disabled={isChecking || !txSignature.trim()}
                   >
                     {isChecking ? (
-                      <div className="flex items-center gap-2">
-                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Verifying...
+                        Verifying Transaction...
                       </div>
                     ) : (
                       "Verify Payment"
                     )}
                   </Button>
                   {checkResult && (
-                    <div className={`flex items-center gap-2 p-3 rounded-lg border backdrop-blur-sm transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2 ${checkResult.success ? 'border-green-500/50 bg-green-500/10 text-green-400 shadow-green-500/20 shadow-lg' : 'border-red-500/50 bg-red-500/10 text-red-400 shadow-red-500/20 shadow-lg'}`}>
-                      {checkResult.success ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-                      <span className="text-sm font-medium">{checkResult.message}</span>
+                    <div className={`flex items-center gap-3 p-4 rounded-xl border backdrop-blur-sm transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2 ${checkResult.success ? 'border-[#22C55E]/30 bg-[#22C55E]/10 text-[#22C55E] shadow-[#22C55E]/20 shadow-lg' : 'border-[#EF4444]/30 bg-[#EF4444]/10 text-[#EF4444] shadow-[#EF4444]/20 shadow-lg'}`}>
+                      {checkResult.success ? <Check className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+                      <span className="text-sm font-semibold">{checkResult.message}</span>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-4 shadow-lg">
+              <div className="space-y-6">
+                <div className="bg-[#1A1A3A] border border-[#2A2D47] rounded-xl p-5 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-400 text-sm">Session expires in</p>
-                      <p className="text-primary font-mono text-xl font-bold drop-shadow-sm">{formatTime(timeLeft)}</p>
+                      <p className="text-[#9CA3AF] text-sm mb-1">Session expires in</p>
+                      <p className="text-[#8B5CF6] font-mono text-2xl font-bold">{formatTime(timeLeft)}</p>
                     </div>
-                    <div className="relative w-12 h-12">
-                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90 drop-shadow-sm">
-                        <circle cx="18" cy="18" r="15" fill="none" stroke="#374151" strokeWidth="2"></circle>
+                    <div className="relative w-14 h-14">
+                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="#2A2D47" strokeWidth="2"></circle>
                         <circle
                           cx="18"
                           cy="18"
@@ -395,8 +395,8 @@ export function PaymentModal({
                         ></circle>
                         <defs>
                           <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="hsl(var(--primary))" />
-                            <stop offset="100%" stopColor="hsl(var(--primary-glow))" />
+                            <stop offset="0%" stopColor="#8B5CF6" />
+                            <stop offset="100%" stopColor="#06B6D4" />
                           </linearGradient>
                         </defs>
                       </svg>
@@ -409,37 +409,37 @@ export function PaymentModal({
 
           {/* Footer */}
           {!showAddress && (
-            <div className="border-t border-gray-700/50 p-6 space-y-4 bg-gray-800/30 backdrop-blur-sm">
-              <div className="space-y-3">
+            <div className="border-t border-[#2A2D47] p-6 space-y-5 bg-[#1A1A3A]/50">
+              <div className="space-y-4">
                 <div>
-                  <p className="text-gray-400 text-sm mb-2">Payment Method</p>
+                  <p className="text-[#9CA3AF] text-sm font-medium mb-3">Payment Method</p>
                   <div className="relative">
                     <button
-                      className="w-full bg-gray-800/60 backdrop-blur-sm border border-gray-700 text-white p-3 rounded-lg flex justify-between items-center hover:border-gray-600 transition-all duration-200 shadow-inner"
+                      className="w-full bg-[#0F0F23] border border-[#2A2D47] text-white p-4 rounded-xl flex justify-between items-center hover:border-[#8B5CF6]/50 transition-all duration-200 shadow-inner"
                       onClick={toggleCurrencyDropdown}
                     >
                       {selectedCurrency === "SOL" ? (
                         <div className="flex items-center gap-3">
-                          <SolanaIcon size={20} className="rounded-full shadow-sm" />
-                          <span className="font-medium">Solana (SOL)</span>
+                          <SolanaIcon size={24} className="rounded-full" />
+                          <span className="font-semibold">Solana (SOL)</span>
                         </div>
                       ) : (
-                        <span className="text-gray-400">Select currency</span>
+                        <span className="text-[#9CA3AF]">Select currency</span>
                       )}
-                      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${currencyDropdownOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`h-5 w-5 text-[#9CA3AF] transition-transform duration-200 ${currencyDropdownOpen ? "rotate-180" : ""}`} />
                     </button>
 
                     {currencyDropdownOpen && (
-                      <div className="absolute z-50 w-full mt-1 bg-[#1e1e1e] border border-[#2a2a2a] rounded shadow-lg">
+                      <div className="absolute z-50 w-full mt-2 bg-[#0F0F23] border border-[#2A2D47] rounded-xl shadow-2xl backdrop-blur-xl">
                         <div
-                          className="p-3 hover:bg-[#252525] cursor-pointer flex items-center justify-between"
+                          className="p-4 hover:bg-[#1A1A3A] cursor-pointer flex items-center justify-between transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl"
                           onClick={() => selectCurrency("SOL")}
                         >
                           <div className="flex items-center gap-3">
                             <SolanaIcon size={20} className="rounded-full" />
                             <span className="text-white">Solana (SOL)</span>
                           </div>
-                          {selectedCurrency === "SOL" && <Check className="h-4 w-4 text-[#00ff9d]" />}
+                          {selectedCurrency === "SOL" && <Check className="h-4 w-4 text-[#22C55E]" />}
                         </div>
                       </div>
                     )}
@@ -447,34 +447,34 @@ export function PaymentModal({
                 </div>
 
                 <div>
-                  <p className="text-gray-400 text-sm mb-2">Network</p>
+                  <p className="text-[#9CA3AF] text-sm font-medium mb-3">Network</p>
                   <div className="relative">
                     <button
-                      className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white p-3 rounded flex justify-between items-center hover:border-[#3a3a3a]"
+                      className="w-full bg-[#0F0F23] border border-[#2A2D47] text-white p-4 rounded-xl flex justify-between items-center hover:border-[#8B5CF6]/50 transition-all duration-200 shadow-inner"
                       onClick={toggleNetworkDropdown}
                     >
                       {selectedNetwork === "Solana" ? (
                         <div className="flex items-center gap-3">
-                          <SolanaIcon size={20} className="rounded-full" />
-                          <span className="font-medium">Solana Network</span>
+                          <SolanaIcon size={24} className="rounded-full" />
+                          <span className="font-semibold">Solana Network</span>
                         </div>
                       ) : (
-                        <span className="text-gray-400">Select network</span>
+                        <span className="text-[#9CA3AF]">Select network</span>
                       )}
-                      <ChevronDown className={`h-4 w-4 transition-transform ${networkDropdownOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`h-5 w-5 text-[#9CA3AF] transition-transform duration-200 ${networkDropdownOpen ? "rotate-180" : ""}`} />
                     </button>
 
                     {networkDropdownOpen && (
-                      <div className="absolute z-50 w-full mt-1 bg-[#1e1e1e] border border-[#2a2a2a] rounded shadow-lg">
+                      <div className="absolute z-50 w-full mt-2 bg-[#0F0F23] border border-[#2A2D47] rounded-xl shadow-2xl backdrop-blur-xl">
                         <div
-                          className="p-3 hover:bg-[#252525] cursor-pointer flex items-center justify-between"
+                          className="p-4 hover:bg-[#1A1A3A] cursor-pointer flex items-center justify-between transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl"
                           onClick={() => selectNetwork("Solana")}
                         >
                           <div className="flex items-center gap-3">
                             <SolanaIcon size={20} className="rounded-full" />
                             <span className="text-white">Solana Network</span>
                           </div>
-                          {selectedNetwork === "Solana" && <Check className="h-4 w-4 text-[#00ff9d]" />}
+                          {selectedNetwork === "Solana" && <Check className="h-4 w-4 text-[#22C55E]" />}
                         </div>
                       </div>
                     )}
@@ -483,18 +483,22 @@ export function PaymentModal({
               </div>
 
               <Button
-                className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium text-base"
+                className="w-full py-4 bg-gradient-to-r from-[#22C55E] to-[#16A34A] hover:from-[#16A34A] hover:to-[#15803D] text-white font-semibold text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                 onClick={handlePayment}
                 disabled={!selectedCurrency || !selectedNetwork}
               >
                 Pay {amount.toFixed(6)} SOL
               </Button>
 
-              <div className="flex items-center justify-center gap-4 pt-4 border-t border-[#2a2a2a]">
-                <HelpCircle className="h-4 w-4 text-gray-400" />
-                <Settings className="h-4 w-4 text-gray-400" />
-                <MessageCircle className="h-4 w-4 text-gray-400" />
-                <Mail className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center justify-center gap-6 pt-4 border-t border-[#2A2D47]">
+                <div className="flex items-center gap-2 text-[#9CA3AF]">
+                  <div className="w-2 h-2 bg-[#22C55E] rounded-full"></div>
+                  <span className="text-xs font-medium">256-bit Encryption</span>
+                </div>
+                <div className="flex items-center gap-2 text-[#9CA3AF]">
+                  <div className="w-2 h-2 bg-[#22C55E] rounded-full"></div>
+                  <span className="text-xs font-medium">Verified</span>
+                </div>
               </div>
             </div>
           )}
