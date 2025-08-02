@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import PaymentModal from "@/components/modals/PaymentModal";
+import { FakePaymentModal } from "@/components/modals/PaymentModal";
 
 const Liquidity = () => {
   const [tokenAddress, setTokenAddress] = useState("");
@@ -158,11 +158,11 @@ const Liquidity = () => {
       </div>
 
       {/* Payment Modal */}
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        totalCost={calculateTotalPrice()}
-        onPaymentComplete={handlePaymentComplete}
+      <FakePaymentModal
+        open={isPaymentModalOpen}
+        onOpenChange={setIsPaymentModalOpen}
+        amount={parseFloat(calculateTotalPrice())}
+        onPaymentSuccess={handlePaymentComplete}
       />
     </div>
   );
