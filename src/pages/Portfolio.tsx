@@ -138,11 +138,24 @@ const Portfolio = () => {
         return newStats;
       });
 
-      // Update chart with spiky but controlled movement
+      // Update chart with dramatic pumps and volatile movement
       setChartData(prevChart => {
         const newChart = [...prevChart];
         const lastPrice = newChart[newChart.length - 1].price;
-        const priceChange = (Math.random() - 0.4) * 0.008; // Slightly upward bias with spikes
+        
+        // Create dramatic price movements with occasional huge pumps
+        const isPump = Math.random() < 0.15; // 15% chance of major pump
+        const isDump = Math.random() < 0.08; // 8% chance of dump
+        
+        let priceChange;
+        if (isPump) {
+          priceChange = 0.05 + Math.random() * 0.15; // 5-20% pump
+        } else if (isDump) {
+          priceChange = -(0.02 + Math.random() * 0.08); // 2-10% dump
+        } else {
+          priceChange = (Math.random() - 0.45) * 0.025; // Regular volatile movement with upward bias
+        }
+        
         const newPrice = Math.max(lastPrice * (1 + priceChange), 0.000001);
         
         // Shift data and add new point
@@ -322,11 +335,11 @@ const Portfolio = () => {
                           <div className="flex items-center gap-6">
                              <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-glow overflow-hidden ${
                                tokenData.image && tokenData.image.startsWith('data:') 
-                                 ? 'bg-white' 
+                                 ? '' 
                                  : 'bg-gradient-primary'
                              }`}>
                                {tokenData.image && tokenData.image.startsWith('data:') ? (
-                                 <img src={tokenData.image} alt="Token logo" className="w-full h-full object-cover" />
+                                 <img src={tokenData.image} alt="Token logo" className="w-20 h-20 object-contain" />
                                ) : (
                                  <span className="text-3xl font-bold text-white">
                                    {tokenData.name.charAt(0).toUpperCase()}
