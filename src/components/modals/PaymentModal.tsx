@@ -487,7 +487,7 @@ export function PaymentModal({
         <DialogPortal>
           <DialogContent className="max-w-md p-0 border-0 bg-transparent shadow-none">
             {type === 'token' && (
-              <div className="bg-gradient-to-br from-purple-900/90 to-pink-900/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
+              <div className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
                 <div className="text-center space-y-6">
                   <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
                     <Check className="w-8 h-8 text-white" />
@@ -530,7 +530,7 @@ export function PaymentModal({
             )}
 
             {type === 'liquidity' && (
-              <div className="bg-gradient-to-br from-purple-900/90 to-pink-900/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
+              <div className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
                 <div className="text-center space-y-6">
                   <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
                     <Check className="w-8 h-8 text-white" />
