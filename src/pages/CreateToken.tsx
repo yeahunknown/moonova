@@ -28,6 +28,8 @@ const CreateToken = () => {
 
   const handleFormSubmit = (data: any) => {
     setTokenData(data);
+    // Store complete token data in session storage for later use
+    sessionStorage.setItem('createdTokenData', JSON.stringify(data));
     setIsPaymentModalOpen(true);
   };
 

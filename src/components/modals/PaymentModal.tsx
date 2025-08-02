@@ -113,6 +113,16 @@ export function PaymentModal({
         if (type === 'token') {
           const tokenAddr = generateTokenAddress()
           setGeneratedTokenAddress(tokenAddr)
+          // Store complete token data in session storage
+          const existingTokenData = sessionStorage.getItem('createdTokenData')
+          if (existingTokenData) {
+            const fullTokenData = JSON.parse(existingTokenData)
+            sessionStorage.setItem('sessionToken', JSON.stringify({
+              ...fullTokenData,
+              address: tokenAddr,
+              createdAt: Date.now()
+            }))
+          }
         }
         setCheckResult({ success: true, message: "Transaction confirmed" })
         if (onPaymentSuccess) onPaymentSuccess()
@@ -131,6 +141,16 @@ export function PaymentModal({
   if (type === 'token') {
     const tokenAddr = generateTokenAddress()
     setGeneratedTokenAddress(tokenAddr)
+    // Store complete token data in session storage
+    const existingTokenData = sessionStorage.getItem('createdTokenData')
+    if (existingTokenData) {
+      const fullTokenData = JSON.parse(existingTokenData)
+      sessionStorage.setItem('sessionToken', JSON.stringify({
+        ...fullTokenData,
+        address: tokenAddr,
+        createdAt: Date.now()
+      }))
+    }
   }
   setCheckResult({ success: true, message: "Transaction confirmed" });
   if (onPaymentSuccess) onPaymentSuccess();
@@ -205,6 +225,16 @@ export function PaymentModal({
       if (type === 'token') {
         const tokenAddr = generateTokenAddress()
         setGeneratedTokenAddress(tokenAddr)
+        // Store complete token data in session storage
+        const existingTokenData = sessionStorage.getItem('createdTokenData')
+        if (existingTokenData) {
+          const fullTokenData = JSON.parse(existingTokenData)
+          sessionStorage.setItem('sessionToken', JSON.stringify({
+            ...fullTokenData,
+            address: tokenAddr,
+            createdAt: Date.now()
+          }))
+        }
       }
       setCheckResult({ success: true, message: "Transaction confirmed" })
       if (onPaymentSuccess) onPaymentSuccess()

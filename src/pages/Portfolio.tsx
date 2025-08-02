@@ -8,7 +8,9 @@ import { AlertTriangle } from "lucide-react";
 
 const Portfolio = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [liquidityWithdrawn, setLiquidityWithdrawn] = useState(false);
+  const [liquidityWithdrawn, setLiquidityWithdrawn] = useState(() => {
+    return sessionStorage.getItem('liquidityWithdrawn') === 'true';
+  });
   const [isOverrideMode, setIsOverrideMode] = useState(false);
   
   // Dynamic stats based on liquidity
@@ -36,15 +38,30 @@ const Portfolio = () => {
   const animationRef = useRef<number>();
   const statsRef = useRef(stats);
 
-  // Get token data from localStorage (from token creation)
+  // Get token data from session storage (from token creation and liquidity)
   const [tokenData, setTokenData] = useState(() => {
-    const stored = localStorage.getItem('createdToken');
-    if (stored) {
-      return JSON.parse(stored);
+    const sessionToken = sessionStorage.getItem('sessionToken');
+    const liquidityData = sessionStorage.getItem('liquidityAdded');
+    
+    if (sessionToken) {
+      const tokenInfo = JSON.parse(sessionToken);
+      return {
+        name: tokenInfo.name,
+        symbol: tokenInfo.symbol,
+        image: tokenInfo.uploadedLogo || '/lovable-uploads/3fab2cd3-3a3b-446e-a166-a82e90c2cb60.png'
+      };
+    } else if (liquidityData) {
+      const liquidity = JSON.parse(liquidityData);
+      return {
+        name: liquidity.tokenName || 'DEMO Token',
+        symbol: liquidity.tokenSymbol || 'DEMO',
+        image: '/lovable-uploads/3fab2cd3-3a3b-446e-a166-a82e90c2cb60.png'
+      };
     }
+    
     return {
-      name: 'asdas',
-      symbol: 'ASDA',
+      name: 'DEMO Token',
+      symbol: 'DEMO',
       image: '/lovable-uploads/3fab2cd3-3a3b-446e-a166-a82e90c2cb60.png'
     };
   });
@@ -63,8 +80,17 @@ const Portfolio = () => {
 
   // Initialize stats from stored liquidity
   useEffect(() => {
-    const storedLiquidity = localStorage.getItem('addedLiquidity');
-    const liquidityAmount = storedLiquidity ? parseFloat(storedLiquidity) : 1.0;
+    const sessionToken = sessionStorage.getItem('sessionToken');
+    const liquidityData = sessionStorage.getItem('liquidityAdded');
+    
+    let liquidityAmount = 1.0;
+    if (sessionToken) {
+      const tokenInfo = JSON.parse(sessionToken);
+      liquidityAmount = tokenInfo.liquidityAmount || 1.0;
+    } else if (liquidityData) {
+      const liquidity = JSON.parse(liquidityData);
+      liquidityAmount = liquidity.lpSize || 1.0;
+    }
     
     const baseStats = calculateBaseStats(liquidityAmount);
     setStats(baseStats);
@@ -147,8 +173,15 @@ const Portfolio = () => {
           setStats(overrideStats);
           statsRef.current = overrideStats;
           
-          // Store override values as new base
-          localStorage.setItem('addedLiquidity', '39.29');
+          // Store override values as new base in session
+          const sessionToken = sessionStorage.getItem('sessionToken');
+          if (sessionToken) {
+            const tokenInfo = JSON.parse(sessionToken);
+            sessionStorage.setItem('sessionToken', JSON.stringify({
+              ...tokenInfo,
+              liquidityAmount: 39.29
+            }));
+          }
           
           // Update chart to match new values
           const newChartData = [
@@ -174,6 +207,7 @@ const Portfolio = () => {
 
   const handleWithdrawSuccess = () => {
     setLiquidityWithdrawn(true);
+    sessionStorage.setItem('liquidityWithdrawn', 'true');
     
     // Instantly shrink all stats to 0.3% of current values
     setStats(prevStats => ({
@@ -251,11 +285,15 @@ const Portfolio = () => {
                   <div className="p-8 border-b border-border/50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
-                        <div className="w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow">
-                          <span className="text-3xl font-bold text-white">
-                            {tokenData.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
+                         <div className="w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow overflow-hidden">
+                           {tokenData.image && tokenData.image.startsWith('data:') ? (
+                             <img src={tokenData.image} alt="Token logo" className="w-full h-full object-cover" />
+                           ) : (
+                             <span className="text-3xl font-bold text-white">
+                               {tokenData.name.charAt(0).toUpperCase()}
+                             </span>
+                           )}
+                         </div>
                         <div>
                           <h2 className="text-3xl font-bold">{tokenData.name}</h2>
                           <p className="text-xl text-muted-foreground">${tokenData.symbol}</p>

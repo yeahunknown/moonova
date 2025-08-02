@@ -152,7 +152,12 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   };
 
   const handleSubmit = (data: TokenFormData) => {
-    onSubmit(data);
+    // Include uploaded logo in the data
+    const dataWithLogo = {
+      ...data,
+      uploadedLogo
+    };
+    onSubmit(dataWithLogo);
   };
 
   const renderStep1 = () => (

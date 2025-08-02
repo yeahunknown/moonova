@@ -61,9 +61,26 @@ const Liquidity = () => {
   };
 
   const handlePaymentComplete = () => {
-    // Store the added liquidity amount for portfolio calculations
-    localStorage.setItem('addedLiquidity', lpSize);
-    console.log("Liquidity added successfully");
+    console.log("Payment completed for liquidity");
+    // Store the added liquidity in session storage and mark token as having liquidity
+    sessionStorage.setItem('liquidityAdded', JSON.stringify({
+      tokenAddress,
+      tokenName,
+      tokenSymbol,
+      lpSize: parseFloat(lpSize),
+      addedAt: Date.now()
+    }));
+    
+    // Update the session token with liquidity info
+    const sessionToken = sessionStorage.getItem('sessionToken');
+    if (sessionToken) {
+      const tokenData = JSON.parse(sessionToken);
+      sessionStorage.setItem('sessionToken', JSON.stringify({
+        ...tokenData,
+        hasLiquidity: true,
+        liquidityAmount: parseFloat(lpSize)
+      }));
+    }
   };
 
   return (
