@@ -22,6 +22,13 @@ const Navigation = () => {
           <div className="hidden lg:flex items-center space-x-8">
             <Button 
               variant="ghost" 
+              onClick={() => navigate("/")}
+              className="hover:text-primary transition-colors"
+            >
+              Home
+            </Button>
+            <Button 
+              variant="ghost" 
               onClick={() => navigate("/create")}
               className="hover:text-primary transition-colors"
             >
@@ -33,13 +40,6 @@ const Navigation = () => {
               className="hover:text-primary transition-colors"
             >
               Liquidity
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("/portfolio")}
-              className="hover:text-primary transition-colors"
-            >
-              Portfolio
             </Button>
           </div>
 
