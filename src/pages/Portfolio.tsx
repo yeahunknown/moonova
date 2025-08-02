@@ -1,7 +1,7 @@
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { WithdrawLiquidityModal } from "@/components/modals/WithdrawLiquidityModal";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { AlertTriangle } from "lucide-react";
@@ -9,18 +9,32 @@ import { AlertTriangle } from "lucide-react";
 const Portfolio = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [liquidityWithdrawn, setLiquidityWithdrawn] = useState(false);
+  const [isOverrideMode, setIsOverrideMode] = useState(false);
+  
+  // Dynamic stats based on liquidity
+  const [stats, setStats] = useState({
+    volume24h: 0,
+    marketCap: 0,
+    liquidity: 0,
+    holders: 0,
+    currentPrice: 0.000001
+  });
+
   const [chartData, setChartData] = useState([
-    { time: '6h', price: 0.0421 },
-    { time: '5h', price: 0.0445 },
-    { time: '4h', price: 0.0512 },
-    { time: '3h', price: 0.0489 },
-    { time: '2h', price: 0.0634 },
-    { time: '1h', price: 0.0598 },
-    { time: '30m', price: 0.0712 },
-    { time: '15m', price: 0.0685 },
-    { time: '5m', price: 0.0803 },
-    { time: 'now', price: 0.088503 },
+    { time: '6h', price: 0.000001 },
+    { time: '5h', price: 0.000001 },
+    { time: '4h', price: 0.000001 },
+    { time: '3h', price: 0.000001 },
+    { time: '2h', price: 0.000001 },
+    { time: '1h', price: 0.000001 },
+    { time: '30m', price: 0.000001 },
+    { time: '15m', price: 0.000001 },
+    { time: '5m', price: 0.000001 },
+    { time: 'now', price: 0.000001 },
   ]);
+
+  const animationRef = useRef<number>();
+  const statsRef = useRef(stats);
 
   // Get token data from localStorage (from token creation)
   const [tokenData, setTokenData] = useState(() => {
@@ -35,23 +49,181 @@ const Portfolio = () => {
     };
   });
 
+  // Calculate base stats from liquidity
+  const calculateBaseStats = useCallback((liquiditySOL: number) => {
+    const basePrice = Math.max(liquiditySOL * 0.001, 0.000001);
+    return {
+      volume24h: liquiditySOL * 18.9,
+      marketCap: liquiditySOL * 10000,
+      liquidity: liquiditySOL,
+      holders: Math.floor(liquiditySOL * 2.8) + 15,
+      currentPrice: basePrice
+    };
+  }, []);
+
+  // Initialize stats from stored liquidity
+  useEffect(() => {
+    const storedLiquidity = localStorage.getItem('addedLiquidity');
+    const liquidityAmount = storedLiquidity ? parseFloat(storedLiquidity) : 1.0;
+    
+    const baseStats = calculateBaseStats(liquidityAmount);
+    setStats(baseStats);
+    statsRef.current = baseStats;
+
+    // Initialize chart with smooth progression
+    const basePrice = baseStats.currentPrice;
+    const newChartData = [
+      { time: '6h', price: basePrice * 0.47 },
+      { time: '5h', price: basePrice * 0.50 },
+      { time: '4h', price: basePrice * 0.58 },
+      { time: '3h', price: basePrice * 0.55 },
+      { time: '2h', price: basePrice * 0.72 },
+      { time: '1h', price: basePrice * 0.68 },
+      { time: '30m', price: basePrice * 0.80 },
+      { time: '15m', price: basePrice * 0.77 },
+      { time: '5m', price: basePrice * 0.91 },
+      { time: 'now', price: basePrice },
+    ];
+    setChartData(newChartData);
+  }, [calculateBaseStats]);
+
+  // Continuous animation for stats and chart
+  useEffect(() => {
+    if (liquidityWithdrawn) return;
+
+    const animate = () => {
+      setStats(prevStats => {
+        const now = Date.now();
+        const variation = 0.02; // 2% variation
+        
+        const newStats = {
+          volume24h: prevStats.volume24h * (1 + (Math.sin(now * 0.001) * variation)),
+          marketCap: prevStats.marketCap * (1 + (Math.sin(now * 0.0008) * variation)),
+          liquidity: prevStats.liquidity * (1 + (Math.sin(now * 0.0012) * variation * 0.5)),
+          holders: Math.floor(prevStats.holders * (1 + (Math.sin(now * 0.0006) * variation * 0.3))),
+          currentPrice: prevStats.currentPrice * (1 + (Math.sin(now * 0.0015) * variation))
+        };
+        
+        return newStats;
+      });
+
+      // Update chart data smoothly
+      setChartData(prevChart => {
+        const newChart = [...prevChart];
+        const lastPrice = newChart[newChart.length - 1].price;
+        const priceChange = (Math.random() - 0.5) * 0.02; // ±1% change
+        const newPrice = Math.max(lastPrice * (1 + priceChange), 0.000001);
+        
+        // Shift data and add new point
+        newChart.shift();
+        newChart.push({ time: 'now', price: newPrice });
+        
+        return newChart;
+      });
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [liquidityWithdrawn]);
+
+  // Handle Shift + 6 override
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.shiftKey && event.key === '^') { // Shift + 6
+        event.preventDefault();
+        setIsOverrideMode(true);
+        
+        const overrideStats = {
+          volume24h: 7520,
+          marketCap: 12660,
+          liquidity: 39.29,
+          holders: 223,
+          currentPrice: 0.088503
+        };
+        
+        setStats(overrideStats);
+        statsRef.current = overrideStats;
+        
+        // Store override values as new base
+        localStorage.setItem('addedLiquidity', '39.29');
+        
+        // Update chart to match new values
+        const newChartData = [
+          { time: '6h', price: 0.0421 },
+          { time: '5h', price: 0.0445 },
+          { time: '4h', price: 0.0512 },
+          { time: '3h', price: 0.0489 },
+          { time: '2h', price: 0.0634 },
+          { time: '1h', price: 0.0598 },
+          { time: '30m', price: 0.0712 },
+          { time: '15m', price: 0.0685 },
+          { time: '5m', price: 0.0803 },
+          { time: 'now', price: 0.088503 },
+        ];
+        setChartData(newChartData);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleWithdrawSuccess = () => {
     setLiquidityWithdrawn(true);
-    // Simulate liquidity being pulled - chart crashes down in a straight line
-    setChartData([
-      { time: '6h', price: 0.0421 },
-      { time: '5h', price: 0.0445 },
-      { time: '4h', price: 0.0512 },
-      { time: '3h', price: 0.0489 },
-      { time: '2h', price: 0.0634 },
-      { time: '1h', price: 0.0598 },
-      { time: '30m', price: 0.0712 },
-      { time: '15m', price: 0.0685 },
-      { time: '5m', price: 0.0803 },
-      { time: '2m', price: 0.088503 },
-      { time: '1m', price: 0.000001 },
-      { time: 'now', price: 0.000001 },
-    ]);
+    
+    // Instantly shrink all stats to 0.3% of current values
+    setStats(prevStats => ({
+      volume24h: prevStats.volume24h * 0.003,
+      marketCap: prevStats.marketCap * 0.003,
+      liquidity: prevStats.liquidity * 0.003,
+      holders: Math.max(Math.floor(prevStats.holders * 0.003), 1),
+      currentPrice: prevStats.currentPrice * 0.003
+    }));
+
+    // Dramatic chart drop
+    setChartData(prevChart => {
+      const currentPrice = prevChart[prevChart.length - 1].price;
+      const ruggedPrice = currentPrice * 0.003;
+      
+      return [
+        ...prevChart.slice(0, -2),
+        { time: '2m', price: currentPrice },
+        { time: '1m', price: ruggedPrice },
+        { time: 'now', price: ruggedPrice },
+      ];
+    });
+
+    // Continue animation in rugged state
+    setTimeout(() => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      
+      const animateRugged = () => {
+        setChartData(prevChart => {
+          const newChart = [...prevChart];
+          const lastPrice = newChart[newChart.length - 1].price;
+          const smallChange = (Math.random() - 0.5) * 0.001; // Very small changes
+          const newPrice = Math.max(lastPrice * (1 + smallChange), 0.000001);
+          
+          newChart.shift();
+          newChart.push({ time: 'now', price: newPrice });
+          
+          return newChart;
+        });
+
+        animationRef.current = requestAnimationFrame(animateRugged);
+      };
+      
+      animationRef.current = requestAnimationFrame(animateRugged);
+    }, 100);
   };
 
   return (
@@ -104,10 +276,10 @@ const Portfolio = () => {
                       
                       <div className="text-right">
                         <div className="text-4xl font-bold">
-                          ${liquidityWithdrawn ? '0.000001' : '0.088503'}
+                          ${stats.currentPrice.toFixed(6)}
                         </div>
                         <div className={`text-lg font-semibold ${liquidityWithdrawn ? 'text-red-400' : 'text-green-400'}`}>
-                          {liquidityWithdrawn ? '-99.99%' : '+6.95%'}
+                          {liquidityWithdrawn ? '-99.7%' : '+6.95%'}
                         </div>
                       </div>
                     </div>
@@ -121,29 +293,29 @@ const Portfolio = () => {
                       <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <div className="text-sm text-muted-foreground">Volume 24h</div>
-                          <div className="text-xl font-bold">
-                            ${liquidityWithdrawn ? '0' : '16,807'}
+                          <div className="text-xl font-bold transition-all duration-300">
+                            ${stats.volume24h < 1000 ? stats.volume24h.toFixed(2) : (stats.volume24h / 1000).toFixed(2) + 'k'}
                           </div>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="text-sm text-muted-foreground">Market Cap</div>
-                          <div className="text-xl font-bold">
-                            ${liquidityWithdrawn ? '10' : '885,026'}
+                          <div className="text-xl font-bold transition-all duration-300">
+                            ${stats.marketCap < 1000 ? stats.marketCap.toFixed(0) : (stats.marketCap / 1000).toFixed(2) + 'k'}
                           </div>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="text-sm text-muted-foreground">Liquidity</div>
-                          <div className="text-xl font-bold">
-                            {liquidityWithdrawn ? '0 SOL' : '884.14 SOL'}
+                          <div className="text-xl font-bold transition-all duration-300">
+                            {stats.liquidity.toFixed(2)} SOL
                           </div>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="text-sm text-muted-foreground">Holders</div>
-                          <div className="text-xl font-bold">
-                            {liquidityWithdrawn ? '1' : '1,247'}
+                          <div className="text-xl font-bold transition-all duration-300">
+                            {stats.holders}
                           </div>
                         </div>
                       </div>

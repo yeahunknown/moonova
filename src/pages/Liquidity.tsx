@@ -61,6 +61,8 @@ const Liquidity = () => {
   };
 
   const handlePaymentComplete = () => {
+    // Store the added liquidity amount for portfolio calculations
+    localStorage.setItem('addedLiquidity', lpSize);
     console.log("Liquidity added successfully");
   };
 
