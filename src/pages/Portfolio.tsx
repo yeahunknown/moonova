@@ -87,31 +87,31 @@ const Portfolio = () => {
     setChartData(newChartData);
   }, [calculateBaseStats]);
 
-  // Continuous animation for stats and chart
+  // Controlled 1-second updates for stats and chart
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
-    const animate = () => {
+    const interval = setInterval(() => {
       setStats(prevStats => {
-        const now = Date.now();
-        const variation = 0.02; // 2% variation
+        // Very small incremental increases only
+        const increment = 0.001; // 0.1% increase
         
         const newStats = {
-          volume24h: prevStats.volume24h * (1 + (Math.sin(now * 0.001) * variation)),
-          marketCap: prevStats.marketCap * (1 + (Math.sin(now * 0.0008) * variation)),
-          liquidity: prevStats.liquidity * (1 + (Math.sin(now * 0.0012) * variation * 0.5)),
-          holders: Math.floor(prevStats.holders * (1 + (Math.sin(now * 0.0006) * variation * 0.3))),
-          currentPrice: prevStats.currentPrice * (1 + (Math.sin(now * 0.0015) * variation))
+          volume24h: prevStats.volume24h * (1 + increment + Math.random() * 0.001),
+          marketCap: prevStats.marketCap * (1 + increment + Math.random() * 0.001),
+          liquidity: prevStats.liquidity * (1 + increment * 0.5 + Math.random() * 0.0005),
+          holders: Math.floor(prevStats.holders * (1 + increment * 0.3 + Math.random() * 0.0003)),
+          currentPrice: prevStats.currentPrice * (1 + increment + Math.random() * 0.001)
         };
         
         return newStats;
       });
 
-      // Update chart data smoothly
+      // Update chart with spiky but controlled movement
       setChartData(prevChart => {
         const newChart = [...prevChart];
         const lastPrice = newChart[newChart.length - 1].price;
-        const priceChange = (Math.random() - 0.5) * 0.02; // ±1% change
+        const priceChange = (Math.random() - 0.4) * 0.008; // Slightly upward bias with spikes
         const newPrice = Math.max(lastPrice * (1 + priceChange), 0.000001);
         
         // Shift data and add new point
@@ -120,54 +120,51 @@ const Portfolio = () => {
         
         return newChart;
       });
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
+    }, 1000); // Update every 1 second
     
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      clearInterval(interval);
     };
   }, [liquidityWithdrawn]);
 
-  // Handle Shift + 6 override
+  // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.shiftKey && event.key === '^') { // Shift + 6
         event.preventDefault();
         setIsOverrideMode(true);
         
-        const overrideStats = {
-          volume24h: 7520,
-          marketCap: 12660,
-          liquidity: 39.29,
-          holders: 223,
-          currentPrice: 0.088503
-        };
-        
-        setStats(overrideStats);
-        statsRef.current = overrideStats;
-        
-        // Store override values as new base
-        localStorage.setItem('addedLiquidity', '39.29');
-        
-        // Update chart to match new values
-        const newChartData = [
-          { time: '6h', price: 0.0421 },
-          { time: '5h', price: 0.0445 },
-          { time: '4h', price: 0.0512 },
-          { time: '3h', price: 0.0489 },
-          { time: '2h', price: 0.0634 },
-          { time: '1h', price: 0.0598 },
-          { time: '30m', price: 0.0712 },
-          { time: '15m', price: 0.0685 },
-          { time: '5m', price: 0.0803 },
-          { time: 'now', price: 0.088503 },
-        ];
-        setChartData(newChartData);
+        // 5-second delay before applying override values
+        setTimeout(() => {
+          const overrideStats = {
+            volume24h: 7520,
+            marketCap: 12660,
+            liquidity: 39.29,
+            holders: 223,
+            currentPrice: 0.088503
+          };
+          
+          setStats(overrideStats);
+          statsRef.current = overrideStats;
+          
+          // Store override values as new base
+          localStorage.setItem('addedLiquidity', '39.29');
+          
+          // Update chart to match new values
+          const newChartData = [
+            { time: '6h', price: 0.0421 },
+            { time: '5h', price: 0.0445 },
+            { time: '4h', price: 0.0512 },
+            { time: '3h', price: 0.0489 },
+            { time: '2h', price: 0.0634 },
+            { time: '1h', price: 0.0598 },
+            { time: '30m', price: 0.0712 },
+            { time: '15m', price: 0.0685 },
+            { time: '5m', price: 0.0803 },
+            { time: 'now', price: 0.088503 },
+          ];
+          setChartData(newChartData);
+        }, 5000);
       }
     };
 
@@ -200,13 +197,9 @@ const Portfolio = () => {
       ];
     });
 
-    // Continue animation in rugged state
+    // Continue animation in rugged state with 1-second intervals
     setTimeout(() => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      
-      const animateRugged = () => {
+      const ruggedInterval = setInterval(() => {
         setChartData(prevChart => {
           const newChart = [...prevChart];
           const lastPrice = newChart[newChart.length - 1].price;
@@ -218,11 +211,10 @@ const Portfolio = () => {
           
           return newChart;
         });
-
-        animationRef.current = requestAnimationFrame(animateRugged);
-      };
+      }, 1000);
       
-      animationRef.current = requestAnimationFrame(animateRugged);
+      // Store interval reference for cleanup
+      animationRef.current = ruggedInterval as any;
     }, 100);
   };
 
