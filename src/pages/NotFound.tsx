@@ -18,7 +18,7 @@ const NotFound = () => {
       <div 
         ref={setSectionRef('content')}
         className={`text-center transition-all duration-700 ${
-          isVisible('content') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+          isVisible('content') ? 'animate-fade-in' : 'opacity-100'
         }`}
       >
         <h1 className="text-4xl font-bold mb-4 text-primary">404</h1>

@@ -11,7 +11,7 @@ const Terms = () => {
         <h1 
           ref={setSectionRef('header')}
           className={`text-4xl font-bold mb-8 text-foreground transition-all duration-700 ${
-            isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+            isVisible('header') ? 'animate-fade-in' : 'opacity-100'
           }`}
         >
           Terms of Service
@@ -20,7 +20,7 @@ const Terms = () => {
         <div 
           ref={setSectionRef('content')}
           className={`prose prose-neutral dark:prose-invert max-w-none space-y-8 transition-all duration-700 ${
-            isVisible('content') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+            isVisible('content') ? 'animate-fade-in' : 'opacity-100'
           }`}
         >
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 mb-8">

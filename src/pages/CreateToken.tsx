@@ -62,7 +62,7 @@ const CreateToken = () => {
             <div 
               ref={setSectionRef('header')}
               className={`text-center mb-8 lg:mb-12 transition-all duration-700 ${
-                isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+                isVisible('header') ? 'animate-fade-in' : 'opacity-100'
               }`}
             >
               <h1 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -75,7 +75,7 @@ const CreateToken = () => {
             <Card 
               ref={setSectionRef('form')}
               className={`border-border bg-card/30 backdrop-blur-lg shadow-2xl transition-all duration-700 ${
-                isVisible('form') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+                isVisible('form') ? 'animate-fade-in' : 'opacity-100'
               }`}
             >
               <CardContent className="p-4 sm:p-6 lg:p-8">

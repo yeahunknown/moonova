@@ -96,7 +96,7 @@ const Liquidity = () => {
             <div 
               ref={setSectionRef('header')}
               className={`text-center mb-12 transition-all duration-700 ${
-                isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+                isVisible('header') ? 'animate-fade-in' : 'opacity-100'
               }`}
             >
               <h1 className="text-4xl font-bold mb-4">
@@ -109,7 +109,7 @@ const Liquidity = () => {
             <Card 
               ref={setSectionRef('form')}
               className={`border-border bg-card/30 backdrop-blur-lg shadow-2xl transition-all duration-700 ${
-                isVisible('form') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+                isVisible('form') ? 'animate-fade-in' : 'opacity-100'
               }`}
             >
               <CardContent className="p-8">

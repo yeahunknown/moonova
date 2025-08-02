@@ -23,6 +23,10 @@ export const useFadeInAnimation = () => {
     if (element && observerRef.current) {
       element.id = id;
       observerRef.current.observe(element);
+      // Make immediately visible if observer isn't working
+      setTimeout(() => {
+        setVisibleSections(prev => new Set(prev).add(id));
+      }, 100);
     }
   };
 
