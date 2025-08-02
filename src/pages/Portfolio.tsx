@@ -118,45 +118,65 @@ const Portfolio = () => {
     setChartData(newChartData);
   }, [calculateBaseStats]);
 
-  // Controlled 1-second updates for stats and chart
+  // Normal stats updates (every 2 seconds) and aggressive chart updates (every 500ms)
   useEffect(() => {
-    if (liquidityWithdrawn || isOverrideMode) return;
+    if (liquidityWithdrawn) return;
 
-    const interval = setInterval(() => {
-      // Only update stats if not in override mode
+    // Stats update interval - every 2 seconds
+    const statsInterval = setInterval(() => {
       if (!isOverrideMode) {
         setStats(prevStats => {
-          // Very small incremental increases only
-          const increment = 0.001; // 0.1% increase
+          const increment = 0.008; // Larger increment for 2-second intervals
           
           const newStats = {
-            volume24h: prevStats.volume24h * (1 + increment + Math.random() * 0.001),
-            marketCap: prevStats.marketCap * (1 + increment + Math.random() * 0.001),
-            liquidity: prevStats.liquidity * (1 + increment * 0.5 + Math.random() * 0.0005),
-            holders: prevStats.holders + Math.floor(Math.random() * 3) + 1, // Slowly increase holders
-            currentPrice: prevStats.currentPrice * (1 + increment + Math.random() * 0.001)
+            volume24h: prevStats.volume24h * (1 + increment + Math.random() * 0.005),
+            marketCap: prevStats.marketCap * (1 + increment + Math.random() * 0.005),
+            liquidity: prevStats.liquidity * (1 + increment * 0.5 + Math.random() * 0.002),
+            holders: prevStats.holders + Math.floor(Math.random() * 2) + 1,
+            currentPrice: prevStats.currentPrice * (1 + increment + Math.random() * 0.005)
           };
           
           return newStats;
         });
+      } else {
+        // Override mode: tiny incremental changes every 1 second
+        setStats(prevStats => {
+          const tinyIncrement = 0.0001; // Extremely small changes
+          
+          return {
+            volume24h: prevStats.volume24h * (1 + tinyIncrement + Math.random() * 0.0001),
+            marketCap: prevStats.marketCap * (1 + tinyIncrement + Math.random() * 0.0001),
+            liquidity: prevStats.liquidity * (1 + tinyIncrement * 0.5 + Math.random() * 0.00005),
+            holders: prevStats.holders + (Math.random() < 0.1 ? 1 : 0), // Very slow holder increase
+            currentPrice: prevStats.currentPrice * (1 + tinyIncrement + Math.random() * 0.0001)
+          };
+        });
       }
+    }, isOverrideMode ? 1000 : 2000);
 
-      // Update chart with dramatic pumps and volatile movement - ALWAYS active unless liquidity withdrawn
+    // Chart update interval - aggressive and fast (every 500ms)
+    const chartInterval = setInterval(() => {
       setChartData(prevChart => {
         const newChart = [...prevChart];
         const lastPrice = newChart[newChart.length - 1].price;
         
-        // Create dramatic price movements with occasional huge pumps
-        const isPump = Math.random() < 0.15; // 15% chance of major pump
-        const isDump = Math.random() < 0.08; // 8% chance of dump
+        // EXTREME volatility with huge swings
+        const isMegaPump = Math.random() < 0.08; // 8% chance of massive pump
+        const isBigPump = Math.random() < 0.25; // 25% chance of big pump
+        const isBigDump = Math.random() < 0.15; // 15% chance of big dump
+        const isMegaDump = Math.random() < 0.05; // 5% chance of massive dump
         
         let priceChange;
-        if (isPump) {
-          priceChange = 0.05 + Math.random() * 0.15; // 5-20% pump
-        } else if (isDump) {
-          priceChange = -(0.02 + Math.random() * 0.08); // 2-10% dump
+        if (isMegaPump) {
+          priceChange = 0.15 + Math.random() * 0.35; // 15-50% mega pump
+        } else if (isBigPump) {
+          priceChange = 0.05 + Math.random() * 0.20; // 5-25% big pump
+        } else if (isMegaDump) {
+          priceChange = -(0.20 + Math.random() * 0.30); // 20-50% mega dump
+        } else if (isBigDump) {
+          priceChange = -(0.05 + Math.random() * 0.15); // 5-20% big dump
         } else {
-          priceChange = (Math.random() - 0.45) * 0.025; // Regular volatile movement with upward bias
+          priceChange = (Math.random() - 0.4) * 0.08; // Regular volatile movement with upward bias
         }
         
         const newPrice = Math.max(lastPrice * (1 + priceChange), 0.000001);
@@ -167,12 +187,13 @@ const Portfolio = () => {
         
         return newChart;
       });
-    }, 1000); // Update every 1 second
+    }, 500); // Update chart every 500ms for maximum chaos
     
     return () => {
-      clearInterval(interval);
+      clearInterval(statsInterval);
+      clearInterval(chartInterval);
     };
-  }, [liquidityWithdrawn]); // Remove isOverrideMode from dependency - chart should always pump
+  }, [liquidityWithdrawn, isOverrideMode]);
 
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
