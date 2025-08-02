@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 const tokenSchema = z.object({
   name: z.string()
     .min(2, "Token name must be at least 2 characters")
-    .max(12, "Token name must be at most 12 characters")
+    .max(24, "Token name must be at most 24 characters")
     .regex(/^[A-Za-z\s]+$/, "Only letters and spaces allowed"),
   symbol: z.string()
     .min(2, "Token symbol must be at least 2 characters")
