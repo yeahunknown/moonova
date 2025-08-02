@@ -141,7 +141,7 @@ const Portfolio = () => {
         });
       }
 
-      // Update chart with dramatic pumps and volatile movement
+      // Update chart with dramatic pumps and volatile movement - ALWAYS active unless liquidity withdrawn
       setChartData(prevChart => {
         const newChart = [...prevChart];
         const lastPrice = newChart[newChart.length - 1].price;
@@ -172,7 +172,7 @@ const Portfolio = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [liquidityWithdrawn, isOverrideMode]);
+  }, [liquidityWithdrawn]); // Remove isOverrideMode from dependency - chart should always pump
 
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
