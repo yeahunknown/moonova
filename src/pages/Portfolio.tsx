@@ -225,20 +225,7 @@ const Portfolio = () => {
             }));
           }
           
-          // Update chart to match new values with crazy pumping chart
-          const newChartData = [
-            { time: '6h', price: 0.0000089 },
-            { time: '5h', price: 0.0000095 },
-            { time: '4h', price: 0.0000101 },
-            { time: '3h', price: 0.0000098 },
-            { time: '2h', price: 0.0000114 },
-            { time: '1h', price: 0.0000109 },
-            { time: '30m', price: 0.0000119 },
-            { time: '15m', price: 0.0000123 },
-            { time: '5m', price: 0.0000125 },
-            { time: 'now', price: 0.0000127 },
-          ];
-          setChartData(newChartData);
+          // DO NOT update chart data here - let it continue pumping normally
         }, 5000);
       }
     };
