@@ -479,7 +479,7 @@ export function PaymentModal({
                       {selectedNetwork === "Solana" ? (
                         <div className="flex items-center gap-3">
                           <SolanaIcon size={24} className="rounded-full" />
-                          <span className="font-semibold">Solana Network</span>
+                          <span className="font-semibold">Solana Mainnet</span>
                         </div>
                       ) : (
                         <span className="text-[#9CA3AF]">Select network</span>
