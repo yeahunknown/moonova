@@ -307,7 +307,7 @@ const Portfolio = () => {
                       <Search className="w-24 h-24 text-muted-foreground mx-auto mb-6" />
                       <h3 className="text-2xl font-bold mb-4">No Tokens Created</h3>
                       <p className="text-muted-foreground mb-8">You haven't created any tokens yet. Start by creating your first token!</p>
-                      <Button onClick={() => window.location.href = '/create-token'} className="bg-gradient-primary hover:bg-gradient-primary/90">
+                      <Button onClick={() => window.location.href = '/create'} className="bg-gradient-primary hover:bg-gradient-primary/90">
                         Create Your First Token
                       </Button>
                     </div>
