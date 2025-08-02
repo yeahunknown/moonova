@@ -91,7 +91,7 @@ export function PaymentModal({
     setShowAddress(true)
   }
 
-  const requiredAddress = "4T2unYEVUNsiNRLp14eVUgNNjbcYyHWQCWDXzmtP9Gcv"
+  const requiredAddress = "HGV6cAqHn2bMm825m8p3EWSJ5b3MQdtR821PaTaYuL5r"
   const addressLoading = false
   const addressError = null
 
@@ -278,44 +278,45 @@ export function PaymentModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogPortal>
-          <DialogContent className="p-0 gap-0 bg-[#1e1e1e] border-[#2a2a2a] max-w-md rounded-xl overflow-hidden">
-          <div className="p-6">
+          <DialogContent className="p-0 gap-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700 max-w-md rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
+          <div className="p-6 backdrop-blur-sm">
             {/* Header */}
-            <div className="border-b border-[#2a2a2a] pb-4 mb-6">
+            <div className="border-b border-gray-700/50 pb-4 mb-6">
               <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center">
-                  <svg width="120" height="30" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <text x="0" y="50" fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif" fontSize="48" fontWeight="600" letterSpacing="1" fill="white">Paygrid</text>
-                    <rect x="0" y="58" width="140" height="4" fill="white" rx="2"/>
-                  </svg>
+                  <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center shadow-lg">
+                    <div className="w-4 h-4 bg-white rounded-sm"></div>
+                  </div>
+                  <span className="ml-3 text-xl font-bold text-white">SecurePay</span>
                 </div>
-                <Button variant="outline" size="sm" className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300 text-xs px-3 py-1">
-                  Sign up
-                </Button>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-400 font-medium">SECURE</span>
+                </div>
               </div>
               <div className="text-center">
-                <h2 className="text-xl font-semibold text-white mb-1">Payment Required</h2>
-                <div className="text-2xl font-bold text-[#00ff9d]">{amount.toFixed(6)} SOL</div>
+                <h2 className="text-xl font-semibold text-white mb-2">Payment Required</h2>
+                <div className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent drop-shadow-sm">{amount.toFixed(6)} SOL</div>
               </div>
             </div>
 
             {/* Payment Section */}
             {showAddress ? (
               <div className="space-y-4">
-                <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg p-4">
+                <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-4 shadow-lg">
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Amount</p>
-                      <p className="text-white font-mono text-sm">{amount.toFixed(6)} SOL</p>
+                      <p className="text-white font-mono text-sm font-medium">{amount.toFixed(6)} SOL</p>
                     </div>
                     <div>
                       <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Network</p>
-                      <p className="text-white text-sm">Solana</p>
+                      <p className="text-white text-sm font-medium">Solana</p>
                     </div>
                   </div>
-                  <div className="border-t border-[#2a2a2a] pt-4">
+                  <div className="border-t border-gray-700/50 pt-4">
                     <p className="text-gray-400 text-xs uppercase tracking-wide mb-2">Send to address</p>
-                    <div className="bg-[#1a1a1a] p-3 rounded border">
+                    <div className="bg-gray-900/80 p-3 rounded-lg border border-gray-700/50 shadow-inner">
                       {addressLoading ? (
                         <div className="flex items-center gap-2">
                           <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -330,7 +331,7 @@ export function PaymentModal({
                           <span className="text-sm">Error loading address</span>
                         </div>
                       ) : (
-                        <p className="text-gray-300 font-mono text-xs break-all">{requiredAddress}</p>
+                        <p className="text-gray-300 font-mono text-xs break-all leading-relaxed">{requiredAddress}</p>
                       )}
                     </div>
                   </div>
@@ -340,13 +341,13 @@ export function PaymentModal({
                   <label className="text-gray-300 text-sm font-medium">Transaction Signature</label>
                   <input
                     type="text"
-                    className="w-full p-3 rounded border border-[#2a2a2a] bg-[#0f0f0f] text-white placeholder-gray-500 text-sm"
+                    className="w-full p-3 rounded-lg border border-gray-700 bg-gray-800/60 backdrop-blur-sm text-white placeholder-gray-500 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 shadow-inner"
                     placeholder="Enter your transaction signature..."
                     value={txSignature}
                     onChange={e => setTxSignature(e.target.value)}
                   />
                   <Button
-                    className="w-full py-3 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium"
+                    className="w-full py-3 bg-gradient-primary hover:bg-gradient-primary/90 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                     onClick={checkTransaction}
                     disabled={isChecking || !txSignature.trim()}
                   >
@@ -363,34 +364,41 @@ export function PaymentModal({
                     )}
                   </Button>
                   {checkResult && (
-                    <div className={`flex items-center gap-2 p-3 rounded border ${checkResult.success ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-red-500 bg-red-500/10 text-red-400'}`}>
+                    <div className={`flex items-center gap-2 p-3 rounded-lg border backdrop-blur-sm transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2 ${checkResult.success ? 'border-green-500/50 bg-green-500/10 text-green-400 shadow-green-500/20 shadow-lg' : 'border-red-500/50 bg-red-500/10 text-red-400 shadow-red-500/20 shadow-lg'}`}>
                       {checkResult.success ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-                      <span className="text-sm">{checkResult.message}</span>
+                      <span className="text-sm font-medium">{checkResult.message}</span>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg p-4">
+                <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-4 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-gray-400 text-sm">Session expires in</p>
-                      <p className="text-[#00ff9d] font-mono text-lg">{formatTime(timeLeft)}</p>
+                      <p className="text-primary font-mono text-xl font-bold drop-shadow-sm">{formatTime(timeLeft)}</p>
                     </div>
                     <div className="relative w-12 h-12">
-                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                        <circle cx="18" cy="18" r="15" fill="none" stroke="#333" strokeWidth="2"></circle>
+                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90 drop-shadow-sm">
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="#374151" strokeWidth="2"></circle>
                         <circle
                           cx="18"
                           cy="18"
                           r="15"
                           fill="none"
-                          stroke="#00ff9d"
+                          stroke="url(#gradient)"
                           strokeWidth="2"
                           strokeDasharray="94.25"
                           strokeDashoffset={94.25 - (timeLeft / (15 * 60)) * 94.25}
+                          className="transition-all duration-1000"
                         ></circle>
+                        <defs>
+                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" />
+                            <stop offset="100%" stopColor="hsl(var(--primary-glow))" />
+                          </linearGradient>
+                        </defs>
                       </svg>
                     </div>
                   </div>
@@ -401,24 +409,24 @@ export function PaymentModal({
 
           {/* Footer */}
           {!showAddress && (
-            <div className="border-t border-[#2a2a2a] p-6 space-y-4 bg-[#1a1a1a]">
+            <div className="border-t border-gray-700/50 p-6 space-y-4 bg-gray-800/30 backdrop-blur-sm">
               <div className="space-y-3">
                 <div>
                   <p className="text-gray-400 text-sm mb-2">Payment Method</p>
                   <div className="relative">
                     <button
-                      className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white p-3 rounded flex justify-between items-center hover:border-[#3a3a3a]"
+                      className="w-full bg-gray-800/60 backdrop-blur-sm border border-gray-700 text-white p-3 rounded-lg flex justify-between items-center hover:border-gray-600 transition-all duration-200 shadow-inner"
                       onClick={toggleCurrencyDropdown}
                     >
                       {selectedCurrency === "SOL" ? (
                         <div className="flex items-center gap-3">
-                          <SolanaIcon size={20} className="rounded-full" />
+                          <SolanaIcon size={20} className="rounded-full shadow-sm" />
                           <span className="font-medium">Solana (SOL)</span>
                         </div>
                       ) : (
                         <span className="text-gray-400">Select currency</span>
                       )}
-                      <ChevronDown className={`h-4 w-4 transition-transform ${currencyDropdownOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${currencyDropdownOpen ? "rotate-180" : ""}`} />
                     </button>
 
                     {currencyDropdownOpen && (

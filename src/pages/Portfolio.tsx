@@ -50,21 +50,21 @@ const Portfolio = () => {
       return {
         name: tokenInfo.name,
         symbol: tokenInfo.symbol,
-        image: tokenInfo.uploadedLogo || '/lovable-uploads/3fab2cd3-3a3b-446e-a166-a82e90c2cb60.png'
+        image: tokenInfo.uploadedLogo || '/placeholder-token.png'
       };
     } else if (liquidityData) {
       const liquidity = JSON.parse(liquidityData);
       return {
         name: liquidity.tokenName || 'DEMO Token',
         symbol: liquidity.tokenSymbol || 'DEMO',
-        image: '/lovable-uploads/3fab2cd3-3a3b-446e-a166-a82e90c2cb60.png'
+        image: '/placeholder-token.png'
       };
     }
     
     return {
       name: 'DEMO Token',
       symbol: 'DEMO',
-      image: '/lovable-uploads/3fab2cd3-3a3b-446e-a166-a82e90c2cb60.png'
+      image: '/placeholder-token.png'
     };
   });
 

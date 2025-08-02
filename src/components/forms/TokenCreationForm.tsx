@@ -226,14 +226,14 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                       size="sm"
                       onClick={generateTokenName}
                       disabled={isGenerating}
-                      className="h-8 px-3 bg-gradient-primary hover:bg-gradient-primary/90 text-white border-primary/20 shadow-glow"
+                      className="h-7 px-2 bg-gradient-primary hover:bg-gradient-primary/90 text-white border-primary/20 shadow-sm text-xs"
                     >
                       {isGenerating ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
-                        <Sparkles className="w-4 h-4" />
+                        <Sparkles className="w-3 h-3" />
                       )}
-                      <span className="ml-1 text-xs">AI Generate</span>
+                      <span className="ml-1">AI</span>
                     </Button>
                   </FormLabel>
                   <FormControl>
