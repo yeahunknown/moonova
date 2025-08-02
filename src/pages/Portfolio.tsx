@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { WithdrawLiquidityModal } from "@/components/modals/WithdrawLiquidityModal";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { AlertTriangle } from "lucide-react";
 
 const Portfolio = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -71,11 +72,11 @@ const Portfolio = () => {
             {/* Token Dashboard */}
             <div className="relative">
               {liquidityWithdrawn && (
-                <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center">
+                <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm z-10 rounded-xl flex items-center justify-center animate-fade-in">
                   <div className="text-center space-y-4">
-                    <div className="text-6xl">💀</div>
-                    <h3 className="text-2xl font-bold text-red-400">Token Rugged</h3>
-                    <p className="text-gray-400">Liquidity has been withdrawn</p>
+                    <AlertTriangle className="w-16 h-16 text-red-400 mx-auto" />
+                    <h3 className="text-2xl font-bold text-red-400">Liquidity Withdrawn</h3>
+                    <p className="text-gray-400">All liquidity has been removed from this token</p>
                   </div>
                 </div>
               )}
