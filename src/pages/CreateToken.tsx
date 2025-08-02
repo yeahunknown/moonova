@@ -71,29 +71,23 @@ const CreateToken = () => {
                     <span className="text-xs sm:text-sm text-muted-foreground">{Math.round(progressPercentage)}% Complete</span>
                   </div>
                   <div className="relative">
-                    <Progress value={progressPercentage} className="h-2" />
+                    <Progress value={progressPercentage} className="h-3" />
                     <div 
-                      className="absolute top-0 left-0 h-2 bg-gradient-primary rounded-full transition-all duration-500 ease-out shadow-glow"
+                      className="absolute top-0 left-0 h-3 bg-gradient-primary rounded-full transition-all duration-500 ease-out shadow-glow"
                       style={{ width: `${progressPercentage}%` }}
                     />
                     
-                    {/* Step indicators positioned over the progress bar */}
-                    <div className="absolute top-1/2 left-0 w-full flex justify-between -translate-y-1/2 pointer-events-none">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                        step >= 1 ? 'bg-gradient-primary border-primary text-white shadow-glow' : 'bg-background border-muted-foreground text-muted-foreground'
-                      }`}>
-                        1
-                      </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                        step >= 2 ? 'bg-gradient-primary border-primary text-white shadow-glow' : 'bg-background border-muted-foreground text-muted-foreground'
-                      }`}>
-                        2
-                      </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                        step >= 3 ? 'bg-gradient-primary border-primary text-white shadow-glow' : 'bg-background border-muted-foreground text-muted-foreground'
-                      }`}>
-                        3
-                      </div>
+                    {/* Dot indicators positioned over the progress bar */}
+                    <div className="absolute top-1/2 left-0 w-full flex justify-between -translate-y-1/2 pointer-events-none px-1">
+                      <div className={`w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+                        step >= 1 ? 'bg-gradient-primary border-primary shadow-glow scale-110' : 'bg-background border-muted-foreground'
+                      }`} />
+                      <div className={`w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+                        step >= 2 ? 'bg-gradient-primary border-primary shadow-glow scale-110' : 'bg-background border-muted-foreground'
+                      }`} />
+                      <div className={`w-4 h-4 rounded-full border-2 transition-all duration-300 ${
+                        step >= 3 ? 'bg-gradient-primary border-primary shadow-glow scale-110' : 'bg-background border-muted-foreground'
+                      }`} />
                     </div>
                   </div>
                   
