@@ -432,205 +432,214 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   );
 
   const renderStep3 = () => (
-    <div className="grid lg:grid-cols-3 gap-8">
-      <Card className="border-border bg-card/50 backdrop-blur-sm shadow-elegant">
-        <CardContent className="p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Advanced Settings</h2>
-          
-          <div className="space-y-6">
+    <div className="grid lg:grid-cols-5 gap-8">
+      {/* Advanced Settings - Takes up 3 columns */}
+      <div className="lg:col-span-3">
+        <Card className="border-border bg-card/50 backdrop-blur-sm shadow-elegant">
+          <CardContent className="p-8">
+            <h2 className="text-2xl font-semibold mb-6 text-center">Advanced Settings</h2>
+            
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-orange-500/10 to-red-500/10">
+                  <div className="flex items-center gap-3">
+                    <Flame className="h-5 w-5 text-orange-500" />
+                    <div>
+                      <Label className="text-orange-500">Burnable</Label>
+                      <p className="text-xs text-muted-foreground">Destroy tokens</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={formData.burnable}
+                    onCheckedChange={(checked) => setValue("burnable", checked)}
+                  />
+                </div>
+                <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10">
+                  <div className="flex items-center gap-3">
+                    <Coins className="h-5 w-5 text-green-500" />
+                    <div>
+                      <Label className="text-green-500">Mintable</Label>
+                      <p className="text-xs text-muted-foreground">Create new tokens</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={formData.mintable}
+                    onCheckedChange={(checked) => setValue("mintable", checked)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-base font-medium">Transaction Tax: {formData.transactionTax[0]}%</Label>
+                <Slider
+                  value={formData.transactionTax}
+                  onValueChange={(value) => setValue("transactionTax", value)}
+                  max={10}
+                  min={0}
+                  step={0.1}
+                  className="mt-3 transition-all duration-300 hover:scale-105"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-center">Authority Revokes</h3>
+                <div className="grid gap-3">
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
+                    <div className="flex items-center gap-3">
+                      <ShieldOff className="h-4 w-4 text-blue-500" />
+                      <div>
+                        <Label className="text-blue-500 text-sm">Revoke Freeze</Label>
+                        <p className="text-xs text-muted-foreground">+0.1 SOL</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={formData.revokeFreezeAuth}
+                      onCheckedChange={(checked) => setValue("revokeFreezeAuth", checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-purple-500/10 to-violet-500/10">
+                    <div className="flex items-center gap-3">
+                      <Unlock className="h-4 w-4 text-purple-500" />
+                      <div>
+                        <Label className="text-purple-500 text-sm">Revoke Mint</Label>
+                        <p className="text-xs text-muted-foreground">+0.1 SOL</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={formData.revokeMintAuth}
+                      onCheckedChange={(checked) => setValue("revokeMintAuth", checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-pink-500/10 to-rose-500/10">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-4 w-4 text-pink-500" />
+                      <div>
+                        <Label className="text-pink-500 text-sm">Revoke Metadata</Label>
+                        <p className="text-xs text-muted-foreground">+0.1 SOL</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={formData.revokeMetadataAuth}
+                      onCheckedChange={(checked) => setValue("revokeMetadataAuth", checked)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Right Column - Preview and Cost Summary stacked */}
+      <div className="lg:col-span-2 space-y-6">
+        {/* Final Token Preview */}
+        <Card className="border-border bg-gradient-subtle shadow-elegant">
+          <CardContent className="p-6">
+            <h3 className="text-xl font-semibold mb-4 text-center">Final Preview</h3>
+            
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-orange-500/10 to-red-500/10">
-                <div className="flex items-center gap-3">
-                  <Flame className="h-5 w-5 text-orange-500" />
-                  <div>
-                    <Label className="text-orange-500">Burnable</Label>
-                    <p className="text-sm text-muted-foreground">Allow tokens to be permanently destroyed</p>
-                  </div>
+              <div className="flex items-center space-x-3 justify-center">
+                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
+                  {uploadedLogo ? (
+                    <img src={uploadedLogo} alt="Token logo" className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <Rocket className="h-6 w-6 text-white" />
+                  )}
                 </div>
-                <Switch
-                  checked={formData.burnable}
-                  onCheckedChange={(checked) => setValue("burnable", checked)}
-                />
-              </div>
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10">
-                <div className="flex items-center gap-3">
-                  <Coins className="h-5 w-5 text-green-500" />
-                  <div>
-                    <Label className="text-green-500">Mintable</Label>
-                    <p className="text-sm text-muted-foreground">Allow creation of new tokens</p>
-                  </div>
+                <div className="text-center">
+                  <h4 className="text-lg font-semibold">{formData.name || "Your Token"}</h4>
+                  <p className="text-sm text-muted-foreground">${formData.symbol || "TOKEN"}</p>
                 </div>
-                <Switch
-                  checked={formData.mintable}
-                  onCheckedChange={(checked) => setValue("mintable", checked)}
-                />
               </div>
-            </div>
 
-            <div>
-              <Label>Transaction Tax: {formData.transactionTax[0]}%</Label>
-              <Slider
-                value={formData.transactionTax}
-                onValueChange={(value) => setValue("transactionTax", value)}
-                max={10}
-                min={0}
-                step={0.1}
-                className="mt-2 transition-all duration-300 hover:scale-105"
-              />
-            </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Supply:</span>
+                  <span className="text-xs">{formData.supply ? Number(formData.supply).toLocaleString() : "1B"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Decimals:</span>
+                  <span>{formData.decimals[0]}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Tax:</span>
+                  <span>{formData.transactionTax[0]}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Network:</span>
+                  <span>Solana</span>
+                </div>
+              </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-center">Authority Revokes</h3>
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
-                <div className="flex items-center gap-3">
-                  <ShieldOff className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <Label className="text-blue-500">Revoke Freeze</Label>
-                    <p className="text-sm text-muted-foreground">Remove ability to freeze accounts • +0.1 SOL</p>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.revokeFreezeAuth}
-                  onCheckedChange={(checked) => setValue("revokeFreezeAuth", checked)}
-                />
+              <div className="flex justify-center space-x-4 text-xs">
+                <span className={`px-2 py-1 rounded-full ${formData.burnable ? "bg-orange-500/20 text-orange-500" : "bg-muted text-muted-foreground"}`}>
+                  {formData.burnable ? "🔥 Burnable" : "❄️ Fixed"}
+                </span>
+                <span className={`px-2 py-1 rounded-full ${formData.mintable ? "bg-green-500/20 text-green-500" : "bg-muted text-muted-foreground"}`}>
+                  {formData.mintable ? "🪙 Mintable" : "🔒 Capped"}
+                </span>
               </div>
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-purple-500/10 to-violet-500/10">
-                <div className="flex items-center gap-3">
-                  <Unlock className="h-5 w-5 text-purple-500" />
-                  <div>
-                    <Label className="text-purple-500">Revoke Mint</Label>
-                    <p className="text-sm text-muted-foreground">Remove ability to mint new tokens • +0.1 SOL</p>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.revokeMintAuth}
-                  onCheckedChange={(checked) => setValue("revokeMintAuth", checked)}
-                />
-              </div>
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg transition-all duration-200 hover:shadow-lg bg-gradient-to-r from-pink-500/10 to-rose-500/10">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-pink-500" />
-                  <div>
-                    <Label className="text-pink-500">Revoke Metadata</Label>
-                    <p className="text-sm text-muted-foreground">Remove ability to update metadata • +0.1 SOL</p>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.revokeMetadataAuth}
-                  onCheckedChange={(checked) => setValue("revokeMetadataAuth", checked)}
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Final Token Preview */}
-      <Card className="border-border bg-gradient-subtle shadow-elegant">
-        <CardContent className="p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Final Preview</h2>
-          
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4 justify-center">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-                {uploadedLogo ? (
-                  <img src={uploadedLogo} alt="Token logo" className="w-14 h-14 rounded-full object-cover" />
-                ) : (
-                  <Rocket className="h-8 w-8 text-white" />
-                )}
-              </div>
               <div className="text-center">
-                <h3 className="text-xl font-semibold">{formData.name || "Your Token"}</h3>
-                <p className="text-muted-foreground">${formData.symbol || "TOKEN"}</p>
+                <span className="px-3 py-1 bg-success/20 text-success rounded-full text-sm">Ready to Launch 🚀</span>
               </div>
-            </div>
 
-            <div className="space-y-3 pt-4">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Supply:</span>
-                <span>{formData.supply ? Number(formData.supply).toLocaleString() : "1,000,000,000"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Decimals:</span>
-                <span>{formData.decimals[0]}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Network:</span>
-                <span>Solana</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax:</span>
-                <span>{formData.transactionTax[0]}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Burnable:</span>
-                <span className={formData.burnable ? "text-orange-500" : "text-muted-foreground"}>{formData.burnable ? "Yes" : "No"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Mintable:</span>
-                <span className={formData.mintable ? "text-green-500" : "text-muted-foreground"}>{formData.mintable ? "Yes" : "No"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Status:</span>
-                <span className="px-3 py-1 bg-success/20 text-success rounded-full text-sm">Ready to Launch</span>
-              </div>
+              {formData.description && (
+                <div className="pt-2 border-t border-border">
+                  <p className="text-xs text-muted-foreground italic text-center">"{formData.description.slice(0, 80)}..."</p>
+                </div>
+              )}
             </div>
+          </CardContent>
+        </Card>
 
-            {formData.description && (
-              <div className="pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground italic">"{formData.description}"</p>
+        {/* Cost Summary */}
+        <Card className="border-border bg-gradient-subtle shadow-elegant">
+          <CardContent className="p-6">
+            <h3 className="text-xl font-semibold mb-4 text-center">Cost Summary</h3>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm py-1">
+                <span>Token Creation:</span>
+                <span>0.1 SOL</span>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Cost Summary */}
-      <Card className="border-border bg-gradient-subtle shadow-elegant">
-        <CardContent className="p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Cost Summary</h2>
-          
-          <div className="space-y-4">
-            <div className="flex justify-between py-2">
-              <span>Token Creation:</span>
-              <span>0.1 SOL</span>
+              {formData.addMetadata && (
+                <div className="flex justify-between text-sm py-1 animate-fade-in">
+                  <span>Metadata:</span>
+                  <span>0.1 SOL</span>
+                </div>
+              )}
+              {formData.revokeFreezeAuth && (
+                <div className="flex justify-between text-sm py-1 animate-fade-in">
+                  <span>Revoke Freeze:</span>
+                  <span>0.1 SOL</span>
+                </div>
+              )}
+              {formData.revokeMintAuth && (
+                <div className="flex justify-between text-sm py-1 animate-fade-in">
+                  <span>Revoke Mint:</span>
+                  <span>0.1 SOL</span>
+                </div>
+              )}
+              {formData.revokeMetadataAuth && (
+                <div className="flex justify-between text-sm py-1 animate-fade-in">
+                  <span>Revoke Metadata:</span>
+                  <span>0.1 SOL</span>
+                </div>
+              )}
+              <div className="flex justify-between text-xs py-1 text-muted-foreground">
+                <span>Network Fee:</span>
+                <span>~0.000005 SOL</span>
+              </div>
+              <hr className="border-border" />
+              <div className="flex justify-between text-lg font-semibold py-1">
+                <span>Total:</span>
+                <span className="text-primary">{calculateCost()} SOL</span>
+              </div>
             </div>
-            {formData.addMetadata && (
-              <div className="flex justify-between py-2 animate-fade-in">
-                <span>Metadata:</span>
-                <span>0.1 SOL</span>
-              </div>
-            )}
-            {formData.revokeFreezeAuth && (
-              <div className="flex justify-between py-2 animate-fade-in">
-                <span>Revoke Freeze:</span>
-                <span>0.1 SOL</span>
-              </div>
-            )}
-            {formData.revokeMintAuth && (
-              <div className="flex justify-between py-2 animate-fade-in">
-                <span>Revoke Mint:</span>
-                <span>0.1 SOL</span>
-              </div>
-            )}
-            {formData.revokeMetadataAuth && (
-              <div className="flex justify-between py-2 animate-fade-in">
-                <span>Revoke Metadata:</span>
-                <span>0.1 SOL</span>
-              </div>
-            )}
-            <div className="flex justify-between py-2 text-sm text-muted-foreground">
-              <span>Network Fee:</span>
-              <span>~0.000005 SOL</span>
-            </div>
-            <hr className="border-border" />
-            <div className="flex justify-between py-2 text-lg font-semibold">
-              <span>Total:</span>
-              <span>{calculateCost()} SOL</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 
