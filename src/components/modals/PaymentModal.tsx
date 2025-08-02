@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck } from "lucide-react"
+import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck, Clipboard } from "lucide-react"
 import { SolanaIcon } from "../SolanaIcon"
 
 interface PaymentModalProps {
@@ -38,6 +38,7 @@ export function PaymentModal({
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [generatedTokenAddress, setGeneratedTokenAddress] = useState("")
   const [copied, setCopied] = useState(false)
+  const [addressCopied, setAddressCopied] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -274,6 +275,16 @@ export function PaymentModal({
     }
   }
 
+  const copyAddressToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(requiredAddress)
+      setAddressCopied(true)
+      setTimeout(() => setAddressCopied(false), 2500)
+    } catch (err) {
+      console.error('Failed to copy address: ', err)
+    }
+  }
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -315,7 +326,19 @@ export function PaymentModal({
                     </div>
                   </div>
                   <div className="border-t border-[#2A2D47] pt-4">
-                    <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-3">Recipient Address</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-[#9CA3AF] text-xs uppercase tracking-wide">Recipient Address</p>
+                      <button
+                        onClick={copyAddressToClipboard}
+                        className="flex items-center gap-1 text-[#8B5CF6] hover:text-[#7C3AED] transition-colors duration-200 p-1"
+                      >
+                        {addressCopied ? (
+                          <Check className="h-4 w-4 text-green-400" />
+                        ) : (
+                          <Clipboard className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                     <div className="bg-[#0F0F23] p-4 rounded-lg border border-[#2A2D47] shadow-inner">
                       {addressLoading ? (
                         <div className="flex items-center gap-2">
