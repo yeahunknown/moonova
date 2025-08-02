@@ -5,16 +5,52 @@ import Navigation from "@/components/Navigation";
 import { HeroAnimation } from "@/components/HeroAnimation";
 import { StatsBar } from "@/components/StatsBar";
 import { Rocket, Shield, TrendingUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleSections(prev => new Set(prev).add(entry.target.id));
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    Object.values(sectionRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      Object.values(sectionRefs.current).forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, []);
+
+  const setSectionRef = (id: string) => (el: HTMLElement | null) => {
+    sectionRefs.current[id] = el;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-dark">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-20 pb-12 px-4 sm:px-6">
+      <section 
+        id="hero"
+        ref={setSectionRef('hero')}
+        className={`pt-20 pb-12 px-4 sm:px-6 transition-all duration-1000 ${
+          visibleSections.has('hero') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+        }`}
+      >
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-7xl mx-auto">
             <div className="text-center lg:text-left">
@@ -47,10 +83,24 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <StatsBar />
+      <div 
+        id="stats"
+        ref={setSectionRef('stats')}
+        className={`transition-all duration-1000 delay-200 ${
+          visibleSections.has('stats') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+        }`}
+      >
+        <StatsBar />
+      </div>
 
       {/* Hype Section */}
-      <div className="container mx-auto px-4 sm:px-6 py-12 lg:py-20">
+      <div 
+        id="features"
+        ref={setSectionRef('features')}
+        className={`container mx-auto px-4 sm:px-6 py-12 lg:py-20 transition-all duration-1000 delay-300 ${
+          visibleSections.has('features') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+        }`}
+      >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 lg:mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
@@ -62,7 +112,9 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12 lg:mb-16">
-            <Card className="border-border bg-card/30 backdrop-blur-lg hover:scale-105 transition-all duration-300 shadow-elegant">
+            <Card className={`border-border bg-card/30 backdrop-blur-lg hover:scale-105 transition-all duration-500 shadow-elegant delay-100 ${
+              visibleSections.has('features') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+            }`}>
               <CardContent className="p-6 lg:p-8 text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
                   <Rocket className="h-8 w-8 text-white" />
@@ -74,7 +126,9 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-border bg-card/30 backdrop-blur-lg hover:scale-105 transition-all duration-300 shadow-elegant">
+            <Card className={`border-border bg-card/30 backdrop-blur-lg hover:scale-105 transition-all duration-500 shadow-elegant delay-200 ${
+              visibleSections.has('features') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+            }`}>
               <CardContent className="p-6 lg:p-8 text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
                   <Shield className="h-8 w-8 text-white" />
@@ -86,7 +140,9 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-border bg-card/30 backdrop-blur-lg hover:scale-105 transition-all duration-300 shadow-elegant md:col-span-2 lg:col-span-1">
+            <Card className={`border-border bg-card/30 backdrop-blur-lg hover:scale-105 transition-all duration-500 shadow-elegant md:col-span-2 lg:col-span-1 delay-300 ${
+              visibleSections.has('features') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+            }`}>
               <CardContent className="p-6 lg:p-8 text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
                   <TrendingUp className="h-8 w-8 text-white" />
@@ -99,7 +155,9 @@ const Index = () => {
             </Card>
           </div>
 
-          <Card className="border-border bg-gradient-subtle shadow-2xl">
+          <Card className={`border-border bg-gradient-subtle shadow-2xl transition-all duration-1000 delay-500 ${
+            visibleSections.has('features') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+          }`}>
             <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
               <h3 className="text-2xl sm:text-3xl font-bold mb-6">
                 Ready to Launch Your <span className="bg-gradient-primary bg-clip-text text-transparent">Next Big Token</span>?
