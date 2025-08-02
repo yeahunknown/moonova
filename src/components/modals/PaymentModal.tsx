@@ -289,97 +289,88 @@ export function PaymentModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogPortal>
-          <DialogContent className="p-0 gap-0 bg-gradient-to-br from-[#0A0A1B] via-[#1A1A3A] to-[#0F0F23] border border-[#2A2D47]/50 max-w-md rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-500">
-          <div className="p-8 relative">
-            {/* Header Amount Display */}
-            <div className="text-center mb-8">
-              <div className="text-5xl font-bold bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#06B6D4] bg-clip-text text-transparent mb-2">
-                {amount.toFixed(6)} SOL
+          <DialogContent className="p-0 gap-0 bg-[#0F0F23] border border-[#2A2D47] max-w-md rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
+          <div className="p-6 relative">
+            {/* Header */}
+            <div className="border-b border-[#2A2D47] pb-6 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="w-5 h-5 bg-white rounded-md opacity-90"></div>
+                  </div>
+                  <span className="ml-3 text-xl font-bold text-white">SecurePay</span>
+                </div>
+                <div className="flex items-center gap-2 bg-[#16A34A]/10 px-3 py-1 rounded-full border border-[#16A34A]/20">
+                  <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></div>
+                  <span className="text-xs text-[#22C55E] font-semibold">SECURE</span>
+                </div>
               </div>
-              <div className="text-[#9CA3AF] text-lg font-medium">≈ ${(amount * 200).toFixed(2)} USD</div>
-              <div className="mt-3 text-sm text-[#9CA3AF]">Network • SOL</div>
-              <div className="flex items-center justify-center gap-2 mt-2 text-xs text-[#10B981]">
-                <div className="w-2 h-2 bg-[#10B981] rounded-full animate-pulse"></div>
-                You pay network fee
+              <div className="text-center">
+                <h2 className="text-xl font-semibold text-white mb-2">Payment Required</h2>
+                <div className="text-3xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] bg-clip-text text-transparent">{amount.toFixed(6)} SOL</div>
               </div>
             </div>
 
             {/* Payment Section */}
             {showAddress ? (
               <div className="space-y-6">
-                {/* Recipient Address Section */}
-                <div className="bg-gradient-to-br from-[#1A1A3A]/80 via-[#2A2D47]/50 to-[#1A1A3A]/80 border border-[#2A2D47]/30 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-[#9CA3AF] text-sm font-medium">Recipient's wallet address</p>
-                    <button
-                      onClick={copyAddressToClipboard}
-                      className="flex items-center gap-2 text-[#8B5CF6] hover:text-[#A855F7] transition-all duration-300 p-2 rounded-xl hover:bg-[#8B5CF6]/10"
-                    >
-                      {addressCopied ? (
-                        <Check className="h-5 w-5 text-[#10B981]" />
-                      ) : (
-                        <Clipboard className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                  <div className="bg-[#0F0F23]/60 p-4 rounded-xl border border-[#2A2D47]/30 shadow-inner">
-                    <p className="text-[#E5E7EB] font-mono text-sm break-all leading-relaxed">{requiredAddress}</p>
-                  </div>
-                </div>
-
-                {/* Transaction Status */}
-                <div className="bg-gradient-to-br from-[#1A1A3A]/80 via-[#2A2D47]/50 to-[#1A1A3A]/80 border border-[#2A2D47]/30 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#10B981] to-[#06B6D4] rounded-full flex items-center justify-center animate-pulse">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                    <span className="text-white font-medium">Checking blockchain transaction</span>
-                  </div>
-                </div>
-
-                {/* Timer Section */}
-                <div className="bg-gradient-to-br from-[#1A1A3A]/80 via-[#2A2D47]/50 to-[#1A1A3A]/80 border border-[#2A2D47]/30 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-12 h-12">
-                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                        <circle cx="18" cy="18" r="15" fill="none" stroke="#2A2D47" strokeWidth="3"></circle>
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15"
-                          fill="none"
-                          stroke="url(#timerGradient)"
-                          strokeWidth="3"
-                          strokeDasharray="94.25"
-                          strokeDashoffset={94.25 - (timeLeft / (15 * 60)) * 94.25}
-                          className="transition-all duration-1000"
-                        ></circle>
-                        <defs>
-                          <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#10B981" />
-                            <stop offset="100%" stopColor="#06B6D4" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
+                <div className="bg-[#1A1A3A] border border-[#2A2D47] rounded-xl p-5 shadow-lg">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-2">Amount</p>
+                      <p className="text-white font-mono text-sm font-semibold">{amount.toFixed(6)} SOL</p>
                     </div>
                     <div>
-                      <p className="text-[#9CA3AF] text-sm">Expiration time</p>
-                      <p className="text-[#10B981] font-mono text-xl font-bold">{formatTime(timeLeft)}</p>
+                      <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-2">Network</p>
+                      <p className="text-white text-sm font-semibold">Solana</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-[#2A2D47] pt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-[#9CA3AF] text-xs uppercase tracking-wide">Recipient Address</p>
+                      <button
+                        onClick={copyAddressToClipboard}
+                        className="flex items-center gap-1 text-[#8B5CF6] hover:text-[#7C3AED] transition-colors duration-200 p-1"
+                      >
+                        {addressCopied ? (
+                          <Check className="h-4 w-4 text-green-400" />
+                        ) : (
+                          <Clipboard className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    <div className="bg-[#0F0F23] p-4 rounded-lg border border-[#2A2D47] shadow-inner">
+                      {addressLoading ? (
+                        <div className="flex items-center gap-2">
+                          <svg className="animate-spin h-4 w-4 text-[#9CA3AF]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span className="text-[#9CA3AF] text-sm">Loading...</span>
+                        </div>
+                      ) : addressError ? (
+                        <div className="flex items-center gap-2 text-[#EF4444]">
+                          <AlertCircle className="h-4 w-4" />
+                          <span className="text-sm">Error loading address</span>
+                        </div>
+                      ) : (
+                        <p className="text-[#E5E7EB] font-mono text-xs break-all leading-relaxed">{requiredAddress}</p>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Transaction Input */}
                 <div className="space-y-4">
+                  <label className="text-[#E5E7EB] text-sm font-semibold">Transaction Signature</label>
                   <input
                     type="text"
-                    className="w-full p-5 rounded-2xl border border-[#2A2D47]/30 bg-gradient-to-br from-[#1A1A3A]/80 to-[#0F0F23]/60 text-white placeholder-[#9CA3AF] text-sm focus:ring-2 focus:ring-[#8B5CF6]/50 focus:border-[#8B5CF6]/50 transition-all duration-300 shadow-xl backdrop-blur-sm"
+                    className="w-full p-4 rounded-xl border border-[#2A2D47] bg-[#1A1A3A] text-white placeholder-[#9CA3AF] text-sm focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all duration-200 shadow-inner"
                     placeholder="Enter your transaction signature..."
                     value={txSignature}
                     onChange={e => setTxSignature(e.target.value)}
                   />
                   <Button
-                    className="w-full py-5 bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#06B6D4] hover:from-[#7C3AED] hover:via-[#9333EA] hover:to-[#0891B2] text-white font-semibold rounded-2xl shadow-2xl hover:shadow-[#8B5CF6]/25 transition-all duration-500 transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none backdrop-blur-sm"
+                    className="w-full py-4 bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] hover:from-[#7C3AED] hover:to-[#0891B2] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none"
                     onClick={checkTransaction}
                     disabled={isChecking || !txSignature.trim()}
                   >
@@ -396,8 +387,8 @@ export function PaymentModal({
                     )}
                   </Button>
                   {checkResult && (
-                    <div className={`flex items-center gap-3 p-5 rounded-2xl border backdrop-blur-sm transition-all duration-500 animate-in fade-in-0 slide-in-from-top-4 ${checkResult.success ? 'border-[#10B981]/40 bg-gradient-to-r from-[#10B981]/10 to-[#06B6D4]/10 text-[#10B981] shadow-[#10B981]/30 shadow-xl' : 'border-[#EF4444]/40 bg-gradient-to-r from-[#EF4444]/10 to-[#F59E0B]/10 text-[#EF4444] shadow-[#EF4444]/30 shadow-xl'}`}>
-                      {checkResult.success ? <Check className="h-6 w-6" /> : <AlertCircle className="h-6 w-6" />}
+                    <div className={`flex items-center gap-3 p-4 rounded-xl border backdrop-blur-sm transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2 ${checkResult.success ? 'border-[#22C55E]/30 bg-[#22C55E]/10 text-[#22C55E] shadow-[#22C55E]/20 shadow-lg' : 'border-[#EF4444]/30 bg-[#EF4444]/10 text-[#EF4444] shadow-[#EF4444]/20 shadow-lg'}`}>
+                      {checkResult.success ? <Check className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
                       <span className="text-sm font-semibold">{checkResult.message}</span>
                     </div>
                   )}
@@ -405,31 +396,29 @@ export function PaymentModal({
               </div>
             ) : (
               <div className="space-y-6">
-                {/* Timer Display */}
-                <div className="bg-gradient-to-br from-[#1A1A3A]/80 via-[#2A2D47]/50 to-[#1A1A3A]/80 border border-[#2A2D47]/30 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
+                <div className="bg-[#1A1A3A] border border-[#2A2D47] rounded-xl p-5 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-[#9CA3AF] text-sm mb-2">Session expires in</p>
-                      <p className="text-[#8B5CF6] font-mono text-3xl font-bold">{formatTime(timeLeft)}</p>
+                      <p className="text-[#9CA3AF] text-sm mb-1">Session expires in</p>
+                      <p className="text-[#8B5CF6] font-mono text-2xl font-bold">{formatTime(timeLeft)}</p>
                     </div>
-                    <div className="relative w-16 h-16">
+                    <div className="relative w-14 h-14">
                       <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                        <circle cx="18" cy="18" r="15" fill="none" stroke="#2A2D47" strokeWidth="3"></circle>
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="#2A2D47" strokeWidth="2"></circle>
                         <circle
                           cx="18"
                           cy="18"
                           r="15"
                           fill="none"
-                          stroke="url(#mainGradient)"
-                          strokeWidth="3"
+                          stroke="url(#gradient)"
+                          strokeWidth="2"
                           strokeDasharray="94.25"
                           strokeDashoffset={94.25 - (timeLeft / (15 * 60)) * 94.25}
                           className="transition-all duration-1000"
                         ></circle>
                         <defs>
-                          <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#8B5CF6" />
-                            <stop offset="50%" stopColor="#A855F7" />
                             <stop offset="100%" stopColor="#06B6D4" />
                           </linearGradient>
                         </defs>
@@ -439,79 +428,103 @@ export function PaymentModal({
                 </div>
               </div>
             )}
+          </div>
 
-            {/* Footer Payment Method */}
-            {!showAddress && (
-              <div className="mt-8 space-y-4">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-[#9CA3AF] text-sm font-medium mb-4">Payment Method</p>
-                    <div className="relative">
-                      <button
-                        onClick={toggleCurrencyDropdown}
-                        className="w-full flex items-center justify-between p-4 rounded-2xl border border-[#2A2D47]/30 bg-gradient-to-br from-[#1A1A3A]/80 to-[#0F0F23]/60 text-white hover:border-[#8B5CF6]/50 transition-all duration-300 shadow-xl backdrop-blur-sm"
-                      >
+          {/* Footer */}
+          {!showAddress && (
+            <div className="border-t border-[#2A2D47] p-6 space-y-5 bg-[#1A1A3A]/50">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-[#9CA3AF] text-sm font-medium mb-3">Payment Method</p>
+                  <div className="relative">
+                    <button
+                      className="w-full bg-[#0F0F23] border border-[#2A2D47] text-white p-4 rounded-xl flex justify-between items-center hover:border-[#8B5CF6]/50 transition-all duration-200 shadow-inner"
+                      onClick={toggleCurrencyDropdown}
+                    >
+                      {selectedCurrency === "SOL" ? (
                         <div className="flex items-center gap-3">
-                          <SolanaIcon className="w-6 h-6" />
-                          <span className="font-medium">{selectedCurrency}</span>
+                          <SolanaIcon size={24} className="rounded-full" />
+                          <span className="font-semibold">Solana (SOL)</span>
                         </div>
-                        <ChevronDown className={`h-5 w-5 text-[#9CA3AF] transition-transform duration-300 ${currencyDropdownOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      {currencyDropdownOpen && (
-                        <div className="absolute top-full mt-2 w-full bg-gradient-to-br from-[#1A1A3A] to-[#0F0F23] border border-[#2A2D47]/50 rounded-2xl shadow-2xl z-50 backdrop-blur-xl animate-in fade-in-0 slide-in-from-top-2 duration-300">
-                          <div className="p-2">
-                            <button
-                              onClick={() => selectCurrency("SOL")}
-                              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[#8B5CF6]/10 transition-all duration-200 text-white"
-                            >
-                              <SolanaIcon className="w-5 h-5" />
-                              <span>SOL</span>
-                            </button>
-                          </div>
-                        </div>
+                      ) : (
+                        <span className="text-[#9CA3AF]">Select currency</span>
                       )}
-                    </div>
-                  </div>
+                      <ChevronDown className={`h-5 w-5 text-[#9CA3AF] transition-transform duration-200 ${currencyDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
 
-                  <div>
-                    <p className="text-[#9CA3AF] text-sm font-medium mb-4">Network</p>
-                    <div className="relative">
-                      <button
-                        onClick={toggleNetworkDropdown}
-                        className="w-full flex items-center justify-between p-4 rounded-2xl border border-[#2A2D47]/30 bg-gradient-to-br from-[#1A1A3A]/80 to-[#0F0F23]/60 text-white hover:border-[#8B5CF6]/50 transition-all duration-300 shadow-xl backdrop-blur-sm"
-                      >
-                        <div className="flex items-center gap-3">
-                          <SolanaIcon className="w-6 h-6" />
-                          <span className="font-medium">{selectedNetwork}</span>
-                        </div>
-                        <ChevronDown className={`h-5 w-5 text-[#9CA3AF] transition-transform duration-300 ${networkDropdownOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      {networkDropdownOpen && (
-                        <div className="absolute top-full mt-2 w-full bg-gradient-to-br from-[#1A1A3A] to-[#0F0F23] border border-[#2A2D47]/50 rounded-2xl shadow-2xl z-50 backdrop-blur-xl animate-in fade-in-0 slide-in-from-top-2 duration-300">
-                          <div className="p-2">
-                            <button
-                              onClick={() => selectNetwork("Solana")}
-                              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[#8B5CF6]/10 transition-all duration-200 text-white"
-                            >
-                              <SolanaIcon className="w-5 h-5" />
-                              <span>Solana</span>
-                            </button>
+                    {currencyDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-2 bg-[#0F0F23] border border-[#2A2D47] rounded-xl shadow-2xl backdrop-blur-xl">
+                        <div
+                          className="p-4 hover:bg-[#1A1A3A] cursor-pointer flex items-center justify-between transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl"
+                          onClick={() => selectCurrency("SOL")}
+                        >
+                          <div className="flex items-center gap-3">
+                            <SolanaIcon size={20} className="rounded-full" />
+                            <span className="text-white">Solana (SOL)</span>
                           </div>
+                          {selectedCurrency === "SOL" && <Check className="h-4 w-4 text-[#22C55E]" />}
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <Button
-                  onClick={handlePayment}
-                  className="w-full py-5 bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#06B6D4] hover:from-[#7C3AED] hover:via-[#9333EA] hover:to-[#0891B2] text-white font-semibold rounded-2xl shadow-2xl hover:shadow-[#8B5CF6]/25 transition-all duration-500 transform hover:scale-[1.02] backdrop-blur-sm"
-                >
-                  Continue to Payment
-                </Button>
+                <div>
+                  <p className="text-[#9CA3AF] text-sm font-medium mb-3">Network</p>
+                  <div className="relative">
+                    <button
+                      className="w-full bg-[#0F0F23] border border-[#2A2D47] text-white p-4 rounded-xl flex justify-between items-center hover:border-[#8B5CF6]/50 transition-all duration-200 shadow-inner"
+                      onClick={toggleNetworkDropdown}
+                    >
+                      {selectedNetwork === "Solana" ? (
+                        <div className="flex items-center gap-3">
+                          <SolanaIcon size={24} className="rounded-full" />
+                          <span className="font-semibold">Solana Network</span>
+                        </div>
+                      ) : (
+                        <span className="text-[#9CA3AF]">Select network</span>
+                      )}
+                      <ChevronDown className={`h-5 w-5 text-[#9CA3AF] transition-transform duration-200 ${networkDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {networkDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-2 bg-[#0F0F23] border border-[#2A2D47] rounded-xl shadow-2xl backdrop-blur-xl">
+                        <div
+                          className="p-4 hover:bg-[#1A1A3A] cursor-pointer flex items-center justify-between transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl"
+                          onClick={() => selectNetwork("Solana")}
+                        >
+                          <div className="flex items-center gap-3">
+                            <SolanaIcon size={20} className="rounded-full" />
+                            <span className="text-white">Solana Network</span>
+                          </div>
+                          {selectedNetwork === "Solana" && <Check className="h-4 w-4 text-[#22C55E]" />}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
+
+              <Button
+                className="w-full py-4 bg-gradient-to-r from-[#22C55E] to-[#16A34A] hover:from-[#16A34A] hover:to-[#15803D] text-white font-semibold text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                onClick={handlePayment}
+                disabled={!selectedCurrency || !selectedNetwork}
+              >
+                Pay {amount.toFixed(6)} SOL
+              </Button>
+
+              <div className="flex items-center justify-center gap-6 pt-4 border-t border-[#2A2D47]">
+                <div className="flex items-center gap-2 text-[#9CA3AF]">
+                  <div className="w-2 h-2 bg-[#22C55E] rounded-full"></div>
+                  <span className="text-xs font-medium">256-bit Encryption</span>
+                </div>
+                <div className="flex items-center gap-2 text-[#9CA3AF]">
+                  <div className="w-2 h-2 bg-[#22C55E] rounded-full"></div>
+                  <span className="text-xs font-medium">Verified</span>
+                </div>
+              </div>
+            </div>
+          )}
           </DialogContent>
         </DialogPortal>
       </Dialog>
@@ -519,60 +532,92 @@ export function PaymentModal({
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
         <DialogPortal>
-          <DialogContent className="p-0 gap-0 bg-gradient-to-br from-[#0A0A1B] via-[#1A1A3A] to-[#0F0F23] border border-[#2A2D47]/50 max-w-md rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
-            <div className="p-8 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-[#10B981] to-[#06B6D4] rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
-                <Check className="h-10 w-10 text-white" />
-              </div>
-              
-              <h3 className="text-2xl font-bold text-white mb-4">
-                {type === 'token' ? 'Token Created Successfully!' : 'Payment Successful!'}
-              </h3>
-              
-              {type === 'token' && generatedTokenAddress && (
-                <div className="space-y-4 mb-6">
-                  <p className="text-[#9CA3AF] text-sm">Your token has been created on the Solana blockchain</p>
+          <DialogContent className="max-w-md p-0 border-0 bg-transparent shadow-none">
+            {type === 'token' && (
+              <div className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
+                    <Check className="w-8 h-8 text-white" />
+                  </div>
                   
-                  <div className="bg-gradient-to-br from-[#1A1A3A]/80 to-[#0F0F23]/60 border border-[#2A2D47]/30 rounded-2xl p-4 backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[#9CA3AF] text-sm">Token Address</span>
-                      <button
-                        onClick={copyToClipboard}
-                        className="text-[#8B5CF6] hover:text-[#A855F7] transition-colors duration-200"
-                      >
-                        {copied ? <CheckCheck className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                      </button>
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Token Launched Successfully!</h3>
+                    <p className="text-muted-foreground">Your token has been created and deployed to the blockchain</p>
+                  </div>
+
+                  <div className="bg-card/30 border border-border rounded-lg p-4 space-y-3">
+                    <label className="text-sm font-medium">Token Address</label>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-muted/30 rounded-md p-3 font-mono text-sm break-all">
+                        {generatedTokenAddress}
+                      </div>
+                      <Button onClick={copyToClipboard} variant="outline" size="sm" className="h-8 w-8 p-0">
+                        {copied ? (
+                          <Check className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
                     </div>
-                    <p className="text-white font-mono text-sm break-all">{generatedTokenAddress}</p>
+                  </div>
+
+                  <div className="flex gap-3 w-full">
+                    <Button
+                      onClick={handleAddLiquidity}
+                      className="flex-1 bg-gradient-primary hover:opacity-90 shadow-glow"
+                    >
+                      Add Liquidity
+                    </Button>
+                    <Button variant="outline" onClick={handleCreateAnotherToken} className="flex-1">
+                      Create Another Token
+                    </Button>
                   </div>
                 </div>
-              )}
-              
-              {type === 'token' ? (
-                <div className="space-y-3">
-                  <Button
-                    onClick={handleAddLiquidity}
-                    className="w-full py-4 bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#06B6D4] hover:from-[#7C3AED] hover:via-[#9333EA] hover:to-[#0891B2] text-white font-semibold rounded-2xl shadow-xl transition-all duration-300"
-                  >
-                    Add Liquidity
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full py-4 border-[#2A2D47]/50 text-white hover:bg-[#8B5CF6]/10 rounded-2xl transition-all duration-300"
-                    onClick={handleCreateAnotherToken}
-                  >
-                    Create Another Token
-                  </Button>
+              </div>
+            )}
+
+            {type === 'liquidity' && (
+              <div className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto shadow-glow">
+                    <Check className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Liquidity Added Successfully!</h3>
+                    <p className="text-muted-foreground">Your liquidity has been added to the pool</p>
+                  </div>
+
+                  <div className="bg-card/30 border border-border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Check your Liquidity Portfolio to track your token's performance and manage your positions.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3 w-full">
+                    <Button
+                      onClick={() => {
+                        setShowSuccessModal(false)
+                        window.location.href = '/portfolio'
+                      }}
+                      className="flex-1 bg-gradient-primary hover:opacity-90 shadow-glow"
+                    >
+                      Liquidity Portfolio
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setShowSuccessModal(false)
+                        window.location.href = '/liquidity'
+                      }}
+                      className="flex-1"
+                    >
+                      Add More Liquidity
+                    </Button>
+                  </div>
                 </div>
-              ) : (
-                <Button
-                  onClick={() => setShowSuccessModal(false)}
-                  className="w-full py-4 bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#06B6D4] hover:from-[#7C3AED] hover:via-[#9333EA] hover:to-[#0891B2] text-white font-semibold rounded-2xl shadow-xl transition-all duration-300"
-                >
-                  Continue
-                </Button>
-              )}
-            </div>
+              </div>
+            )}
           </DialogContent>
         </DialogPortal>
       </Dialog>
