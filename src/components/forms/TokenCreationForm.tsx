@@ -383,9 +383,23 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-all duration-300 hover:scale-105 cursor-pointer">
-                <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Upload your token logo</p>
-                <p className="text-sm text-muted-foreground mt-1">Max 2MB • PNG, JPG, SVG</p>
+                {uploadedLogo && !isUploading ? (
+                  <div className="flex flex-col items-center">
+                    <img 
+                      src={uploadedLogo} 
+                      alt="Token logo" 
+                      className="w-16 h-16 rounded-full object-cover mb-4 shadow-lg"
+                    />
+                    <p className="text-muted-foreground">Logo uploaded successfully</p>
+                    <p className="text-sm text-muted-foreground mt-1">Click to change</p>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground">Upload your token logo</p>
+                    <p className="text-sm text-muted-foreground mt-1">Max 2MB • PNG, JPG, SVG</p>
+                  </>
+                )}
                 {isUploading && (
                   <div className="mt-4">
                     <div className="w-full bg-secondary rounded-full h-2">
