@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import moonovaLogo from "@/assets/moonova-logo.png";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -13,7 +12,7 @@ const Navigation = () => {
             className="flex items-center space-x-2 sm:space-x-3 cursor-pointer transition-all hover:scale-105"
             onClick={() => navigate("/")}
           >
-            <img src={moonovaLogo} alt="Moonova" className="w-6 h-6 sm:w-8 sm:h-8" />
+            <img src="https://i.ibb.co/Nn3Jmzk8/Moonova.png" alt="Moonova" className="w-6 h-6 sm:w-8 sm:h-8" />
             <span className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Moonova
             </span>

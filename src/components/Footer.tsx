@@ -1,5 +1,4 @@
 import { motion } from "framer-motion"
-import moonovaLogo from "@/assets/moonova-logo.png"
 
 export function Footer() {
   return (
@@ -9,7 +8,7 @@ export function Footer() {
           {/* Left Side - Logo + About */}
           <div className="space-y-4 text-center sm:text-left lg:col-span-1">
             <div className="flex items-center gap-3 justify-center sm:justify-start">
-              <img src={moonovaLogo} alt="Moonova" className="w-6 h-6 sm:w-8 sm:h-8" />
+              <img src="https://i.ibb.co/Nn3Jmzk8/Moonova.png" alt="Moonova" className="w-6 h-6 sm:w-8 sm:h-8" />
               <span className="text-lg sm:text-xl font-bold text-foreground">Moonova</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto sm:mx-0">
