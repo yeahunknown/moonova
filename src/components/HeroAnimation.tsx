@@ -4,9 +4,11 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Rocket, Coins, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
 
 export function HeroAnimation() {
   const [step, setStep] = useState(0)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -202,7 +204,12 @@ export function HeroAnimation() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold">Create Token</Button>
+            <Button 
+              className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold"
+              onClick={() => navigate("/create")}
+            >
+              Create Token
+            </Button>
           </motion.div>
         </motion.div>
       </div>
