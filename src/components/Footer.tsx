@@ -46,7 +46,7 @@ export function Footer() {
             <h3 className="text-base sm:text-lg font-semibold text-foreground">Community</h3>
             <nav className="space-y-2 sm:space-y-3">
               <a 
-                href="https://t.me/moonova" 
+                href="https://t.me/moonovapp" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-muted-foreground hover:text-foreground transition-colors text-sm"
