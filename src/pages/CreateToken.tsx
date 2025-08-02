@@ -5,11 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import TokenCreationForm from "@/components/forms/TokenCreationForm";
 import { PaymentModal } from "@/components/modals/PaymentModal";
 import { useToast } from "@/hooks/use-toast";
+import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
 
 const CreateToken = () => {
   const [step, setStep] = useState(1);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [tokenData, setTokenData] = useState<any>(null);
+  const { setSectionRef, isVisible } = useFadeInAnimation();
   const { toast } = useToast();
 
   const progressPercentage = (step / 3) * 100;
@@ -57,7 +59,12 @@ const CreateToken = () => {
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-8 lg:mb-12">
+            <div 
+              ref={setSectionRef('header')}
+              className={`text-center mb-8 lg:mb-12 transition-all duration-700 ${
+                isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+              }`}
+            >
               <h1 className="text-3xl sm:text-4xl font-bold mb-4">
                 Create Your <span className="bg-gradient-primary bg-clip-text text-transparent">Token</span>
               </h1>
@@ -65,7 +72,12 @@ const CreateToken = () => {
             </div>
 
             {/* Main Container */}
-            <Card className="border-border bg-card/30 backdrop-blur-lg shadow-2xl">
+            <Card 
+              ref={setSectionRef('form')}
+              className={`border-border bg-card/30 backdrop-blur-lg shadow-2xl transition-all duration-700 ${
+                isVisible('form') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+              }`}
+            >
               <CardContent className="p-4 sm:p-6 lg:p-8">
                 {/* Progress Bar */}
                 <div className="mb-6 lg:mb-8">

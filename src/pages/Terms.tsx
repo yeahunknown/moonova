@@ -1,13 +1,28 @@
-import Navigation from "@/components/Navigation"
+import Navigation from "@/components/Navigation";
+import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
 
 const Terms = () => {
+  const { setSectionRef, isVisible } = useFadeInAnimation();
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8 text-foreground">Terms of Service</h1>
+        <h1 
+          ref={setSectionRef('header')}
+          className={`text-4xl font-bold mb-8 text-foreground transition-all duration-700 ${
+            isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          Terms of Service
+        </h1>
         
-        <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">
+        <div 
+          ref={setSectionRef('content')}
+          className={`prose prose-neutral dark:prose-invert max-w-none space-y-8 transition-all duration-700 ${
+            isVisible('content') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+          }`}
+        >
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 mb-8">
             <h2 className="text-xl font-bold text-destructive mb-4">IMPORTANT DISCLAIMER</h2>
             <p className="text-sm font-medium">

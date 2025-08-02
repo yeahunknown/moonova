@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { WithdrawLiquidityModal } from "@/components/modals/WithdrawLiquidityModal";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { AlertTriangle } from "lucide-react";
+import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
 
 const Portfolio = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -12,6 +13,7 @@ const Portfolio = () => {
     return sessionStorage.getItem('liquidityWithdrawn') === 'true';
   });
   const [isOverrideMode, setIsOverrideMode] = useState(false);
+  const { setSectionRef, isVisible } = useFadeInAnimation();
   
   // Dynamic stats based on liquidity
   const [stats, setStats] = useState({
@@ -260,7 +262,12 @@ const Portfolio = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-12">
+            <div 
+              ref={setSectionRef('header')}
+              className={`text-center mb-12 transition-all duration-700 ${
+                isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+              }`}
+            >
               <h1 className="text-4xl font-bold mb-4">
                 Token <span className="bg-gradient-primary bg-clip-text text-transparent">Portfolio</span>
               </h1>
@@ -279,7 +286,12 @@ const Portfolio = () => {
                 </div>
               )}
               
-              <Card className="border-border bg-card/50 backdrop-blur-sm shadow-2xl">
+              <Card 
+                ref={setSectionRef('portfolio')}
+                className={`border-border bg-card/50 backdrop-blur-sm shadow-2xl transition-all duration-700 ${
+                  isVisible('portfolio') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+                }`}
+              >
                 <CardContent className="p-0">
                   {/* Header Section */}
                   <div className="p-8 border-b border-border/50">

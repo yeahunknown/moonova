@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { PaymentModal } from "@/components/modals/PaymentModal";
+import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
 
 const Liquidity = () => {
   const [tokenAddress, setTokenAddress] = useState("");
@@ -16,6 +17,7 @@ const Liquidity = () => {
   const [lpSize, setLpSize] = useState("");
   const [boostVisibility, setBoostVisibility] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const { setSectionRef, isVisible } = useFadeInAnimation();
 
   // Handle pre-filled data from URL params
   useEffect(() => {
@@ -91,7 +93,12 @@ const Liquidity = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-12">
+            <div 
+              ref={setSectionRef('header')}
+              className={`text-center mb-12 transition-all duration-700 ${
+                isVisible('header') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+              }`}
+            >
               <h1 className="text-4xl font-bold mb-4">
                 Add <span className="bg-gradient-primary bg-clip-text text-transparent">Liquidity</span>
               </h1>
@@ -99,7 +106,12 @@ const Liquidity = () => {
             </div>
 
             {/* Liquidity Form */}
-            <Card className="border-border bg-card/30 backdrop-blur-lg shadow-2xl">
+            <Card 
+              ref={setSectionRef('form')}
+              className={`border-border bg-card/30 backdrop-blur-lg shadow-2xl transition-all duration-700 ${
+                isVisible('form') ? 'animate-fade-in' : 'opacity-0 translate-y-10'
+              }`}
+            >
               <CardContent className="p-8">
                 <div className="space-y-6">
                   <div className="space-y-4">
