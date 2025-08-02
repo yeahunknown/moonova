@@ -249,236 +249,216 @@ export function PaymentModal({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogPortal>
           <DialogContent className="p-0 gap-0 bg-[#1e1e1e] border-[#2a2a2a] max-w-md rounded-xl overflow-hidden">
-          <div className="p-6 space-y-6">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <svg width="120" height="30" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <text x="0" y="50" fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif" fontSize="48" fontWeight="600" letterSpacing="1" fill="white">Paygrid</text>
-                  <rect x="0" y="58" width="140" height="4" fill="white" rx="2"/>
-                </svg>
-              </div>
-              <Button variant="outline" size="sm" className="rounded-full bg-white text-black hover:bg-gray-200 border-0">
-                Sign up
-              </Button>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-white">Select currency</h2>
-              <div className="text-xl font-semibold text-white">{amount.toFixed(6)} SOL</div>
-
-              <div className="space-y-1">
-                <p className="text-gray-400">Select network</p>
-                <div className="flex items-center gap-1 text-gray-400">
-                  <Info className="h-4 w-4" />
-                  <span className="text-sm">You pay network fee</span>
+          <div className="p-6">
+            {/* Header */}
+            <div className="border-b border-[#2a2a2a] pb-4 mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center">
+                  <svg width="120" height="30" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="50" fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif" fontSize="48" fontWeight="600" letterSpacing="1" fill="white">Paygrid</text>
+                    <rect x="0" y="58" width="140" height="4" fill="white" rx="2"/>
+                  </svg>
                 </div>
+                <Button variant="outline" size="sm" className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300 text-xs px-3 py-1">
+                  Sign up
+                </Button>
+              </div>
+              <div className="text-center">
+                <h2 className="text-xl font-semibold text-white mb-1">Payment Required</h2>
+                <div className="text-2xl font-bold text-[#00ff9d]">{amount.toFixed(6)} SOL</div>
               </div>
             </div>
 
+            {/* Payment Section */}
             {showAddress ? (
-              <div className="bg-[#252525] rounded-lg p-4 space-y-4">
-                <div className="space-y-2">
-                  <p className="text-gray-400 text-sm">Send exactly</p>
-                  <p className="text-white font-mono text-lg">{amount.toFixed(6)} SOL</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-gray-400 text-sm">address</p>
-                  <div className="bg-[#1e1e1e] p-3 rounded-lg">
-                    {addressLoading ? (
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="animate-spin h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        <span className="text-white text-sm">Loading address...</span>
-                      </div>
-                    ) : addressError ? (
-                      <div className="flex items-center gap-2 text-red-400">
-                        <AlertCircle className="h-4 w-4" />
-                        <span className="text-sm">Error loading address</span>
-                      </div>
-                    ) : (
-                      <p className="text-white font-mono text-sm break-all">{requiredAddress}</p>
-                    )}
+              <div className="space-y-4">
+                <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Amount</p>
+                      <p className="text-white font-mono text-sm">{amount.toFixed(6)} SOL</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Network</p>
+                      <p className="text-white text-sm">Solana</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-[#2a2a2a] pt-4">
+                    <p className="text-gray-400 text-xs uppercase tracking-wide mb-2">Send to address</p>
+                    <div className="bg-[#1a1a1a] p-3 rounded border">
+                      {addressLoading ? (
+                        <div className="flex items-center gap-2">
+                          <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span className="text-gray-400 text-sm">Loading...</span>
+                        </div>
+                      ) : addressError ? (
+                        <div className="flex items-center gap-2 text-red-400">
+                          <AlertCircle className="h-4 w-4" />
+                          <span className="text-sm">Error loading address</span>
+                        </div>
+                      ) : (
+                        <p className="text-gray-300 font-mono text-xs break-all">{requiredAddress}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-gray-400 text-sm">Paste your transaction signature</label>
+
+                <div className="space-y-3">
+                  <label className="text-gray-300 text-sm font-medium">Transaction Signature</label>
                   <input
                     type="text"
-                    className="w-full p-2 rounded bg-[#181818] text-white border border-[#333]"
-                    placeholder="Transaction signature"
+                    className="w-full p-3 rounded border border-[#2a2a2a] bg-[#0f0f0f] text-white placeholder-gray-500 text-sm"
+                    placeholder="Enter your transaction signature..."
                     value={txSignature}
                     onChange={e => setTxSignature(e.target.value)}
                   />
-                </div>
-                <Button
-                  className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg"
-                  onClick={checkTransaction}
-                  disabled={isChecking}
-                >
-                  {isChecking ? (
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="animate-spin h-4 w-4 text-black"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Checking...
+                  <Button
+                    className="w-full py-3 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium"
+                    onClick={checkTransaction}
+                    disabled={isChecking || !txSignature.trim()}
+                  >
+                    {isChecking ? (
+                      <div className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verifying...
+                      </div>
+                    ) : (
+                      "Verify Payment"
+                    )}
+                  </Button>
+                  {checkResult && (
+                    <div className={`flex items-center gap-2 p-3 rounded border ${checkResult.success ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-red-500 bg-red-500/10 text-red-400'}`}>
+                      {checkResult.success ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                      <span className="text-sm">{checkResult.message}</span>
                     </div>
-                  ) : (
-                    "Check Transaction"
                   )}
-                </Button>
-                {checkResult && (
-                  <div className={`mt-2 flex items-center gap-2 ${checkResult.success ? 'text-green-400' : 'text-red-400'}`}>
-                    {checkResult.success ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-                    <span>{checkResult.message}</span>
-                  </div>
-                )}
+                </div>
               </div>
             ) : (
-              <div className="bg-[#252525] rounded-lg p-4 flex items-center gap-3">
-                <div className="relative w-8 h-8">
-                  <svg viewBox="0 0 36 36" className="w-full h-full">
-                    <circle cx="18" cy="18" r="16" fill="none" stroke="#333" strokeWidth="2"></circle>
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="16"
-                      fill="none"
-                      stroke="#00ff9d"
-                      strokeWidth="2"
-                      strokeDasharray="100"
-                      strokeDashoffset={100 - (timeLeft / (15 * 60)) * 100}
-                      transform="rotate(-90 18 18)"
-                    ></circle>
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Expiration time</p>
-                  <p className="text-[#00ff9d] font-mono">{formatTime(timeLeft)}</p>
+              <div className="space-y-4">
+                <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm">Session expires in</p>
+                      <p className="text-[#00ff9d] font-mono text-lg">{formatTime(timeLeft)}</p>
+                    </div>
+                    <div className="relative w-12 h-12">
+                      <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="#333" strokeWidth="2"></circle>
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="15"
+                          fill="none"
+                          stroke="#00ff9d"
+                          strokeWidth="2"
+                          strokeDasharray="94.25"
+                          strokeDashoffset={94.25 - (timeLeft / (15 * 60)) * 94.25}
+                        ></circle>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
+          {/* Footer */}
           {!showAddress && (
-            <>
-              <div className="bg-[#252525] p-6 space-y-4">
-                <div className="relative">
-                  <button
-                    className="w-full bg-[#1e1e1e] text-white p-4 rounded-lg flex justify-between items-center"
-                    onClick={toggleCurrencyDropdown}
-                  >
-                    {selectedCurrency === "SOL" ? (
-                      <div className="flex items-center gap-2">
-                        <SolanaIcon size={24} className="rounded-full" />
-                        <span>SOL</span>
-                      </div>
-                    ) : (
-                      <span>Select currency</span>
-                    )}
-                    <ChevronDown className={`h-5 w-5 transition-transform ${currencyDropdownOpen ? "rotate-180" : ""}`} />
-                  </button>
-
-                  {currencyDropdownOpen && (
-                    <div className="absolute z-50 w-full mt-2 bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                      <div
-                        className="p-3 hover:bg-[#252525] cursor-pointer flex items-center justify-between"
-                        onClick={() => selectCurrency("SOL")}
-                      >
-                        <div className="flex items-center gap-2">
-                          <SolanaIcon size={24} className="rounded-full" />
-                          <span className="text-white">SOL</span>
+            <div className="border-t border-[#2a2a2a] p-6 space-y-4 bg-[#1a1a1a]">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-gray-400 text-sm mb-2">Payment Method</p>
+                  <div className="relative">
+                    <button
+                      className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white p-3 rounded flex justify-between items-center hover:border-[#3a3a3a]"
+                      onClick={toggleCurrencyDropdown}
+                    >
+                      {selectedCurrency === "SOL" ? (
+                        <div className="flex items-center gap-3">
+                          <SolanaIcon size={20} className="rounded-full" />
+                          <span className="font-medium">Solana (SOL)</span>
                         </div>
-                        {selectedCurrency === "SOL" && <Check className="h-4 w-4 text-[#00ff9d]" />}
+                      ) : (
+                        <span className="text-gray-400">Select currency</span>
+                      )}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${currencyDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {currencyDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-1 bg-[#1e1e1e] border border-[#2a2a2a] rounded shadow-lg">
+                        <div
+                          className="p-3 hover:bg-[#252525] cursor-pointer flex items-center justify-between"
+                          onClick={() => selectCurrency("SOL")}
+                        >
+                          <div className="flex items-center gap-3">
+                            <SolanaIcon size={20} className="rounded-full" />
+                            <span className="text-white">Solana (SOL)</span>
+                          </div>
+                          {selectedCurrency === "SOL" && <Check className="h-4 w-4 text-[#00ff9d]" />}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <button
-                    className="w-full bg-[#1e1e1e] text-white p-4 rounded-lg flex justify-between items-center"
-                    onClick={toggleNetworkDropdown}
-                  >
-                    {selectedNetwork === "Solana" ? (
-                      <div className="flex items-center gap-2">
-                        <SolanaIcon size={24} className="rounded-full" />
-                        <span>Solana</span>
-                      </div>
-                    ) : (
-                      <span>Select network</span>
-                    )}
-                    <ChevronDown className={`h-5 w-5 transition-transform ${networkDropdownOpen ? "rotate-180" : ""}`} />
-                  </button>
-
-                  {networkDropdownOpen && (
-                    <div className="absolute z-50 w-full mt-2 bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
-                      <div
-                        className="p-3 hover:bg-[#252525] cursor-pointer flex items-center justify-between"
-                        onClick={() => selectNetwork("Solana")}
-                      >
-                        <div className="flex items-center gap-2">
-                          <SolanaIcon size={24} className="rounded-full" />
-                          <span className="text-white">Solana</span>
+                <div>
+                  <p className="text-gray-400 text-sm mb-2">Network</p>
+                  <div className="relative">
+                    <button
+                      className="w-full bg-[#0f0f0f] border border-[#2a2a2a] text-white p-3 rounded flex justify-between items-center hover:border-[#3a3a3a]"
+                      onClick={toggleNetworkDropdown}
+                    >
+                      {selectedNetwork === "Solana" ? (
+                        <div className="flex items-center gap-3">
+                          <SolanaIcon size={20} className="rounded-full" />
+                          <span className="font-medium">Solana Network</span>
                         </div>
-                        {selectedNetwork === "Solana" && <Check className="h-4 w-4 text-[#00ff9d]" />}
+                      ) : (
+                        <span className="text-gray-400">Select network</span>
+                      )}
+                      <ChevronDown className={`h-4 w-4 transition-transform ${networkDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {networkDropdownOpen && (
+                      <div className="absolute z-50 w-full mt-1 bg-[#1e1e1e] border border-[#2a2a2a] rounded shadow-lg">
+                        <div
+                          className="p-3 hover:bg-[#252525] cursor-pointer flex items-center justify-between"
+                          onClick={() => selectNetwork("Solana")}
+                        >
+                          <div className="flex items-center gap-3">
+                            <SolanaIcon size={20} className="rounded-full" />
+                            <span className="text-white">Solana Network</span>
+                          </div>
+                          {selectedNetwork === "Solana" && <Check className="h-4 w-4 text-[#00ff9d]" />}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-[#1e1e1e] p-6 space-y-4">
-                <Button
-                  className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg text-base"
-                  onClick={handlePayment}
-                  disabled={!selectedCurrency || !selectedNetwork}
-                >
-                  Pay {amount.toFixed(6)} SOL
-                </Button>
+              <Button
+                className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium text-base"
+                onClick={handlePayment}
+                disabled={!selectedCurrency || !selectedNetwork}
+              >
+                Pay {amount.toFixed(6)} SOL
+              </Button>
 
-                <div className="flex items-center justify-center gap-4 pt-4 border-t border-[#2a2a2a]">
-                  <HelpCircle className="h-4 w-4 text-gray-400" />
-                  <Settings className="h-4 w-4 text-gray-400" />
-                  <MessageCircle className="h-4 w-4 text-gray-400" />
-                  <Mail className="h-4 w-4 text-gray-400" />
-                </div>
+              <div className="flex items-center justify-center gap-4 pt-4 border-t border-[#2a2a2a]">
+                <HelpCircle className="h-4 w-4 text-gray-400" />
+                <Settings className="h-4 w-4 text-gray-400" />
+                <MessageCircle className="h-4 w-4 text-gray-400" />
+                <Mail className="h-4 w-4 text-gray-400" />
               </div>
-            </>
+            </div>
           )}
           </DialogContent>
         </DialogPortal>

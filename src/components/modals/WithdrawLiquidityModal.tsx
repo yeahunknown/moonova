@@ -35,34 +35,41 @@ export function WithdrawLiquidityModal({ open, onOpenChange, onWithdrawSuccess }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogContent className="p-0 gap-0 bg-[#1e1e1e] border-[#2a2a2a] max-w-md rounded-xl overflow-hidden">
-          <div className="p-6 space-y-6">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <svg width="120" height="30" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <text x="0" y="50" fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif" fontSize="48" fontWeight="600" letterSpacing="1" fill="white">Paygrid</text>
-                  <rect x="0" y="58" width="140" height="4" fill="white" rx="2"/>
-                </svg>
+          <div className="p-6">
+            {/* Header */}
+            <div className="border-b border-[#2a2a2a] pb-4 mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center">
+                  <svg width="120" height="30" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="50" fontFamily="Helvetica Neue, Helvetica, Arial, sans-serif" fontSize="48" fontWeight="600" letterSpacing="1" fill="white">Paygrid</text>
+                    <rect x="0" y="58" width="140" height="4" fill="white" rx="2"/>
+                  </svg>
+                </div>
+                <Button variant="outline" size="sm" className="bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300 text-xs px-3 py-1">
+                  Sign up
+                </Button>
               </div>
-              <Button variant="outline" size="sm" className="rounded-full bg-white text-black hover:bg-gray-200 border-0">
-                Sign up
-              </Button>
+              <div className="text-center">
+                <h2 className="text-xl font-semibold text-white mb-1">Send Payment</h2>
+                <p className="text-gray-400 text-sm">Please input your Solana address to receive payment</p>
+              </div>
             </div>
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-white">Send Payment</h2>
-              <div className="text-xl font-semibold text-white">Please input your solana address to send payment</div>
-            </div>
+
+            {/* Content */}
             {step === "input" && (
-              <div className="bg-[#252525] rounded-lg p-4 space-y-4">
-                <label className="text-gray-400 text-sm">Your Solana Address</label>
-                <input
-                  type="text"
-                  className="w-full p-2 rounded bg-[#181818] text-white border border-[#333]"
-                  placeholder="Enter your Solana address"
-                  value={address}
-                  onChange={e => setAddress(e.target.value)}
-                />
+              <div className="space-y-4">
+                <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-lg p-4">
+                  <label className="text-gray-300 text-sm font-medium mb-3 block">Your Solana Address</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 rounded border border-[#2a2a2a] bg-[#1a1a1a] text-white placeholder-gray-500 text-sm"
+                    placeholder="Enter your Solana address..."
+                    value={address}
+                    onChange={e => setAddress(e.target.value)}
+                  />
+                </div>
                 <Button
-                  className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg"
+                  className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium text-base"
                   onClick={handleFakeSend}
                   disabled={!address.trim()}
                 >
@@ -70,16 +77,31 @@ export function WithdrawLiquidityModal({ open, onOpenChange, onWithdrawSuccess }
                 </Button>
               </div>
             )}
+
             {step === "sending" && (
-              <div className="flex flex-col items-center justify-center py-8">
-                <svg className="animate-spin h-8 w-8 text-[#00ff9d] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-                <span className="text-white">Sending payment...</span>
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="relative">
+                  <svg className="animate-spin h-12 w-12 text-[#00ff9d] mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                  </svg>
+                </div>
+                <div className="text-center">
+                  <p className="text-white font-medium mb-1">Processing payment...</p>
+                  <p className="text-gray-400 text-sm">Please wait while we process your request</p>
+                </div>
               </div>
             )}
+
             {step === "sent" && (
-              <div className="flex flex-col items-center justify-center py-8">
-                <Check className="h-8 w-8 text-green-400 mb-4" />
-                <span className="text-green-400 font-bold">Payment sent!</span>
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+                  <Check className="h-8 w-8 text-green-400" />
+                </div>
+                <div className="text-center">
+                  <p className="text-green-400 font-semibold text-lg mb-1">Payment sent successfully!</p>
+                  <p className="text-gray-400 text-sm">The payment has been processed</p>
+                </div>
               </div>
             )}
           </div>
