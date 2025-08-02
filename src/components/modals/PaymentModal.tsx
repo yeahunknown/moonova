@@ -1,66 +1,62 @@
-import * as React from "react"
-import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CuboidIcon as Cube, Check, ChevronDown } from "lucide-react"
-import solLogo from "@/assets/sol-logo.png"
-
+import * as React from "react";
+import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CuboidIcon as Cube, Check, ChevronDown } from "lucide-react";
+import solLogo from "@/assets/sol-logo.png";
 interface FakePaymentModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  amount?: number
-  onPaymentSuccess?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  amount?: number;
+  onPaymentSuccess?: () => void;
 }
-
-export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSuccess }: FakePaymentModalProps) {
-  const [step, setStep] = React.useState<"select"|"payment"|"checking"|"success">("select")
-  const [currency, setCurrency] = React.useState("SOL")
-  const [network, setNetwork] = React.useState("Solana")
-  const [timeLeft, setTimeLeft] = React.useState(300) // 5 minutes
-  const [txSignature, setTxSignature] = React.useState("")
-
+export function FakePaymentModal({
+  open,
+  onOpenChange,
+  amount = 0.1,
+  onPaymentSuccess
+}: FakePaymentModalProps) {
+  const [step, setStep] = React.useState<"select" | "payment" | "checking" | "success">("select");
+  const [currency, setCurrency] = React.useState("SOL");
+  const [network, setNetwork] = React.useState("Solana");
+  const [timeLeft, setTimeLeft] = React.useState(300); // 5 minutes
+  const [txSignature, setTxSignature] = React.useState("");
   React.useEffect(() => {
     if (open) {
-      setStep("select")
-      setCurrency("SOL")
-      setNetwork("Solana")
-      setTimeLeft(300)
-      setTxSignature("")
+      setStep("select");
+      setCurrency("SOL");
+      setNetwork("Solana");
+      setTimeLeft(300);
+      setTxSignature("");
     }
-  }, [open])
-
+  }, [open]);
   React.useEffect(() => {
     if (step === "select" && timeLeft > 0) {
       const timer = setInterval(() => {
-        setTimeLeft(prev => prev - 1)
-      }, 1000)
-      return () => clearInterval(timer)
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
     }
-  }, [step, timeLeft])
-
+  }, [step, timeLeft]);
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
   const handleProceedToPayment = () => {
-    setStep("payment")
-  }
-
+    setStep("payment");
+  };
   const handleCheckTransaction = () => {
-    setStep("checking")
+    setStep("checking");
     setTimeout(() => {
-      setStep("success")
+      setStep("success");
       setTimeout(() => {
-        if (onPaymentSuccess) onPaymentSuccess()
-        onOpenChange(false)
-      }, 1500)
-    }, 2000)
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+        if (onPaymentSuccess) onPaymentSuccess();
+        onOpenChange(false);
+      }, 1500);
+    }, 2000);
+  };
+  return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogContent className="p-0 gap-0 bg-[#1e1e1e] border-[#2a2a2a] max-w-md rounded-xl overflow-hidden">
           <div className="p-6 space-y-6">
@@ -68,15 +64,14 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Cube className="h-6 w-6 text-white" />
-                <span className="text-white font-medium">PGPAY</span>
+                <span className="text-white font-medium">UGPAY</span>
               </div>
               <Button variant="outline" size="sm" className="rounded-full bg-white text-black hover:bg-gray-200 border-0">
                 Sign up
               </Button>
             </div>
 
-            {step === "select" && (
-              <>
+            {step === "select" && <>
                 <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-white">Select currency</h2>
                   <div className="flex items-center gap-2 text-xl font-semibold text-white">
@@ -134,10 +129,7 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
                     </div>
                   </div>
 
-                  <Button
-                    className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg"
-                    onClick={handleProceedToPayment}
-                  >
+                  <Button className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg" onClick={handleProceedToPayment}>
                     Proceed to the payment
                   </Button>
                 </div>
@@ -149,11 +141,9 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
                   </div>
                   <div>By continuing, you agree to our Terms and Privacy Policy</div>
                 </div>
-              </>
-            )}
+              </>}
 
-            {step === "payment" && (
-              <>
+            {step === "payment" && <>
                 <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-white">Send exactly</h2>
                   <div className="flex items-center gap-2 text-xl font-semibold text-white">
@@ -172,47 +162,30 @@ export function FakePaymentModal({ open, onOpenChange, amount = 0.1, onPaymentSu
 
                   <div className="space-y-2">
                     <label className="text-gray-400 text-sm">Paste your transaction signature</label>
-                    <input
-                      type="text"
-                      className="w-full p-3 rounded-lg bg-[#252525] text-white border border-[#333] placeholder-gray-500"
-                      placeholder="Transaction signature"
-                      value={txSignature}
-                      onChange={e => setTxSignature(e.target.value)}
-                    />
+                    <input type="text" className="w-full p-3 rounded-lg bg-[#252525] text-white border border-[#333] placeholder-gray-500" placeholder="Transaction signature" value={txSignature} onChange={e => setTxSignature(e.target.value)} />
                   </div>
 
-                  <Button
-                    className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg"
-                    onClick={handleCheckTransaction}
-                    disabled={!txSignature.trim()}
-                  >
+                  <Button className="w-full py-4 bg-[#00ff9d] hover:bg-[#00cc7d] text-black font-medium rounded-lg" onClick={handleCheckTransaction} disabled={!txSignature.trim()}>
                     Check Transaction
                   </Button>
                 </div>
-              </>
-            )}
+              </>}
 
-            {step === "checking" && (
-              <div className="flex flex-col items-center justify-center py-12">
+            {step === "checking" && <div className="flex flex-col items-center justify-center py-12">
                 <svg className="animate-spin h-8 w-8 text-[#00ff9d] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                 </svg>
                 <span className="text-white">Checking transaction...</span>
-              </div>
-            )}
+              </div>}
 
-            {step === "success" && (
-              <div className="flex flex-col items-center justify-center py-12">
+            {step === "success" && <div className="flex flex-col items-center justify-center py-12">
                 <Check className="h-8 w-8 text-green-400 mb-4" />
                 <span className="text-green-400 font-bold">Transaction verified!</span>
-              </div>
-            )}
+              </div>}
           </div>
         </DialogContent>
       </DialogPortal>
-    </Dialog>
-  )
+    </Dialog>;
 }
-
-export default FakePaymentModal
+export default FakePaymentModal;
