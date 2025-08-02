@@ -133,14 +133,6 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
     e?.preventDefault();
     e?.stopPropagation();
     
-    // Add small delay to prevent double clicks
-    if (e?.currentTarget) {
-      (e.currentTarget as HTMLButtonElement).disabled = true;
-      setTimeout(() => {
-        (e.currentTarget as HTMLButtonElement).disabled = false;
-      }, 500);
-    }
-    
     let fieldsToValidate: (keyof TokenFormData)[] = [];
     
     if (step === 1) {
@@ -154,10 +146,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
-      // Add small delay for smooth transition
-      setTimeout(() => {
-        onNext();
-      }, 100);
+      onNext();
     }
   };
 
