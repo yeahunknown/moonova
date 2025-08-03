@@ -156,75 +156,27 @@ export function PaymentModal({
         setIsChecking(false);
         return;
       }
-      const heliusUrl = "https://mainnet.helius-rpc.com/?api-key=33336ba1-7c13-4015-8ab5-a4fbfe0a6bb2";
-      const body = {
-        jsonrpc: "2.0",
-        id: 1,
-        method: "getTransaction",
-        params: [txSignature, {
-          encoding: "jsonParsed"
-        }]
-      };
-      const resp = await fetch(heliusUrl, {
-        method: "POST",
+      // Call secure Supabase Edge Function for transaction verification
+      const response = await fetch('/api/functions/v1/verify-transaction', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          signature: txSignature,
+          expectedAmount: amount,
+          recipientAddress: requiredAddress
+        })
       });
-      if (!resp.ok) throw new Error("Transaction not found. (Dev/Error code: h0)");
-      const data = await resp.json();
-      if (!data.result) throw new Error("Transaction not found or not confirmed yet.");
-      const tx = data.result;
-      if (!tx.blockTime) throw new Error("Transaction not confirmed yet.");
-      // check replukic time heh i mean checks time
-      const now = Math.floor(Date.now() / 1000);
-      const age = now - tx.blockTime;
-      if (age > 300) {
-        setCheckResult({
-          success: false,
-          message: "Transaction hash found, please contact support | error code : 2o"
-        });
-        setIsChecking(false);
-        return;
+
+      if (!response.ok) {
+        throw new Error('Transaction verification failed. Please try again.');
       }
-      // Check status
-      if (tx.meta && tx.meta.err) {
-        setCheckResult({
-          success: false,
-          message: "Transaction not successful."
-        });
-        setIsChecking(false);
-        return;
-      }
-      let found = false;
-      let sentAmount = 0;
-      if (tx.transaction && tx.transaction.message && tx.transaction.message.instructions) {
-        for (const ix of tx.transaction.message.instructions) {
-          if (ix.program === "system" && ix.parsed && ix.parsed.type === "transfer" && ix.parsed.info && ix.parsed.info.destination === requiredAddress) {
-            sentAmount = ix.parsed.info.lamports / 1e9; // convert lamports to SOL
-            found = true;
-            break;
-          }
-        }
-      }
-      if (!found) {
-        setCheckResult({
-          success: false,
-          message: `Transaction is not valid.`
-        });
-        setIsChecking(false);
-        return;
-      }
-      // Check amount (allow small tolerance)
-      const tolerance = 0.00001;
-      if (Math.abs(sentAmount - amount) > tolerance) {
-        setCheckResult({
-          success: false,
-          message: `Incorrect amount sent. Sent: ${sentAmount.toFixed(6)} SOL, Required: ${amount.toFixed(6)} SOL`
-        });
-        setIsChecking(false);
-        return;
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Transaction verification failed.');
       }
       if (type === 'token') {
         const tokenAddr = generateTokenAddress();
