@@ -30,9 +30,9 @@ const Portfolio = () => {
     }
     
     // Calculate initial stats immediately
-    const volume24h = liquidityAmount * (80 + Math.random() * 120);
-    const marketCap = liquidityAmount * (150 + Math.random() * 250);
-    const holders = Math.round(liquidityAmount * (1 + Math.random() * 3));
+    const volume24h = liquidityAmount * (300 + Math.random() * 500);
+    const marketCap = liquidityAmount * (800 + Math.random() * 700);
+    const holders = Math.round(liquidityAmount * (15 + Math.random() * 25));
     const currentPrice = marketCap / 1000000000;
     
     return {
@@ -59,7 +59,7 @@ const Portfolio = () => {
     }
     
     // Calculate initial stats and price
-    const marketCap = liquidityAmount * (150 + Math.random() * 250);
+    const marketCap = liquidityAmount * (800 + Math.random() * 700);
     const basePrice = marketCap / 1000000000;
     
     return [
@@ -136,14 +136,14 @@ const Portfolio = () => {
 
   // Calculate base stats from liquidity with updated formulas
   const calculateBaseStats = useCallback((liquiditySOL: number) => {
-    // Volume 24h: much higher - random between liquidity * 80 and liquidity * 200
-    const volume24h = liquiditySOL * (80 + Math.random() * 120);
+    // Volume 24h: higher - random between liquidity * 300 and liquidity * 800
+    const volume24h = liquiditySOL * (300 + Math.random() * 500);
     
-    // Market Cap: random between liquidity * 150 and liquidity * 400
-    const marketCap = liquiditySOL * (150 + Math.random() * 250);
+    // Market Cap: higher - random between liquidity * 800 and liquidity * 1500
+    const marketCap = liquiditySOL * (800 + Math.random() * 700);
     
-    // Holders: random between liquidity * 1 and liquidity * 4
-    const holders = Math.round(liquiditySOL * (1 + Math.random() * 3));
+    // Holders: higher - random between liquidity * 15 and liquidity * 40
+    const holders = Math.round(liquiditySOL * (15 + Math.random() * 25));
     
     // Price: market cap / 1,000,000,000 (1B token supply)
     const currentPrice = marketCap / 1000000000;
@@ -219,15 +219,15 @@ const Portfolio = () => {
 
     const updateStats = () => {
       setStats(prevStats => {
-        // Make liquidity fluctuate by roughly 25% of current value (random and realistic)
-        const liquidityChange = (Math.random() - 0.3) * 0.25; // Bias towards increase (-0.3 to +0.7)
+        // Make liquidity fluctuate by roughly 25% of current value, with roughly 36% decrease when going down
+        const liquidityChange = Math.random() < 0.3 ? -(0.32 + Math.random() * 0.08) : (Math.random() * 0.25); // 30% chance of ~36% decrease, 70% chance of increase
         const newLiquidity = Math.max(0.1, prevStats.liquidity * (1 + liquidityChange));
         
         // Tie all other stats to liquidity changes
         const liquidityRatio = newLiquidity / prevStats.liquidity;
-        const volume24h = newLiquidity * (80 + Math.random() * 120);
-        const marketCap = newLiquidity * (150 + Math.random() * 250);
-        const holders = Math.round(newLiquidity * (1 + Math.random() * 3));
+        const volume24h = newLiquidity * (300 + Math.random() * 500);
+        const marketCap = newLiquidity * (800 + Math.random() * 700);
+        const holders = Math.round(newLiquidity * (15 + Math.random() * 25));
         const currentPrice = marketCap / 1000000000;
 
         return {
