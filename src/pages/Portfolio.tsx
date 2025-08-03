@@ -216,60 +216,42 @@ const Portfolio = () => {
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
-  // LIVE PUMPING CHART - REFLECTS ACTUAL PRICE CHANGES
+  // Chart updates in sync with liquidity changes
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
-    let isRunning = true;
-    let timeoutId: NodeJS.Timeout;
-
-    const pumpChart = () => {
-      if (!isRunning) return;
+    setChartData(prevChart => {
+      const newChart = [...prevChart];
+      const lastCandle = newChart[newChart.length - 1];
       
-      setChartData(prevChart => {
-        const newChart = [...prevChart];
-        const lastCandle = newChart[newChart.length - 1];
-        
-        // Use the ACTUAL current price from stats
-        const currentPrice = stats.currentPrice;
-        const lastClose = lastCandle.close;
-        
-        // Create realistic candlestick with current price as close
-        const volatility = 0.02 + Math.random() * 0.03; // 2-5% wick volatility
-        const isGreen = currentPrice >= lastClose;
-        
-        const high = Math.max(currentPrice, lastClose) * (1 + volatility);
-        const low = Math.min(currentPrice, lastClose) * (1 - volatility);
-        const open = lastClose;
-        
-        const newCandle = {
-          time: 'now',
-          open: open,
-          high: high,
-          low: low,
-          close: currentPrice,
-          isGreen: isGreen
-        };
-        
-        // Shift array and add new candle
-        newChart.shift();
-        newChart.push(newCandle);
-        
-        return newChart;
-      });
+      // Use the ACTUAL current price from stats
+      const currentPrice = stats.currentPrice;
+      const lastClose = lastCandle.close;
       
-      // Update every 250-750ms
-      timeoutId = setTimeout(pumpChart, 250 + Math.random() * 500);
-    };
-
-    // START PUMPING IMMEDIATELY
-    pumpChart();
-
-    return () => {
-      isRunning = false;
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [liquidityWithdrawn, stats.currentPrice]); // Watch for price changes!
+      // Create realistic candlestick with current price as close
+      const volatility = 0.02 + Math.random() * 0.03; // 2-5% wick volatility
+      const isGreen = currentPrice >= lastClose;
+      
+      const high = Math.max(currentPrice, lastClose) * (1 + volatility);
+      const low = Math.min(currentPrice, lastClose) * (1 - volatility);
+      const open = lastClose;
+      
+      const newCandle = {
+        time: 'now',
+        open: open,
+        high: high,
+        low: low,
+        close: currentPrice,
+        isGreen: isGreen
+      };
+      
+      // Shift array and add new candle
+      newChart.shift();
+      newChart.push(newCandle);
+      
+      return newChart;
+    });
+  }, [stats.currentPrice, liquidityWithdrawn]); // Only update when price changes!
 
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
