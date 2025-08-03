@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck, Clipboard } from "lucide-react"
 import { SolanaIcon } from "../SolanaIcon"
+import { Link } from "react-router-dom"
 
 interface PaymentModalProps {
   open: boolean
@@ -394,6 +395,12 @@ export function PaymentModal({
                       "Verify Payment"
                     )}
                   </Button>
+                  <p className="text-[#6B7280] text-xs text-center mt-2">
+                    By pressing verify payment you agree to our{" "}
+                    <Link to="/terms" className="underline hover:text-[#9CA3AF] transition-colors">
+                      terms of service
+                    </Link>
+                  </p>
                   {checkResult && (
                     <div className={`flex items-center gap-3 p-4 rounded-xl border backdrop-blur-sm transition-all duration-300 animate-in fade-in-0 slide-in-from-top-2 ${checkResult.success ? 'border-[#22C55E]/30 bg-[#22C55E]/10 text-[#22C55E] shadow-[#22C55E]/20 shadow-lg' : 'border-[#EF4444]/30 bg-[#EF4444]/10 text-[#EF4444] shadow-[#EF4444]/20 shadow-lg'}`}>
                       {checkResult.success ? <Check className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
