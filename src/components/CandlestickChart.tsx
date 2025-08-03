@@ -107,18 +107,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
                 strokeWidth="1"
                 className="transition-all duration-200"
               />
-              
-              {/* Time label */}
-              <text
-                x={x}
-                y={height - 10}
-                textAnchor="middle"
-                fill="#666"
-                fontSize="10"
-                fontFamily="monospace"
-              >
-                {candle.time}
-              </text>
             </g>
           );
         })}
