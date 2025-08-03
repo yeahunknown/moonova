@@ -192,19 +192,19 @@ const Portfolio = () => {
     let lastUpdateTime = 0;
 
     const animateChart = (timestamp: number) => {
-      // Update every 80-120ms for smooth but not overwhelming movement
-      if (timestamp - lastUpdateTime > 80 + Math.random() * 40) {
+      // Update every 100-200ms for smooth visible movement
+      if (timestamp - lastUpdateTime > 100 + Math.random() * 100) {
         setChartData(prevChart => {
           const newChart = [...prevChart];
           const lastPrice = newChart[newChart.length - 1].price;
           
-          // Create realistic price movement: small changes with occasional bigger moves
-          const baseChange = (Math.random() - 0.5) * 0.002; // ±0.1% base movement
-          const volatilitySpike = Math.random() < 0.1 ? (Math.random() - 0.5) * 0.01 : 0; // 10% chance of ±0.5% spike
+          // Create more dramatic price movement for visibility
+          const baseChange = (Math.random() - 0.5) * 0.02; // ±1% base movement
+          const volatilitySpike = Math.random() < 0.15 ? (Math.random() - 0.5) * 0.05 : 0; // 15% chance of ±2.5% spike
           const totalChange = baseChange + volatilitySpike;
           
-          // Apply change with some momentum (trending behavior)
-          const newPrice = Math.max(lastPrice * (1 + totalChange), 0.000001);
+          // Apply change ensuring minimum movement
+          const newPrice = Math.max(lastPrice * (1 + totalChange), lastPrice * 0.95);
           
           // Shift the array and add new point
           newChart.shift();
@@ -219,6 +219,7 @@ const Portfolio = () => {
       animationId = requestAnimationFrame(animateChart);
     };
 
+    // Start animation immediately
     animationId = requestAnimationFrame(animateChart);
 
     return () => {
