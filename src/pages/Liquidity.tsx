@@ -172,7 +172,7 @@ const Liquidity = () => {
                       <Label>Token Symbol</Label>
                       <Input
                         value={tokenSymbol}
-                        onChange={(e) => setTokenSymbol(e.target.value)}
+                        onChange={(e) => setTokenSymbol(e.target.value.toUpperCase())}
                         placeholder="Enter token symbol"
                         className="mt-2"
                       />

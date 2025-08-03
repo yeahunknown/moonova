@@ -262,9 +262,9 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                       placeholder="zzz"
                       {...field}
                       onChange={(e) => {
-                        const value = e.target.value;
+                        const value = e.target.value.toUpperCase();
                         // Only allow letters
-                        if (value === "" || /^[A-Za-z]*$/.test(value)) {
+                        if (value === "" || /^[A-Z]*$/.test(value)) {
                           field.onChange(value);
                         }
                       }}
