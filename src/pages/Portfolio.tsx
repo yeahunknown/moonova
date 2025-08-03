@@ -71,16 +71,16 @@ const Portfolio = () => {
     };
   });
 
-  // Calculate base stats from liquidity with proper formulas
+  // Calculate base stats from liquidity with updated formulas
   const calculateBaseStats = useCallback((liquiditySOL: number) => {
-    // Volume 24h: random between liquidity * 10 and liquidity * 35
-    const volume24h = liquiditySOL * (10 + Math.random() * 25);
+    // Volume 24h: random between liquidity * 12 and liquidity * 30
+    const volume24h = liquiditySOL * (12 + Math.random() * 18);
     
-    // Market Cap: random between liquidity * 8,000 and liquidity * 12,000
-    const marketCap = liquiditySOL * (8000 + Math.random() * 4000);
+    // Market Cap: random between liquidity * 9,000 and liquidity * 11,500
+    const marketCap = liquiditySOL * (9000 + Math.random() * 2500);
     
-    // Holders: random between liquidity * 5 and liquidity * 18, rounded to whole numbers
-    const holders = Math.round(liquiditySOL * (5 + Math.random() * 13));
+    // Holders: random whole number between liquidity * 6 and liquidity * 14
+    const holders = Math.round(liquiditySOL * (6 + Math.random() * 8));
     
     // Price: market cap / 1,000,000,000 (1B token supply)
     const currentPrice = marketCap / 1000000000;
@@ -129,7 +129,7 @@ const Portfolio = () => {
     setChartData(newChartData);
   }, [calculateBaseStats]);
 
-  // Real-time stats updates with staggered delays
+  // Real-time stats updates with realistic wobbles
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
@@ -147,68 +147,40 @@ const Portfolio = () => {
       }
 
       if (!isOverrideMode) {
-        // Calculate new values based on liquidity
-        const volume24h = liquidityAmount * (10 + Math.random() * 25);
-        const marketCap = liquidityAmount * (8000 + Math.random() * 4000);
-        const holders = Math.round(liquidityAmount * (5 + Math.random() * 13));
+        // Calculate fresh values from liquidity with small wobbles
+        const wobble = () => 0.95 + Math.random() * 0.1; // ±5% wobble
+        
+        const volume24h = liquidityAmount * (12 + Math.random() * 18) * wobble();
+        const marketCap = liquidityAmount * (9000 + Math.random() * 2500) * wobble();
+        const holders = Math.round(liquidityAmount * (6 + Math.random() * 8) * wobble());
         const currentPrice = marketCap / 1000000000;
 
-        // Update each stat with random delays (0.5s to 1.2s)
-        setTimeout(() => {
-          setStats(prev => ({ ...prev, volume24h }));
-        }, Math.random() * 700 + 500);
-
-        setTimeout(() => {
-          setStats(prev => ({ ...prev, marketCap, currentPrice }));
-        }, Math.random() * 700 + 500);
-
-        setTimeout(() => {
-          setStats(prev => ({ ...prev, holders }));
-        }, Math.random() * 700 + 500);
+        setStats({
+          volume24h,
+          marketCap,
+          liquidity: liquidityAmount,
+          holders,
+          currentPrice
+        });
       }
     };
 
-    // Update stats every 3-5 seconds
-    const statsInterval = setInterval(updateStats, Math.random() * 2000 + 3000);
+    // Update stats every 1-2 seconds
+    const getRandomInterval = () => Math.random() * 1000 + 1000; // 1-2 seconds
+    
+    let timeoutId: NodeJS.Timeout;
+    const scheduleNextUpdate = () => {
+      timeoutId = setTimeout(() => {
+        updateStats();
+        scheduleNextUpdate();
+      }, getRandomInterval());
+    };
+    
+    scheduleNextUpdate();
 
-    // Chart update interval - aggressive and fast (every 500ms)
-    const chartInterval = setInterval(() => {
-      setChartData(prevChart => {
-        const newChart = [...prevChart];
-        const lastPrice = newChart[newChart.length - 1].price;
-        
-        // EXTREME volatility with huge swings
-        const isMegaPump = Math.random() < 0.08; // 8% chance of massive pump
-        const isBigPump = Math.random() < 0.25; // 25% chance of big pump
-        const isBigDump = Math.random() < 0.15; // 15% chance of big dump
-        const isMegaDump = Math.random() < 0.05; // 5% chance of massive dump
-        
-        let priceChange;
-        if (isMegaPump) {
-          priceChange = 0.15 + Math.random() * 0.35; // 15-50% mega pump
-        } else if (isBigPump) {
-          priceChange = 0.05 + Math.random() * 0.20; // 5-25% big pump
-        } else if (isMegaDump) {
-          priceChange = -(0.20 + Math.random() * 0.30); // 20-50% mega dump
-        } else if (isBigDump) {
-          priceChange = -(0.05 + Math.random() * 0.15); // 5-20% big dump
-        } else {
-          priceChange = (Math.random() - 0.4) * 0.08; // Regular volatile movement with upward bias
-        }
-        
-        const newPrice = Math.max(lastPrice * (1 + priceChange), 0.000001);
-        
-        // Shift data and add new point
-        newChart.shift();
-        newChart.push({ time: 'now', price: newPrice });
-        
-        return newChart;
-      });
-    }, 500); // Update chart every 500ms for maximum chaos
     
     return () => {
-      clearInterval(statsInterval);
-      clearInterval(chartInterval);
+      clearTimeout(timeoutId);
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
