@@ -28,8 +28,8 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const padding = 40;
   const chartHeight = height - padding * 2;
   const chartWidth = 800;
-  const candleWidth = 8;
-  const candleSpacing = 32;
+  const candleWidth = 12;
+  const candleSpacing = 14;
 
   const getY = (price: number) => {
     return padding + ((maxPrice - price) / priceRange) * chartHeight;
@@ -37,7 +37,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
 
   return (
     <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-background/50 to-transparent rounded-lg">
-      <svg width="100%" height={height} viewBox={`0 0 ${chartWidth} ${height}`} className="overflow-visible">
+      <svg width="100%" height={height} viewBox={`0 0 ${chartWidth} ${height}`} className="overflow-visible" preserveAspectRatio="none">
         {/* Grid lines */}
         {[0.25, 0.5, 0.75].map((ratio, i) => {
           const y = padding + chartHeight * ratio;
