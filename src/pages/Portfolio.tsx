@@ -15,27 +15,66 @@ const Portfolio = () => {
   const [isOverrideMode, setIsOverrideMode] = useState(false);
   const { setSectionRef, isVisible } = useFadeInAnimation();
   
-  // Dynamic stats based on liquidity
-  const [stats, setStats] = useState({
-    volume24h: 0,
-    marketCap: 0,
-    liquidity: 0,
-    holders: 0,
-    currentPrice: 0.000001
+  // Dynamic stats based on liquidity - initialize immediately  
+  const [stats, setStats] = useState(() => {
+    const sessionToken = sessionStorage.getItem('sessionToken');
+    const liquidityData = sessionStorage.getItem('liquidityAdded');
+    
+    let liquidityAmount = 1.0;
+    if (sessionToken) {
+      const tokenInfo = JSON.parse(sessionToken);
+      liquidityAmount = tokenInfo.liquidityAmount || 1.0;
+    } else if (liquidityData) {
+      const liquidity = JSON.parse(liquidityData);
+      liquidityAmount = liquidity.lpSize || 1.0;
+    }
+    
+    // Calculate initial stats immediately
+    const volume24h = liquidityAmount * (12 + Math.random() * 18);
+    const marketCap = liquidityAmount * (9000 + Math.random() * 2500);
+    const holders = Math.round(liquidityAmount * (6 + Math.random() * 8));
+    const currentPrice = marketCap / 1000000000;
+    
+    return {
+      volume24h,
+      marketCap,
+      liquidity: liquidityAmount,
+      holders,
+      currentPrice
+    };
   });
 
-  const [chartData, setChartData] = useState([
-    { time: '6h', price: 0.000001 },
-    { time: '5h', price: 0.000001 },
-    { time: '4h', price: 0.000001 },
-    { time: '3h', price: 0.000001 },
-    { time: '2h', price: 0.000001 },
-    { time: '1h', price: 0.000001 },
-    { time: '30m', price: 0.000001 },
-    { time: '15m', price: 0.000001 },
-    { time: '5m', price: 0.000001 },
-    { time: 'now', price: 0.000001 },
-  ]);
+  const [chartData, setChartData] = useState(() => {
+    // Initialize chart with proper prices immediately
+    const sessionToken = sessionStorage.getItem('sessionToken');
+    const liquidityData = sessionStorage.getItem('liquidityAdded');
+    
+    let liquidityAmount = 1.0;
+    if (sessionToken) {
+      const tokenInfo = JSON.parse(sessionToken);
+      liquidityAmount = tokenInfo.liquidityAmount || 1.0;
+    } else if (liquidityData) {
+      const liquidity = JSON.parse(liquidityData);
+      liquidityAmount = liquidity.lpSize || 1.0;
+    }
+    
+    // Calculate initial stats and price
+    const marketCap = liquidityAmount * (9000 + Math.random() * 2500);
+    const basePrice = marketCap / 1000000000;
+    
+    return [
+      { time: '6h', price: basePrice * 0.47 },
+      { time: '5h', price: basePrice * 0.50 },
+      { time: '4h', price: basePrice * 0.58 },
+      { time: '3h', price: basePrice * 0.55 },
+      { time: '2h', price: basePrice * 0.72 },
+      { time: '1h', price: basePrice * 0.68 },
+      { time: '30m', price: basePrice * 0.80 },
+      { time: '15m', price: basePrice * 0.77 },
+      { time: '5m', price: basePrice * 0.91 },
+      { time: 'now', price: basePrice },
+    ];
+  });
 
   const animationRef = useRef<number>();
   const statsRef = useRef(stats);
@@ -51,7 +90,8 @@ const Portfolio = () => {
         name: tokenInfo.name,
         symbol: tokenInfo.symbol,
         image: tokenInfo.uploadedLogo || '/placeholder-token.png',
-        hasToken: true
+        hasToken: true,
+        liquidityAmount: tokenInfo.liquidityAmount || 1.0
       };
     } else if (liquidityData) {
       const liquidity = JSON.parse(liquidityData);
@@ -59,7 +99,8 @@ const Portfolio = () => {
         name: liquidity.tokenName || 'DEMO Token',
         symbol: liquidity.tokenSymbol || 'DEMO',
         image: '/placeholder-token.png',
-        hasToken: true
+        hasToken: true,
+        liquidityAmount: liquidity.lpSize || 1.0
       };
     }
     
@@ -67,7 +108,8 @@ const Portfolio = () => {
       name: '',
       symbol: '',
       image: '',
-      hasToken: false
+      hasToken: false,
+      liquidityAmount: 1.0
     };
   });
 
@@ -212,8 +254,8 @@ const Portfolio = () => {
         return newChart;
       });
       
-      // MICRO HEARTBEAT - 50-150ms updates for LIVE action
-      setTimeout(pumpChart, 50 + Math.random() * 100);
+      // SLOWED DOWN HEARTBEAT - 250-750ms updates (5x slower)
+      setTimeout(pumpChart, 250 + Math.random() * 500);
     };
 
     // START PUMPING IMMEDIATELY
