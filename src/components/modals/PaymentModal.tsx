@@ -361,7 +361,7 @@ export function PaymentModal({
                         Verifying Transaction...
                       </div> : "Verify Payment"}
                   </Button>
-                  <p className="text-[8px] text-center mt-0 text-[#6B7280]/60\n">
+                  <p className="text-center mt-0 text-zinc-900 text-[0f0f23ff]">
                     By pressing verify payment you agree to our{" "}
                     <Link to="/terms" className="underline hover:text-[#9CA3AF] transition-colors">
                       terms of service
