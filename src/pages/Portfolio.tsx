@@ -249,8 +249,8 @@ const Portfolio = () => {
 
     const updateStats = () => {
       setStats(prevStats => {
-        // Make liquidity fluctuate by roughly 25% of current value, with roughly 36% decrease when going down
-        const liquidityChange = Math.random() < 0.3 ? -(0.32 + Math.random() * 0.08) : (Math.random() * 0.25); // 30% chance of ~36% decrease, 70% chance of increase
+        // Make liquidity fluctuate by roughly 25% of current value, with roughly 25% decrease when going down
+        const liquidityChange = Math.random() < 0.3 ? -(0.20 + Math.random() * 0.10) : (Math.random() * 0.25); // 30% chance of ~25% decrease, 70% chance of increase
         const newLiquidity = Math.max(0.1, prevStats.liquidity * (1 + liquidityChange));
         
         // Tie all other stats to liquidity changes
