@@ -184,47 +184,43 @@ const Portfolio = () => {
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
-  // Live price chart animation - constant pumping action
+  // LIVE PUMPING CHART - CONSTANT HEARTBEAT ACTION
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
-    let animationId: number;
+    let isRunning = true;
 
-    const animateChart = () => {
+    const pumpChart = () => {
+      if (!isRunning) return;
+      
       setChartData(prevChart => {
         const newChart = [...prevChart];
         const lastPrice = newChart[newChart.length - 1].price;
         
-        // Big visible movements - this is a pumping token!
-        const baseChange = (Math.random() - 0.3) * 0.08; // Bias toward pumping, ±4% with upward bias
-        const pumpSpike = Math.random() < 0.2 ? Math.random() * 0.15 : 0; // 20% chance of +15% pump
-        const volatilityDip = Math.random() < 0.1 ? -Math.random() * 0.08 : 0; // 10% chance of -8% dip
+        // AGGRESSIVE PUMPING - Always moving, never flat
+        const volatility = 0.05 + Math.random() * 0.1; // 5-15% base volatility
+        const direction = Math.random() - 0.35; // Slight upward bias for pumping
+        const spike = Math.random() < 0.3 ? (Math.random() - 0.5) * 0.2 : 0; // 30% chance of ±10% spike
         
-        const totalChange = baseChange + pumpSpike + volatilityDip;
+        const totalChange = (direction * volatility) + spike;
+        const newPrice = Math.max(lastPrice * (1 + totalChange), lastPrice * 0.5); // Never crash below 50%
         
-        // Ensure we always have visible movement
-        const minChange = Math.abs(totalChange) < 0.02 ? (Math.random() > 0.5 ? 0.03 : -0.02) : totalChange;
-        
-        const newPrice = Math.max(lastPrice * (1 + minChange), lastPrice * 0.85); // Never drop below 15%
-        
-        // Shift array and add new pumping point
+        // Always shift and add new price - CONSTANT MOVEMENT
         newChart.shift();
         newChart.push({ time: 'now', price: newPrice });
         
         return newChart;
       });
       
-      // Update every 300-600ms for dramatic visible action
-      setTimeout(() => {
-        animationId = requestAnimationFrame(animateChart);
-      }, 300 + Math.random() * 300);
+      // MICRO HEARTBEAT - 50-150ms updates for LIVE action
+      setTimeout(pumpChart, 50 + Math.random() * 100);
     };
 
-    // Start the pump immediately
-    animationId = requestAnimationFrame(animateChart);
+    // START PUMPING IMMEDIATELY
+    pumpChart();
 
     return () => {
-      cancelAnimationFrame(animationId);
+      isRunning = false;
     };
   }, [liquidityWithdrawn]);
 
