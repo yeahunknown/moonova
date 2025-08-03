@@ -48,15 +48,23 @@ const Liquidity = () => {
     // Only allow numbers and decimal point
     if (!/^\d*\.?\d*$/.test(value)) return;
     
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 0.2 && numValue <= 100) {
-      setLpSize(value);
-    } else if (numValue < 0.2 || numValue > 100) {
-      // Don't update state if outside range
-      return;
-    } else {
-      setLpSize(value); // Allow partial inputs like "0." or "10."
-    }
+    // Always allow user to type the value, validation happens separately
+    setLpSize(value);
+  };
+
+  const isValidLpSize = () => {
+    if (!lpSize) return false;
+    const numValue = parseFloat(lpSize);
+    return !isNaN(numValue) && numValue >= 0.2 && numValue <= 100;
+  };
+
+  const getLpSizeError = () => {
+    if (!lpSize) return "";
+    const numValue = parseFloat(lpSize);
+    if (isNaN(numValue)) return "Invalid number";
+    if (numValue < 0.2) return "Value below minimum (0.2 SOL)";
+    if (numValue > 100) return "Value above maximum (100 SOL)";
+    return "";
   };
 
   const handleSupplyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +76,8 @@ const Liquidity = () => {
   };
 
   const validateTokenAddress = (address: string) => {
-    // Valid token address should be 44 characters and end with moon or be in standard format
-    const isValidFormat = /^[A-Za-z0-9]{40}moon$/.test(address) || /^[A-Za-z0-9]{44}$/.test(address);
+    // Only accept the new generated format ending with "moon"
+    const isValidFormat = /^[A-Za-z0-9]{40}moon$/.test(address);
     setIsValidTokenAddress(isValidFormat || address === "");
     return isValidFormat || address === "";
   };
@@ -180,19 +188,23 @@ const Liquidity = () => {
                       />
                     </div>
 
-                    <div>
-                      <Label>LP Size (SOL)</Label>
-                      <Input
-                        type="text"
-                        value={lpSize}
-                        onChange={handleLpSizeChange}
-                        placeholder="Enter amount (0.2 - 100 SOL)"
-                        className="mt-2"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Minimum: 0.2 SOL • Maximum: 100 SOL
-                      </p>
-                    </div>
+                     <div>
+                       <Label>LP Size (SOL)</Label>
+                       <Input
+                         type="text"
+                         value={lpSize}
+                         onChange={handleLpSizeChange}
+                         placeholder="Enter amount (0.2 - 100 SOL)"
+                         className={`mt-2 ${getLpSizeError() ? 'border-red-500' : ''}`}
+                       />
+                       {getLpSizeError() ? (
+                         <p className="text-red-500 text-sm mt-1">{getLpSizeError()}</p>
+                       ) : (
+                         <p className="text-xs text-muted-foreground mt-1">
+                           Minimum: 0.2 SOL • Maximum: 100 SOL
+                         </p>
+                       )}
+                     </div>
                   </div>
 
                   {/* Boost Token Visibility */}
@@ -224,7 +236,7 @@ const Liquidity = () => {
                     onClick={handleAddLiquidity}
                     className="w-full bg-gradient-primary hover:opacity-90 shadow-glow"
                     size="lg"
-                    disabled={!tokenAddress || !tokenName || !tokenSymbol || !supply || !lpSize || !isValidTokenAddress}
+                    disabled={!tokenAddress || !tokenName || !tokenSymbol || !supply || !isValidLpSize() || !isValidTokenAddress}
                   >
                     Add Liquidity
                   </Button>
