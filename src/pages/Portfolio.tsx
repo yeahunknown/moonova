@@ -171,43 +171,34 @@ const Portfolio = () => {
     setChartData(newChartData);
   }, [calculateBaseStats]);
 
-  // Real-time stats updates with realistic wobbles
+  // Real-time liquidity and price updates
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
     const updateStats = () => {
-      const sessionToken = sessionStorage.getItem('sessionToken');
-      const liquidityData = sessionStorage.getItem('liquidityAdded');
-      
-      let liquidityAmount = 1.0;
-      if (sessionToken) {
-        const tokenInfo = JSON.parse(sessionToken);
-        liquidityAmount = tokenInfo.liquidityAmount || 1.0;
-      } else if (liquidityData) {
-        const liquidity = JSON.parse(liquidityData);
-        liquidityAmount = liquidity.lpSize || 1.0;
-      }
-
-      if (!isOverrideMode) {
-        // Calculate fresh values from liquidity with small wobbles
-        const wobble = () => 0.95 + Math.random() * 0.1; // ±5% wobble
+      setStats(prevStats => {
+        // Make liquidity fluctuate by roughly 25% of current value (random and realistic)
+        const liquidityChange = (Math.random() - 0.3) * 0.25; // Bias towards increase (-0.3 to +0.7)
+        const newLiquidity = Math.max(0.1, prevStats.liquidity * (1 + liquidityChange));
         
-        const volume24h = liquidityAmount * (12 + Math.random() * 18) * wobble();
-        const marketCap = liquidityAmount * (9000 + Math.random() * 2500) * wobble();
-        const holders = Math.round(liquidityAmount * (6 + Math.random() * 8) * wobble());
+        // Tie all other stats to liquidity changes
+        const liquidityRatio = newLiquidity / prevStats.liquidity;
+        const volume24h = newLiquidity * (12 + Math.random() * 18);
+        const marketCap = newLiquidity * (9000 + Math.random() * 2500);
+        const holders = Math.round(newLiquidity * (6 + Math.random() * 8));
         const currentPrice = marketCap / 1000000000;
 
-        setStats({
+        return {
           volume24h,
           marketCap,
-          liquidity: liquidityAmount,
+          liquidity: newLiquidity,
           holders,
           currentPrice
-        });
-      }
+        };
+      });
     };
 
-    // Update stats every 1-2 seconds
+    // Update every 1-2 seconds
     const getRandomInterval = () => Math.random() * 1000 + 1000; // 1-2 seconds
     
     let timeoutId: NodeJS.Timeout;
@@ -219,7 +210,6 @@ const Portfolio = () => {
     };
     
     scheduleNextUpdate();
-
     
     return () => {
       clearTimeout(timeoutId);
