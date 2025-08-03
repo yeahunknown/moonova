@@ -184,6 +184,48 @@ const Portfolio = () => {
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
+  // Live price chart animation - separate from stats
+  useEffect(() => {
+    if (liquidityWithdrawn) return;
+
+    let animationId: number;
+    let lastUpdateTime = 0;
+
+    const animateChart = (timestamp: number) => {
+      // Update every 80-120ms for smooth but not overwhelming movement
+      if (timestamp - lastUpdateTime > 80 + Math.random() * 40) {
+        setChartData(prevChart => {
+          const newChart = [...prevChart];
+          const lastPrice = newChart[newChart.length - 1].price;
+          
+          // Create realistic price movement: small changes with occasional bigger moves
+          const baseChange = (Math.random() - 0.5) * 0.002; // ±0.1% base movement
+          const volatilitySpike = Math.random() < 0.1 ? (Math.random() - 0.5) * 0.01 : 0; // 10% chance of ±0.5% spike
+          const totalChange = baseChange + volatilitySpike;
+          
+          // Apply change with some momentum (trending behavior)
+          const newPrice = Math.max(lastPrice * (1 + totalChange), 0.000001);
+          
+          // Shift the array and add new point
+          newChart.shift();
+          newChart.push({ time: 'now', price: newPrice });
+          
+          return newChart;
+        });
+        
+        lastUpdateTime = timestamp;
+      }
+      
+      animationId = requestAnimationFrame(animateChart);
+    };
+
+    animationId = requestAnimationFrame(animateChart);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, [liquidityWithdrawn]);
+
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
