@@ -28,7 +28,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const padding = 40;
   const chartHeight = height - padding * 2;
   const chartWidth = 600;
-  const candleWidth = 20;
+  const candleWidth = 48;
   const candleSpacing = 50;
 
   const getY = (price: number) => {

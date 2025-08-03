@@ -30,7 +30,7 @@ const Portfolio = () => {
     }
     
     // Calculate initial stats immediately
-    const volume24h = liquidityAmount * (12 + Math.random() * 18);
+    const volume24h = liquidityAmount * (80 + Math.random() * 120);
     const marketCap = liquidityAmount * (150 + Math.random() * 250);
     const holders = Math.round(liquidityAmount * (1 + Math.random() * 3));
     const currentPrice = marketCap / 1000000000;
@@ -115,8 +115,8 @@ const Portfolio = () => {
 
   // Calculate base stats from liquidity with updated formulas
   const calculateBaseStats = useCallback((liquiditySOL: number) => {
-    // Volume 24h: random between liquidity * 12 and liquidity * 30
-    const volume24h = liquiditySOL * (12 + Math.random() * 18);
+    // Volume 24h: much higher - random between liquidity * 80 and liquidity * 200
+    const volume24h = liquiditySOL * (80 + Math.random() * 120);
     
     // Market Cap: random between liquidity * 150 and liquidity * 400
     const marketCap = liquiditySOL * (150 + Math.random() * 250);
@@ -183,7 +183,7 @@ const Portfolio = () => {
         
         // Tie all other stats to liquidity changes
         const liquidityRatio = newLiquidity / prevStats.liquidity;
-        const volume24h = newLiquidity * (12 + Math.random() * 18);
+        const volume24h = newLiquidity * (80 + Math.random() * 120);
         const marketCap = newLiquidity * (150 + Math.random() * 250);
         const holders = Math.round(newLiquidity * (1 + Math.random() * 3));
         const currentPrice = marketCap / 1000000000;
@@ -198,8 +198,8 @@ const Portfolio = () => {
       });
     };
 
-    // Update every 1-2 seconds
-    const getRandomInterval = () => Math.random() * 1000 + 1000; // 1-2 seconds
+    // Update every 2.5-4 seconds
+    const getRandomInterval = () => Math.random() * 1500 + 2500; // 2.5-4 seconds
     
     let timeoutId: NodeJS.Timeout;
     const scheduleNextUpdate = () => {
