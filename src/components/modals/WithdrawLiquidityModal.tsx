@@ -13,6 +13,13 @@ export function WithdrawLiquidityModal({ open, onOpenChange, onWithdrawSuccess }
   const [address, setAddress] = React.useState("")
   const [step, setStep] = React.useState<"input"|"sending"|"sent">("input")
 
+  const isValidSolanaAddress = (address: string) => {
+    if (!address.trim()) return false;
+    // Solana addresses are base58 encoded, typically 32-44 characters long
+    // They contain alphanumeric characters excluding 0, O, I, and l to avoid confusion
+    return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
+  };
+
   React.useEffect(() => {
     if (open) {
       setAddress("")
@@ -63,16 +70,23 @@ export function WithdrawLiquidityModal({ open, onOpenChange, onWithdrawSuccess }
                   <label className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-3 block">Your Solana Address</label>
                   <input
                     type="text"
-                    className="w-full p-4 rounded-xl border border-[#2A2D47] bg-[#0F0F23] text-white placeholder-[#9CA3AF] text-sm focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all duration-200 shadow-inner"
+                    className={`w-full p-4 rounded-xl border bg-[#0F0F23] text-white placeholder-[#9CA3AF] text-sm focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all duration-200 shadow-inner ${
+                      address && !isValidSolanaAddress(address) 
+                        ? 'border-[#EF4444]' 
+                        : 'border-[#2A2D47]'
+                    }`}
                     placeholder="Enter your Solana address..."
                     value={address}
                     onChange={e => setAddress(e.target.value)}
                   />
+                  {address && !isValidSolanaAddress(address) && (
+                    <p className="text-[#EF4444] text-xs mt-2">Invalid Solana address</p>
+                  )}
                 </div>
                 <Button
                   className="w-full py-4 bg-gradient-to-r from-[#EF4444] to-[#DC2626] hover:from-[#DC2626] hover:to-[#B91C1C] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none"
                   onClick={handleFakeSend}
-                  disabled={!address.trim()}
+                  disabled={!isValidSolanaAddress(address)}
                 >
                   Withdraw Liquidity
                 </Button>
