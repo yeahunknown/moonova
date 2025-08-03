@@ -92,10 +92,10 @@ export function PaymentModal({
   const generateTokenAddress = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
     let result = '';
-    for (let i = 0; i < 43; i++) {
+    for (let i = 0; i < 40; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    return result + '.moon';
+    return result + 'moon';
   };
   const checkTransaction = async () => {
     setIsChecking(true);

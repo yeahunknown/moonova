@@ -68,8 +68,8 @@ const Liquidity = () => {
   };
 
   const validateTokenAddress = (address: string) => {
-    // Valid token address should be 44 characters and end with .moon or be in the format of generated addresses
-    const isValidFormat = /^[A-Za-z0-9]{43,44}(\.moon)?$/.test(address) || address.length === 44;
+    // Valid token address should be 44 characters and end with moon or be in standard format
+    const isValidFormat = /^[A-Za-z0-9]{40}moon$/.test(address) || /^[A-Za-z0-9]{44}$/.test(address);
     setIsValidTokenAddress(isValidFormat || address === "");
     return isValidFormat || address === "";
   };
