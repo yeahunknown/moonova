@@ -29,8 +29,10 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const chartHeight = height - padding * 2;
   const chartWidth = 800;
   const candleWidth = 12;
+  const candleSpacing = candleWidth + 1; // Candles almost touching
+  const totalCandlesWidth = data.length * candleSpacing;
   const availableWidth = chartWidth - padding * 2;
-  const candleSpacing = availableWidth / (data.length - 1);
+  const startX = padding + (availableWidth - totalCandlesWidth) / 2;
 
   const getY = (price: number) => {
     return padding + ((maxPrice - price) / priceRange) * chartHeight;
@@ -58,7 +60,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
         
         {/* Candlesticks */}
         {data.map((candle, index) => {
-          const x = padding + index * candleSpacing;
+          const x = startX + index * candleSpacing + candleWidth / 2;
           const openY = getY(candle.open);
           const closeY = getY(candle.close);
           const highY = getY(candle.high);
