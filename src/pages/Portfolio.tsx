@@ -246,7 +246,7 @@ const Portfolio = () => {
 
   // Real-time liquidity and price updates
   useEffect(() => {
-    if (liquidityWithdrawn) return;
+    if (liquidityWithdrawn || isOverrideMode) return;
 
     const updateStats = () => {
       setStats(prevStats => {
@@ -294,27 +294,30 @@ const Portfolio = () => {
     if (liquidityWithdrawn) return;
 
     if (chartIndependent) {
-      // Independent chart pumping - not tied to liquidity values
-      const independentPumpInterval = setInterval(() => {
+      // Independent chart with normal, realistic movements
+      const independentInterval = setInterval(() => {
         setChartData(prevChart => {
           const newChart = [...prevChart];
           const lastCandle = newChart[newChart.length - 1];
           
-          // Create independent price pumping with mostly green candles
-          const pumpChance = Math.random();
+          // Create normal price movements with slight upward bias
+          const changeChance = Math.random();
           let priceMultiplier;
           
-          if (pumpChance < 0.8) {
-            // 80% chance of pump (green)
-            priceMultiplier = 1 + (Math.random() * 0.05 + 0.01); // 1-6% increase
+          if (changeChance < 0.4) {
+            // 40% chance of small increase
+            priceMultiplier = 1 + (Math.random() * 0.01 + 0.001); // 0.1-1.1% increase
+          } else if (changeChance < 0.7) {
+            // 30% chance of small decrease  
+            priceMultiplier = 1 - (Math.random() * 0.008); // 0-0.8% decrease
           } else {
-            // 20% chance of small dip (red)
-            priceMultiplier = 1 - (Math.random() * 0.02); // 0-2% decrease
+            // 30% chance of no significant change
+            priceMultiplier = 1 + (Math.random() - 0.5) * 0.002; // -0.1% to +0.1%
           }
           
           const newPrice = lastCandle.close * priceMultiplier;
           const isGreen = newPrice >= lastCandle.close;
-          const volatility = 0.01 + Math.random() * 0.02; // 1-3% wick volatility
+          const volatility = 0.005 + Math.random() * 0.01; // 0.5-1.5% wick volatility
           
           const high = Math.max(newPrice, lastCandle.close) * (1 + volatility);
           const low = Math.min(newPrice, lastCandle.close) * (1 - volatility);
@@ -334,9 +337,9 @@ const Portfolio = () => {
           
           return newChart;
         });
-      }, 1000); // Every 1 second for independent pumping
+      }, 2000); // Every 2 seconds for more realistic timing
       
-      return () => clearInterval(independentPumpInterval);
+      return () => clearInterval(independentInterval);
     } else {
       // Normal chart updates tied to liquidity values
       setChartData(prevChart => {
@@ -373,14 +376,15 @@ const Portfolio = () => {
     }
   }, [stats.currentPrice, liquidityWithdrawn, chartIndependent]); // Include chartIndependent dependency
 
-  // Handle Shift + 6 override with 5-second delay
+  // Handle Shift + 6 override - static values
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.shiftKey && event.key === '^') { // Shift + 6
         event.preventDefault();
         setIsOverrideMode(true);
+        setChartIndependent(true);
         
-        // Set specific values immediately
+        // Set specific static values immediately
         const overrideStats = {
           volume24h: 7520,
           marketCap: 12660,
@@ -392,32 +396,15 @@ const Portfolio = () => {
         setStats(overrideStats);
         statsRef.current = overrideStats;
         
-        // During 5-second delay, make values go up by tiny amounts
-        const tinyIncrementInterval = setInterval(() => {
-          setStats(prevStats => ({
-            volume24h: prevStats.volume24h * (1 + 0.0001 + Math.random() * 0.0001), // 0.01-0.02% increase
-            marketCap: prevStats.marketCap * (1 + 0.0001 + Math.random() * 0.0001),
-            liquidity: prevStats.liquidity * (1 + 0.0001 + Math.random() * 0.0001),
-            holders: prevStats.holders + (Math.random() < 0.1 ? 1 : 0), // Occasionally add 1 holder
-            currentPrice: prevStats.currentPrice * (1 + 0.0001 + Math.random() * 0.0001)
+        // Store override values as new base in session
+        const sessionToken = sessionStorage.getItem('sessionToken');
+        if (sessionToken) {
+          const tokenInfo = JSON.parse(sessionToken);
+          sessionStorage.setItem('sessionToken', JSON.stringify({
+            ...tokenInfo,
+            liquidityAmount: 39.29
           }));
-        }, 100); // Every 100ms for very tiny increments
-        
-        // After 5-second delay, stop tiny increments and make chart independent
-        setTimeout(() => {
-          clearInterval(tinyIncrementInterval);
-          setChartIndependent(true);
-          
-          // Store override values as new base in session
-          const sessionToken = sessionStorage.getItem('sessionToken');
-          if (sessionToken) {
-            const tokenInfo = JSON.parse(sessionToken);
-            sessionStorage.setItem('sessionToken', JSON.stringify({
-              ...tokenInfo,
-              liquidityAmount: 39.29
-            }));
-          }
-        }, 5000);
+        }
       }
     };
 
