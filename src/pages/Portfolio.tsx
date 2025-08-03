@@ -184,42 +184,43 @@ const Portfolio = () => {
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
-  // Live price chart animation - separate from stats
+  // Live price chart animation - constant pumping action
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
     let animationId: number;
-    let lastUpdateTime = 0;
 
-    const animateChart = (timestamp: number) => {
-      // Update every 100-200ms for smooth visible movement
-      if (timestamp - lastUpdateTime > 100 + Math.random() * 100) {
-        setChartData(prevChart => {
-          const newChart = [...prevChart];
-          const lastPrice = newChart[newChart.length - 1].price;
-          
-          // Create more dramatic price movement for visibility
-          const baseChange = (Math.random() - 0.5) * 0.02; // ±1% base movement
-          const volatilitySpike = Math.random() < 0.15 ? (Math.random() - 0.5) * 0.05 : 0; // 15% chance of ±2.5% spike
-          const totalChange = baseChange + volatilitySpike;
-          
-          // Apply change ensuring minimum movement
-          const newPrice = Math.max(lastPrice * (1 + totalChange), lastPrice * 0.95);
-          
-          // Shift the array and add new point
-          newChart.shift();
-          newChart.push({ time: 'now', price: newPrice });
-          
-          return newChart;
-        });
+    const animateChart = () => {
+      setChartData(prevChart => {
+        const newChart = [...prevChart];
+        const lastPrice = newChart[newChart.length - 1].price;
         
-        lastUpdateTime = timestamp;
-      }
+        // Big visible movements - this is a pumping token!
+        const baseChange = (Math.random() - 0.3) * 0.08; // Bias toward pumping, ±4% with upward bias
+        const pumpSpike = Math.random() < 0.2 ? Math.random() * 0.15 : 0; // 20% chance of +15% pump
+        const volatilityDip = Math.random() < 0.1 ? -Math.random() * 0.08 : 0; // 10% chance of -8% dip
+        
+        const totalChange = baseChange + pumpSpike + volatilityDip;
+        
+        // Ensure we always have visible movement
+        const minChange = Math.abs(totalChange) < 0.02 ? (Math.random() > 0.5 ? 0.03 : -0.02) : totalChange;
+        
+        const newPrice = Math.max(lastPrice * (1 + minChange), lastPrice * 0.85); // Never drop below 15%
+        
+        // Shift array and add new pumping point
+        newChart.shift();
+        newChart.push({ time: 'now', price: newPrice });
+        
+        return newChart;
+      });
       
-      animationId = requestAnimationFrame(animateChart);
+      // Update every 300-600ms for dramatic visible action
+      setTimeout(() => {
+        animationId = requestAnimationFrame(animateChart);
+      }, 300 + Math.random() * 300);
     };
 
-    // Start animation immediately
+    // Start the pump immediately
     animationId = requestAnimationFrame(animateChart);
 
     return () => {
