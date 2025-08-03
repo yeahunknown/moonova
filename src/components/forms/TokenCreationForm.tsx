@@ -169,7 +169,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       );
 
       const { data, error } = await supabase.functions.invoke('generate-token-name', {
-        body: { prompt: "Generate a creative cryptocurrency token name and symbol" }
+        body: { prompt: "Generate a viral memey cryptocurrency token name that would absolutely moon on crypto Twitter" }
       });
 
       if (error) throw error;
@@ -186,18 +186,28 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
         toast.success("Generated creative token name!");
       }
     } catch (error) {
-      // Fallback names in case of complete failure
+      // Fallback names in case of complete failure - MEMEY EDITION
       const fallbacks = [
-        { name: "Moon Rocket", symbol: "MOON" },
-        { name: "Crypto Star", symbol: "STAR" },
-        { name: "Diamond Hands", symbol: "DIAMOND" },
-        { name: "Stellar Fire", symbol: "FIRE" },
-        { name: "Quantum Leap", symbol: "QUANTUM" }
+        { name: "Gigachad Pepe", symbol: "CHAD" },
+        { name: "Wojak Moon", symbol: "WOJAK" },
+        { name: "Based Doge", symbol: "BASED" },
+        { name: "Diamond Paws", symbol: "DIAMOND" },
+        { name: "Paper Hands", symbol: "PAPER" },
+        { name: "Wen Lambo", symbol: "LAMBO" },
+        { name: "Touch Grass", symbol: "GRASS" },
+        { name: "Degen Mode", symbol: "DEGEN" },
+        { name: "Cope Harder", symbol: "COPE" },
+        { name: "Sigma Grindset", symbol: "SIGMA" },
+        { name: "Fren Coin", symbol: "FREN" },
+        { name: "Honk Honk", symbol: "HONK" },
+        { name: "Rare Pepe", symbol: "RARE" },
+        { name: "Number Go Up", symbol: "NGU" },
+        { name: "Monkey JPEG", symbol: "APE" }
       ];
       const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
       form.setValue('name', randomFallback.name);
       form.setValue('symbol', randomFallback.symbol);
-      toast.success("Generated token name!");
+      toast.success("Generated memey token name!");
     } finally {
       setIsGenerating(false);
     }

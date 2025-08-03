@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { WithdrawLiquidityModal } from "@/components/modals/WithdrawLiquidityModal";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import CandlestickChart from "@/components/CandlestickChart";
 import { AlertTriangle, Search } from "lucide-react";
 import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
 
@@ -525,71 +525,11 @@ const Portfolio = () => {
                             <p className="text-sm text-muted-foreground">Updates Every 1 Second</p>
                           </div>
                           
-                          <div className="h-80 w-full bg-gradient-to-b from-background/50 to-transparent rounded-lg p-4">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart data={chartData} barCategoryGap={1}>
-                                <XAxis 
-                                  dataKey="time" 
-                                  axisLine={false}
-                                  tickLine={false}
-                                  tick={{ fill: '#666', fontSize: 12 }}
-                                />
-                                <YAxis 
-                                  hide 
-                                  domain={['dataMin * 0.98', 'dataMax * 1.02']}
-                                />
-                                <Bar 
-                                  dataKey="high"
-                                  fill="transparent"
-                                  shape={(props: any) => {
-                                    const { payload, x, y, width, height } = props;
-                                    if (!payload) return null;
-                                    
-                                    const { open, high, low, close, isGreen } = payload;
-                                    const color = isGreen ? '#00ff9d' : '#ff4444';
-                                    
-                                    // Calculate positions
-                                    const bodyHeight = Math.abs(close - open) * height / (high - low);
-                                    const bodyTop = Math.min(close, open) * height / (high - low);
-                                    const wickX = x + width / 2;
-                                    
-                                    return (
-                                      <g>
-                                        {/* Upper wick */}
-                                        <line
-                                          x1={wickX}
-                                          y1={y}
-                                          x2={wickX}
-                                          y2={y + bodyTop}
-                                          stroke={color}
-                                          strokeWidth={1}
-                                        />
-                                        {/* Body */}
-                                        <rect
-                                          x={x + width * 0.3}
-                                          y={y + bodyTop}
-                                          width={width * 0.4}
-                                          height={Math.max(bodyHeight, 2)}
-                                          fill={isGreen ? color : 'transparent'}
-                                          stroke={color}
-                                          strokeWidth={1}
-                                        />
-                                        {/* Lower wick */}
-                                        <line
-                                          x1={wickX}
-                                          y1={y + bodyTop + bodyHeight}
-                                          x2={wickX}
-                                          y2={y + height}
-                                          stroke={color}
-                                          strokeWidth={1}
-                                        />
-                                      </g>
-                                    );
-                                  }}
-                                />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
+                          <CandlestickChart 
+                            data={chartData} 
+                            height={320}
+                            liquidityWithdrawn={liquidityWithdrawn}
+                          />
                         </div>
                       </div>
                     </CardContent>

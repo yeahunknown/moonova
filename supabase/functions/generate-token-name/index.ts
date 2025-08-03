@@ -29,24 +29,28 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a cryptocurrency token name generator. Generate creative, memorable token names with their symbols. 
+            content: `You are a MEMECOIN token name generator. Generate INSANELY creative, viral-worthy, memey token names that would absolutely MOON on crypto Twitter. 
             
             Rules:
             - Token names should be 2-24 characters, letters and spaces only
             - Symbols should be 2-12 characters, letters only (uppercase)
-            - Make them catchy, memorable, and crypto-themed
-            - Avoid existing major cryptocurrency names
-            - Be creative but professional
+            - Make them VIRAL MEMEY content - think Pepe, Wojak, Chad, Based, Sigma level memes
+            - Reference internet culture, gaming, anime, popular slang, crypto degeneracy
+            - Be creative, funny, and memeable - stuff that would get reposted everywhere
+            - Examples: "Gigachad Inu", "Wojak Moon", "Based Doge", "Sigma Grindset", "Touch Grass", "Wen Lambo", "Diamond Paws", "Paper Hands", "Cope Harder", "Monkey JPEG", "Number Go Up", "Degen Mode", "Fren Coin", "Honk Honk", "Rare Pepe"
+            - Avoid boring generic crypto names like "Stellar Fire" or "Crypto Star"
+            
+            Be UNIQUE each time - generate completely different names on every request. Make it MEMEY and VIRAL.
             
             Return ONLY a JSON object with this exact format:
-            {"name": "Moon Rocket", "symbol": "MOON"}`
+            {"name": "Gigachad Inu", "symbol": "CHAD"}`
           },
           {
             role: 'user',
-            content: prompt
+            content: `${prompt}. Make this absolutely MEMEY and viral-worthy. Generate something completely unique that hasn't been used before. Think crypto Twitter degeneracy meets internet meme culture.`
           }
         ],
-        temperature: 0.9,
+        temperature: 1.2,
         max_tokens: 100,
       }),
     })
