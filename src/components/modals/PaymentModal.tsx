@@ -317,7 +317,7 @@ export function PaymentModal({
                     </div>
                     <div>
                       <p className="text-[#9CA3AF] text-xs uppercase tracking-wide mb-2">Network</p>
-                      <p className="text-white text-sm font-semibold">Solana</p>
+                      <p className="text-white text-sm font-semibold">Solana Mainnet</p>
                     </div>
                   </div>
                     <div className="border-t border-[#2A2D47] pt-4">
