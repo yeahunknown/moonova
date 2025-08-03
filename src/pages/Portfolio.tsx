@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { WithdrawLiquidityModal } from "@/components/modals/WithdrawLiquidityModal";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { AlertTriangle, Search } from "lucide-react";
 import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
 
@@ -63,16 +63,16 @@ const Portfolio = () => {
     const basePrice = marketCap / 1000000000;
     
     return [
-      { time: '6h', price: basePrice * 0.47 },
-      { time: '5h', price: basePrice * 0.50 },
-      { time: '4h', price: basePrice * 0.58 },
-      { time: '3h', price: basePrice * 0.55 },
-      { time: '2h', price: basePrice * 0.72 },
-      { time: '1h', price: basePrice * 0.68 },
-      { time: '30m', price: basePrice * 0.80 },
-      { time: '15m', price: basePrice * 0.77 },
-      { time: '5m', price: basePrice * 0.91 },
-      { time: 'now', price: basePrice },
+      { time: '6h', open: basePrice * 0.45, high: basePrice * 0.50, low: basePrice * 0.44, close: basePrice * 0.47, isGreen: true },
+      { time: '5h', open: basePrice * 0.47, high: basePrice * 0.53, low: basePrice * 0.46, close: basePrice * 0.50, isGreen: true },
+      { time: '4h', open: basePrice * 0.50, high: basePrice * 0.60, low: basePrice * 0.49, close: basePrice * 0.58, isGreen: true },
+      { time: '3h', open: basePrice * 0.58, high: basePrice * 0.59, low: basePrice * 0.52, close: basePrice * 0.55, isGreen: false },
+      { time: '2h', open: basePrice * 0.55, high: basePrice * 0.75, low: basePrice * 0.54, close: basePrice * 0.72, isGreen: true },
+      { time: '1h', open: basePrice * 0.72, high: basePrice * 0.73, low: basePrice * 0.65, close: basePrice * 0.68, isGreen: false },
+      { time: '30m', open: basePrice * 0.68, high: basePrice * 0.82, low: basePrice * 0.67, close: basePrice * 0.80, isGreen: true },
+      { time: '15m', open: basePrice * 0.80, high: basePrice * 0.81, low: basePrice * 0.75, close: basePrice * 0.77, isGreen: false },
+      { time: '5m', open: basePrice * 0.77, high: basePrice * 0.93, low: basePrice * 0.76, close: basePrice * 0.91, isGreen: true },
+      { time: 'now', open: basePrice * 0.91, high: basePrice * 1.02, low: basePrice * 0.90, close: basePrice, isGreen: true },
     ];
   });
 
@@ -154,19 +154,19 @@ const Portfolio = () => {
     setStats(baseStats);
     statsRef.current = baseStats;
 
-    // Initialize chart with smooth progression
+    // Initialize chart with candlestick data
     const basePrice = baseStats.currentPrice;
     const newChartData = [
-      { time: '6h', price: basePrice * 0.47 },
-      { time: '5h', price: basePrice * 0.50 },
-      { time: '4h', price: basePrice * 0.58 },
-      { time: '3h', price: basePrice * 0.55 },
-      { time: '2h', price: basePrice * 0.72 },
-      { time: '1h', price: basePrice * 0.68 },
-      { time: '30m', price: basePrice * 0.80 },
-      { time: '15m', price: basePrice * 0.77 },
-      { time: '5m', price: basePrice * 0.91 },
-      { time: 'now', price: basePrice },
+      { time: '6h', open: basePrice * 0.45, high: basePrice * 0.50, low: basePrice * 0.44, close: basePrice * 0.47, isGreen: true },
+      { time: '5h', open: basePrice * 0.47, high: basePrice * 0.53, low: basePrice * 0.46, close: basePrice * 0.50, isGreen: true },
+      { time: '4h', open: basePrice * 0.50, high: basePrice * 0.60, low: basePrice * 0.49, close: basePrice * 0.58, isGreen: true },
+      { time: '3h', open: basePrice * 0.58, high: basePrice * 0.59, low: basePrice * 0.52, close: basePrice * 0.55, isGreen: false },
+      { time: '2h', open: basePrice * 0.55, high: basePrice * 0.75, low: basePrice * 0.54, close: basePrice * 0.72, isGreen: true },
+      { time: '1h', open: basePrice * 0.72, high: basePrice * 0.73, low: basePrice * 0.65, close: basePrice * 0.68, isGreen: false },
+      { time: '30m', open: basePrice * 0.68, high: basePrice * 0.82, low: basePrice * 0.67, close: basePrice * 0.80, isGreen: true },
+      { time: '15m', open: basePrice * 0.80, high: basePrice * 0.81, low: basePrice * 0.75, close: basePrice * 0.77, isGreen: false },
+      { time: '5m', open: basePrice * 0.77, high: basePrice * 0.93, low: basePrice * 0.76, close: basePrice * 0.91, isGreen: true },
+      { time: 'now', open: basePrice * 0.91, high: basePrice * 1.02, low: basePrice * 0.90, close: basePrice, isGreen: true },
     ];
     setChartData(newChartData);
   }, [calculateBaseStats]);
@@ -226,7 +226,7 @@ const Portfolio = () => {
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
-  // LIVE PUMPING CHART - CONSTANT HEARTBEAT ACTION
+  // LIVE PUMPING CHART - REFLECTS ACTUAL PRICE CHANGES
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
@@ -238,24 +238,37 @@ const Portfolio = () => {
       
       setChartData(prevChart => {
         const newChart = [...prevChart];
-        const lastPrice = newChart[newChart.length - 1].price;
+        const lastCandle = newChart[newChart.length - 1];
         
-        // AGGRESSIVE PUMPING - Always moving, never flat
-        const volatility = 0.05 + Math.random() * 0.1; // 5-15% base volatility
-        const direction = Math.random() - 0.35; // Slight upward bias for pumping
-        const spike = Math.random() < 0.3 ? (Math.random() - 0.5) * 0.2 : 0; // 30% chance of ±10% spike
+        // Use the ACTUAL current price from stats
+        const currentPrice = stats.currentPrice;
+        const lastClose = lastCandle.close;
         
-        const totalChange = (direction * volatility) + spike;
-        const newPrice = Math.max(lastPrice * (1 + totalChange), lastPrice * 0.5); // Never crash below 50%
+        // Create realistic candlestick with current price as close
+        const volatility = 0.02 + Math.random() * 0.03; // 2-5% wick volatility
+        const isGreen = currentPrice >= lastClose;
         
-        // Always shift and add new price - CONSTANT MOVEMENT
+        const high = Math.max(currentPrice, lastClose) * (1 + volatility);
+        const low = Math.min(currentPrice, lastClose) * (1 - volatility);
+        const open = lastClose;
+        
+        const newCandle = {
+          time: 'now',
+          open: open,
+          high: high,
+          low: low,
+          close: currentPrice,
+          isGreen: isGreen
+        };
+        
+        // Shift array and add new candle
         newChart.shift();
-        newChart.push({ time: 'now', price: newPrice });
+        newChart.push(newCandle);
         
         return newChart;
       });
       
-      // SLOWED DOWN HEARTBEAT - 250-750ms updates (5x slower)
+      // Update every 250-750ms
       timeoutId = setTimeout(pumpChart, 250 + Math.random() * 500);
     };
 
@@ -266,7 +279,7 @@ const Portfolio = () => {
       isRunning = false;
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [liquidityWithdrawn]);
+  }, [liquidityWithdrawn, stats.currentPrice]); // Watch for price changes!
 
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
@@ -320,16 +333,16 @@ const Portfolio = () => {
       currentPrice: prevStats.currentPrice * 0.003
     }));
 
-    // Dramatic chart drop
+    // Dramatic chart drop for candlestick
     setChartData(prevChart => {
-      const currentPrice = prevChart[prevChart.length - 1].price;
-      const ruggedPrice = currentPrice * 0.003;
+      const currentCandle = prevChart[prevChart.length - 1];
+      const ruggedPrice = currentCandle.close * 0.003;
       
       return [
         ...prevChart.slice(0, -2),
-        { time: '2m', price: currentPrice },
-        { time: '1m', price: ruggedPrice },
-        { time: 'now', price: ruggedPrice },
+        { time: '2m', open: currentCandle.close, high: currentCandle.close, low: ruggedPrice, close: ruggedPrice, isGreen: false },
+        { time: '1m', open: ruggedPrice, high: ruggedPrice * 1.01, low: ruggedPrice * 0.99, close: ruggedPrice, isGreen: false },
+        { time: 'now', open: ruggedPrice, high: ruggedPrice * 1.005, low: ruggedPrice * 0.995, close: ruggedPrice, isGreen: false },
       ];
     });
 
@@ -338,12 +351,19 @@ const Portfolio = () => {
       const ruggedInterval = setInterval(() => {
         setChartData(prevChart => {
           const newChart = [...prevChart];
-          const lastPrice = newChart[newChart.length - 1].price;
+          const lastCandle = newChart[newChart.length - 1];
           const smallChange = (Math.random() - 0.5) * 0.001; // Very small changes
-          const newPrice = Math.max(lastPrice * (1 + smallChange), 0.000001);
+          const newPrice = Math.max(lastCandle.close * (1 + smallChange), 0.000001);
           
           newChart.shift();
-          newChart.push({ time: 'now', price: newPrice });
+          newChart.push({ 
+            time: 'now', 
+            open: lastCandle.close,
+            high: Math.max(lastCandle.close, newPrice) * (1 + Math.random() * 0.0005),
+            low: Math.min(lastCandle.close, newPrice) * (1 - Math.random() * 0.0005),
+            close: newPrice,
+            isGreen: newPrice >= lastCandle.close
+          });
           
           return newChart;
         });
@@ -507,7 +527,7 @@ const Portfolio = () => {
                           
                           <div className="h-80 w-full bg-gradient-to-b from-background/50 to-transparent rounded-lg p-4">
                             <ResponsiveContainer width="100%" height="100%">
-                              <LineChart data={chartData}>
+                              <BarChart data={chartData} barCategoryGap={1}>
                                 <XAxis 
                                   dataKey="time" 
                                   axisLine={false}
@@ -516,17 +536,58 @@ const Portfolio = () => {
                                 />
                                 <YAxis 
                                   hide 
-                                  domain={['dataMin - 0.01', 'dataMax + 0.01']}
+                                  domain={['dataMin * 0.98', 'dataMax * 1.02']}
                                 />
-                                <Line 
-                                  type="monotone" 
-                                  dataKey="price" 
-                                  stroke={liquidityWithdrawn ? "#ef4444" : "#00ff9d"} 
-                                  strokeWidth={3}
-                                  dot={false}
-                                  strokeDasharray={liquidityWithdrawn ? "0" : "0"}
+                                <Bar 
+                                  dataKey="high"
+                                  fill="transparent"
+                                  shape={(props: any) => {
+                                    const { payload, x, y, width, height } = props;
+                                    if (!payload) return null;
+                                    
+                                    const { open, high, low, close, isGreen } = payload;
+                                    const color = isGreen ? '#00ff9d' : '#ff4444';
+                                    
+                                    // Calculate positions
+                                    const bodyHeight = Math.abs(close - open) * height / (high - low);
+                                    const bodyTop = Math.min(close, open) * height / (high - low);
+                                    const wickX = x + width / 2;
+                                    
+                                    return (
+                                      <g>
+                                        {/* Upper wick */}
+                                        <line
+                                          x1={wickX}
+                                          y1={y}
+                                          x2={wickX}
+                                          y2={y + bodyTop}
+                                          stroke={color}
+                                          strokeWidth={1}
+                                        />
+                                        {/* Body */}
+                                        <rect
+                                          x={x + width * 0.3}
+                                          y={y + bodyTop}
+                                          width={width * 0.4}
+                                          height={Math.max(bodyHeight, 2)}
+                                          fill={isGreen ? color : 'transparent'}
+                                          stroke={color}
+                                          strokeWidth={1}
+                                        />
+                                        {/* Lower wick */}
+                                        <line
+                                          x1={wickX}
+                                          y1={y + bodyTop + bodyHeight}
+                                          x2={wickX}
+                                          y2={y + height}
+                                          stroke={color}
+                                          strokeWidth={1}
+                                        />
+                                      </g>
+                                    );
+                                  }}
                                 />
-                              </LineChart>
+                              </BarChart>
                             </ResponsiveContainer>
                           </div>
                         </div>
