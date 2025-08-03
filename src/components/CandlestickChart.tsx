@@ -27,9 +27,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const priceRange = maxPrice - minPrice;
   const padding = 40;
   const chartHeight = height - padding * 2;
-  const chartWidth = 600;
-  const candleWidth = 48;
-  const candleSpacing = 50;
+  const chartWidth = 800;
+  const candleWidth = 8;
+  const candleSpacing = 32;
 
   const getY = (price: number) => {
     return padding + ((maxPrice - price) / priceRange) * chartHeight;
@@ -77,7 +77,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
                 x2={x}
                 y2={bodyTop}
                 stroke={color}
-                strokeWidth="2"
+                strokeWidth="1"
                 className="transition-all duration-200"
               />
               
@@ -89,9 +89,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
                 height={Math.max(bodyHeight, 2)}
                 fill={liquidityWithdrawn ? color : color}
                 stroke={color}
-                strokeWidth="2"
+                strokeWidth="1"
                 className="transition-all duration-200"
-                rx="1"
+                rx="0"
               />
               
               {/* Lower wick */}
@@ -101,7 +101,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
                 x2={x}
                 y2={lowY}
                 stroke={color}
-                strokeWidth="2"
+                strokeWidth="1"
                 className="transition-all duration-200"
               />
               

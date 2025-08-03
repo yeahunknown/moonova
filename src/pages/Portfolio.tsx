@@ -63,15 +63,16 @@ const Portfolio = () => {
     const basePrice = marketCap / 1000000000;
     
     return [
-      { time: '6h', open: basePrice * 0.45, high: basePrice * 0.50, low: basePrice * 0.44, close: basePrice * 0.47, isGreen: true },
-      { time: '5h', open: basePrice * 0.47, high: basePrice * 0.53, low: basePrice * 0.46, close: basePrice * 0.50, isGreen: true },
-      { time: '4h', open: basePrice * 0.50, high: basePrice * 0.60, low: basePrice * 0.49, close: basePrice * 0.58, isGreen: true },
-      { time: '3h', open: basePrice * 0.58, high: basePrice * 0.59, low: basePrice * 0.52, close: basePrice * 0.55, isGreen: false },
-      { time: '2h', open: basePrice * 0.55, high: basePrice * 0.75, low: basePrice * 0.54, close: basePrice * 0.72, isGreen: true },
-      { time: '1h', open: basePrice * 0.72, high: basePrice * 0.73, low: basePrice * 0.65, close: basePrice * 0.68, isGreen: false },
-      { time: '30m', open: basePrice * 0.68, high: basePrice * 0.82, low: basePrice * 0.67, close: basePrice * 0.80, isGreen: true },
-      { time: '15m', open: basePrice * 0.80, high: basePrice * 0.81, low: basePrice * 0.75, close: basePrice * 0.77, isGreen: false },
-      { time: '5m', open: basePrice * 0.77, high: basePrice * 0.93, low: basePrice * 0.76, close: basePrice * 0.91, isGreen: true },
+      { time: '20m', open: basePrice * 0.35, high: basePrice * 0.40, low: basePrice * 0.34, close: basePrice * 0.37, isGreen: true },
+      { time: '18m', open: basePrice * 0.37, high: basePrice * 0.43, low: basePrice * 0.36, close: basePrice * 0.40, isGreen: true },
+      { time: '16m', open: basePrice * 0.40, high: basePrice * 0.50, low: basePrice * 0.39, close: basePrice * 0.48, isGreen: true },
+      { time: '14m', open: basePrice * 0.48, high: basePrice * 0.49, low: basePrice * 0.42, close: basePrice * 0.45, isGreen: false },
+      { time: '12m', open: basePrice * 0.45, high: basePrice * 0.65, low: basePrice * 0.44, close: basePrice * 0.62, isGreen: true },
+      { time: '10m', open: basePrice * 0.62, high: basePrice * 0.63, low: basePrice * 0.55, close: basePrice * 0.58, isGreen: false },
+      { time: '8m', open: basePrice * 0.58, high: basePrice * 0.72, low: basePrice * 0.57, close: basePrice * 0.70, isGreen: true },
+      { time: '6m', open: basePrice * 0.70, high: basePrice * 0.71, low: basePrice * 0.65, close: basePrice * 0.67, isGreen: false },
+      { time: '4m', open: basePrice * 0.67, high: basePrice * 0.83, low: basePrice * 0.66, close: basePrice * 0.81, isGreen: true },
+      { time: '2m', open: basePrice * 0.81, high: basePrice * 0.92, low: basePrice * 0.80, close: basePrice * 0.91, isGreen: true },
       { time: 'now', open: basePrice * 0.91, high: basePrice * 1.02, low: basePrice * 0.90, close: basePrice, isGreen: true },
     ];
   });
@@ -157,15 +158,16 @@ const Portfolio = () => {
     // Initialize chart with candlestick data
     const basePrice = baseStats.currentPrice;
     const newChartData = [
-      { time: '6h', open: basePrice * 0.45, high: basePrice * 0.50, low: basePrice * 0.44, close: basePrice * 0.47, isGreen: true },
-      { time: '5h', open: basePrice * 0.47, high: basePrice * 0.53, low: basePrice * 0.46, close: basePrice * 0.50, isGreen: true },
-      { time: '4h', open: basePrice * 0.50, high: basePrice * 0.60, low: basePrice * 0.49, close: basePrice * 0.58, isGreen: true },
-      { time: '3h', open: basePrice * 0.58, high: basePrice * 0.59, low: basePrice * 0.52, close: basePrice * 0.55, isGreen: false },
-      { time: '2h', open: basePrice * 0.55, high: basePrice * 0.75, low: basePrice * 0.54, close: basePrice * 0.72, isGreen: true },
-      { time: '1h', open: basePrice * 0.72, high: basePrice * 0.73, low: basePrice * 0.65, close: basePrice * 0.68, isGreen: false },
-      { time: '30m', open: basePrice * 0.68, high: basePrice * 0.82, low: basePrice * 0.67, close: basePrice * 0.80, isGreen: true },
-      { time: '15m', open: basePrice * 0.80, high: basePrice * 0.81, low: basePrice * 0.75, close: basePrice * 0.77, isGreen: false },
-      { time: '5m', open: basePrice * 0.77, high: basePrice * 0.93, low: basePrice * 0.76, close: basePrice * 0.91, isGreen: true },
+      { time: '20m', open: basePrice * 0.35, high: basePrice * 0.40, low: basePrice * 0.34, close: basePrice * 0.37, isGreen: true },
+      { time: '18m', open: basePrice * 0.37, high: basePrice * 0.43, low: basePrice * 0.36, close: basePrice * 0.40, isGreen: true },
+      { time: '16m', open: basePrice * 0.40, high: basePrice * 0.50, low: basePrice * 0.39, close: basePrice * 0.48, isGreen: true },
+      { time: '14m', open: basePrice * 0.48, high: basePrice * 0.49, low: basePrice * 0.42, close: basePrice * 0.45, isGreen: false },
+      { time: '12m', open: basePrice * 0.45, high: basePrice * 0.65, low: basePrice * 0.44, close: basePrice * 0.62, isGreen: true },
+      { time: '10m', open: basePrice * 0.62, high: basePrice * 0.63, low: basePrice * 0.55, close: basePrice * 0.58, isGreen: false },
+      { time: '8m', open: basePrice * 0.58, high: basePrice * 0.72, low: basePrice * 0.57, close: basePrice * 0.70, isGreen: true },
+      { time: '6m', open: basePrice * 0.70, high: basePrice * 0.71, low: basePrice * 0.65, close: basePrice * 0.67, isGreen: false },
+      { time: '4m', open: basePrice * 0.67, high: basePrice * 0.83, low: basePrice * 0.66, close: basePrice * 0.81, isGreen: true },
+      { time: '2m', open: basePrice * 0.81, high: basePrice * 0.92, low: basePrice * 0.80, close: basePrice * 0.91, isGreen: true },
       { time: 'now', open: basePrice * 0.91, high: basePrice * 1.02, low: basePrice * 0.90, close: basePrice, isGreen: true },
     ];
     setChartData(newChartData);
