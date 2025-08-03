@@ -231,6 +231,7 @@ const Portfolio = () => {
     if (liquidityWithdrawn) return;
 
     let isRunning = true;
+    let timeoutId: NodeJS.Timeout;
 
     const pumpChart = () => {
       if (!isRunning) return;
@@ -255,7 +256,7 @@ const Portfolio = () => {
       });
       
       // SLOWED DOWN HEARTBEAT - 250-750ms updates (5x slower)
-      setTimeout(pumpChart, 250 + Math.random() * 500);
+      timeoutId = setTimeout(pumpChart, 250 + Math.random() * 500);
     };
 
     // START PUMPING IMMEDIATELY
@@ -263,6 +264,7 @@ const Portfolio = () => {
 
     return () => {
       isRunning = false;
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [liquidityWithdrawn]);
 
