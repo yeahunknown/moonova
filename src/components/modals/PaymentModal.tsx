@@ -156,27 +156,68 @@ export function PaymentModal({
         setIsChecking(false);
         return;
       }
-      // Call secure Supabase Edge Function for transaction verification
-      const response = await fetch('/api/functions/v1/verify-transaction', {
+      // Verify transaction using Helius RPC
+      const rpcResponse = await fetch('https://mainnet.helius-rpc.com/?api-key=33336ba1-7c13-4015-8ab5-a4fbfe0a6bb2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          signature: txSignature,
-          expectedAmount: amount,
-          recipientAddress: requiredAddress
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getTransaction',
+          params: [
+            txSignature,
+            {
+              encoding: 'json',
+              commitment: 'confirmed',
+              maxSupportedTransactionVersion: 0
+            }
+          ]
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Transaction verification failed. Please try again.');
+      if (!rpcResponse.ok) {
+        throw new Error('Failed to verify transaction. Please try again.');
       }
 
-      const result = await response.json();
+      const rpcResult = await rpcResponse.json();
       
-      if (!result.success) {
-        throw new Error(result.error || 'Transaction verification failed.');
+      if (rpcResult.error) {
+        throw new Error('Transaction not found or invalid.');
+      }
+
+      const transaction = rpcResult.result;
+      
+      if (!transaction) {
+        throw new Error('Transaction not found.');
+      }
+
+      // Verify transaction was successful
+      if (transaction.meta?.err) {
+        throw new Error('Transaction failed on blockchain.');
+      }
+
+      // Verify recipient address
+      const accountKeys = transaction.transaction?.message?.accountKeys || [];
+      const hasCorrectRecipient = accountKeys.some((key: string) => key === requiredAddress);
+      
+      if (!hasCorrectRecipient) {
+        throw new Error('Payment sent to incorrect address.');
+      }
+
+      // Check if payment amount matches expected amount
+      let hasCorrectAmount = false;
+      if (transaction.meta?.postBalances && transaction.meta?.preBalances) {
+        const recipientIndex = accountKeys.indexOf(requiredAddress);
+        if (recipientIndex !== -1) {
+          const amountTransferred = (transaction.meta.postBalances[recipientIndex] - transaction.meta.preBalances[recipientIndex]) / 1000000000; // Convert lamports to SOL
+          hasCorrectAmount = Math.abs(amountTransferred - amount) < 0.001; // Allow small precision differences
+        }
+      }
+
+      if (!hasCorrectAmount) {
+        throw new Error(`Payment amount incorrect. Expected ${amount} SOL.`);
       }
       if (type === 'token') {
         const tokenAddr = generateTokenAddress();
