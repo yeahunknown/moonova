@@ -418,7 +418,7 @@ const Portfolio = () => {
                         <div className="lg:col-span-3 p-8">
                           <div className="mb-4">
                             <h3 className="text-lg font-semibold">Price Chart</h3>
-                            <p className="text-sm text-muted-foreground">Last 6 hours</p>
+                            <p className="text-sm text-muted-foreground">Updates Every 1 Second</p>
                           </div>
                           
                           <div className="h-80 w-full bg-gradient-to-b from-background/50 to-transparent rounded-lg p-4">
