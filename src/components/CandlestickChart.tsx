@@ -27,9 +27,9 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
   const priceRange = maxPrice - minPrice;
   const padding = 40;
   const chartHeight = height - padding * 2;
-  const chartWidth = 720; // Reduced width to avoid overlap with price values
+  const chartWidth = 800;
   const candleWidth = 8;
-  const candleSpacing = 10; // Tighter spacing
+  const candleSpacing = 14;
   const totalCandleArea = data.length * candleSpacing;
   const startX = padding;
 
