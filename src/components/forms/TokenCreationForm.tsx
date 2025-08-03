@@ -236,6 +236,13 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                     <Input
                       placeholder="Solana COIN"
                       {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Only allow letters and spaces
+                        if (value === "" || /^[A-Za-z\s]*$/.test(value)) {
+                          field.onChange(value);
+                        }
+                      }}
                       className="transition-all duration-200 focus:scale-105"
                     />
                   </FormControl>
@@ -254,6 +261,13 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                     <Input
                       placeholder="zzz"
                       {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Only allow letters
+                        if (value === "" || /^[A-Za-z]*$/.test(value)) {
+                          field.onChange(value);
+                        }
+                      }}
                       className="transition-all duration-200 focus:scale-105"
                     />
                   </FormControl>
@@ -272,6 +286,13 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                     <Input
                       placeholder="1000000000"
                       {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Only allow numbers
+                        if (value === "" || /^\d*$/.test(value)) {
+                          field.onChange(value);
+                        }
+                      }}
                       className="transition-all duration-200 focus:scale-105"
                     />
                   </FormControl>

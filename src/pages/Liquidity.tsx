@@ -17,6 +17,7 @@ const Liquidity = () => {
   const [lpSize, setLpSize] = useState("");
   const [boostVisibility, setBoostVisibility] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isValidTokenAddress, setIsValidTokenAddress] = useState(true);
   const { setSectionRef, isVisible } = useFadeInAnimation();
 
   // Handle pre-filled data from URL params
@@ -56,6 +57,27 @@ const Liquidity = () => {
     } else {
       setLpSize(value); // Allow partial inputs like "0." or "10."
     }
+  };
+
+  const handleSupplyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow numbers
+    if (value === "" || /^\d+$/.test(value)) {
+      setSupply(value);
+    }
+  };
+
+  const validateTokenAddress = (address: string) => {
+    // Valid token address should be 44 characters and end with .moon or be in the format of generated addresses
+    const isValidFormat = /^[A-Za-z0-9]{43,44}(\.moon)?$/.test(address) || address.length === 44;
+    setIsValidTokenAddress(isValidFormat || address === "");
+    return isValidFormat || address === "";
+  };
+
+  const handleTokenAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTokenAddress(value);
+    validateTokenAddress(value);
   };
 
   const handleAddLiquidity = () => {
@@ -119,10 +141,13 @@ const Liquidity = () => {
                       <Label>Token Address</Label>
                       <Input
                         value={tokenAddress}
-                        onChange={(e) => setTokenAddress(e.target.value)}
+                        onChange={handleTokenAddressChange}
                         placeholder="Enter token address"
-                        className="mt-2"
+                        className={`mt-2 ${!isValidTokenAddress ? 'border-red-500' : ''}`}
                       />
+                      {!isValidTokenAddress && tokenAddress && (
+                        <p className="text-red-500 text-sm mt-1">Invalid token address</p>
+                      )}
                     </div>
 
                     <div>
@@ -149,7 +174,7 @@ const Liquidity = () => {
                       <Label>Add Supply</Label>
                       <Input
                         value={supply}
-                        onChange={(e) => setSupply(e.target.value)}
+                        onChange={handleSupplyChange}
                         placeholder="Enter supply amount"
                         className="mt-2"
                       />
@@ -199,7 +224,7 @@ const Liquidity = () => {
                     onClick={handleAddLiquidity}
                     className="w-full bg-gradient-primary hover:opacity-90 shadow-glow"
                     size="lg"
-                    disabled={!tokenAddress || !tokenName || !tokenSymbol || !supply || !lpSize}
+                    disabled={!tokenAddress || !tokenName || !tokenSymbol || !supply || !lpSize || !isValidTokenAddress}
                   >
                     Add Liquidity
                   </Button>
