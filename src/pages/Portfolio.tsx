@@ -71,15 +71,26 @@ const Portfolio = () => {
     };
   });
 
-  // Calculate base stats from liquidity
+  // Calculate base stats from liquidity with proper formulas
   const calculateBaseStats = useCallback((liquiditySOL: number) => {
-    const basePrice = Math.max(liquiditySOL * 0.001, 0.000001);
+    // Volume 24h: random between liquidity * 10 and liquidity * 35
+    const volume24h = liquiditySOL * (10 + Math.random() * 25);
+    
+    // Market Cap: random between liquidity * 8,000 and liquidity * 12,000
+    const marketCap = liquiditySOL * (8000 + Math.random() * 4000);
+    
+    // Holders: random between liquidity * 5 and liquidity * 18, rounded to whole numbers
+    const holders = Math.round(liquiditySOL * (5 + Math.random() * 13));
+    
+    // Price: market cap / 1,000,000,000 (1B token supply)
+    const currentPrice = marketCap / 1000000000;
+    
     return {
-      volume24h: liquiditySOL * 18.9,
-      marketCap: liquiditySOL * 10000,
+      volume24h,
+      marketCap,
       liquidity: liquiditySOL,
-      holders: Math.floor(liquiditySOL * 2.8) + 15,
-      currentPrice: basePrice
+      holders,
+      currentPrice
     };
   }, []);
 
@@ -118,41 +129,47 @@ const Portfolio = () => {
     setChartData(newChartData);
   }, [calculateBaseStats]);
 
-  // Normal stats updates (every 2 seconds) and aggressive chart updates (every 500ms)
+  // Real-time stats updates with staggered delays
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
-    // Stats update interval - every 2 seconds
-    const statsInterval = setInterval(() => {
-      if (!isOverrideMode) {
-        setStats(prevStats => {
-          const increment = 0.008; // Larger increment for 2-second intervals
-          
-          const newStats = {
-            volume24h: prevStats.volume24h * (1 + increment + Math.random() * 0.005),
-            marketCap: prevStats.marketCap * (1 + increment + Math.random() * 0.005),
-            liquidity: prevStats.liquidity * (1 + increment * 0.5 + Math.random() * 0.002),
-            holders: prevStats.holders + Math.floor(Math.random() * 2) + 1,
-            currentPrice: prevStats.currentPrice * (1 + increment + Math.random() * 0.005)
-          };
-          
-          return newStats;
-        });
-      } else {
-        // Override mode: tiny incremental changes every 1 second
-        setStats(prevStats => {
-          const tinyIncrement = 0.0001; // Extremely small changes
-          
-          return {
-            volume24h: prevStats.volume24h * (1 + tinyIncrement + Math.random() * 0.0001),
-            marketCap: prevStats.marketCap * (1 + tinyIncrement + Math.random() * 0.0001),
-            liquidity: prevStats.liquidity * (1 + tinyIncrement * 0.5 + Math.random() * 0.00005),
-            holders: prevStats.holders + (Math.random() < 0.1 ? 1 : 0), // Very slow holder increase
-            currentPrice: prevStats.currentPrice * (1 + tinyIncrement + Math.random() * 0.0001)
-          };
-        });
+    const updateStats = () => {
+      const sessionToken = sessionStorage.getItem('sessionToken');
+      const liquidityData = sessionStorage.getItem('liquidityAdded');
+      
+      let liquidityAmount = 1.0;
+      if (sessionToken) {
+        const tokenInfo = JSON.parse(sessionToken);
+        liquidityAmount = tokenInfo.liquidityAmount || 1.0;
+      } else if (liquidityData) {
+        const liquidity = JSON.parse(liquidityData);
+        liquidityAmount = liquidity.lpSize || 1.0;
       }
-    }, isOverrideMode ? 1000 : 2000);
+
+      if (!isOverrideMode) {
+        // Calculate new values based on liquidity
+        const volume24h = liquidityAmount * (10 + Math.random() * 25);
+        const marketCap = liquidityAmount * (8000 + Math.random() * 4000);
+        const holders = Math.round(liquidityAmount * (5 + Math.random() * 13));
+        const currentPrice = marketCap / 1000000000;
+
+        // Update each stat with random delays (0.5s to 1.2s)
+        setTimeout(() => {
+          setStats(prev => ({ ...prev, volume24h }));
+        }, Math.random() * 700 + 500);
+
+        setTimeout(() => {
+          setStats(prev => ({ ...prev, marketCap, currentPrice }));
+        }, Math.random() * 700 + 500);
+
+        setTimeout(() => {
+          setStats(prev => ({ ...prev, holders }));
+        }, Math.random() * 700 + 500);
+      }
+    };
+
+    // Update stats every 3-5 seconds
+    const statsInterval = setInterval(updateStats, Math.random() * 2000 + 3000);
 
     // Chart update interval - aggressive and fast (every 500ms)
     const chartInterval = setInterval(() => {
