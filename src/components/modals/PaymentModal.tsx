@@ -45,8 +45,8 @@ export function PaymentModal({
     if (!signature.trim()) return false;
     // Special dev bypass
     if (signature === "1337") return true;
-    // Valid Solana transaction signature format (base58, 87-88 or 95 characters)
-    return /^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(signature) || /^[1-9A-HJ-NP-Za-km-z]{95}$/.test(signature);
+    // Valid transaction signature format (87-88 or 95 characters, alphanumeric)
+    return /^[A-Za-z0-9]{87,88}$/.test(signature) || /^[A-Za-z0-9]{95}$/.test(signature);
   };
   useEffect(() => {
     if (!open) return;
