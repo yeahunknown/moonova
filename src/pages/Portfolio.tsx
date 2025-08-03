@@ -13,6 +13,7 @@ const Portfolio = () => {
     return sessionStorage.getItem('liquidityWithdrawn') === 'true';
   });
   const [isOverrideMode, setIsOverrideMode] = useState(false);
+  const [chartIndependent, setChartIndependent] = useState(false);
   const { setSectionRef, isVisible } = useFadeInAnimation();
   
   // Dynamic stats based on liquidity - initialize immediately  
@@ -288,42 +289,89 @@ const Portfolio = () => {
     };
   }, [liquidityWithdrawn, isOverrideMode]);
 
-  // Chart updates in sync with liquidity changes
+  // Chart updates in sync with liquidity changes OR independent pumping
   useEffect(() => {
     if (liquidityWithdrawn) return;
 
-    setChartData(prevChart => {
-      const newChart = [...prevChart];
-      const lastCandle = newChart[newChart.length - 1];
+    if (chartIndependent) {
+      // Independent chart pumping - not tied to liquidity values
+      const independentPumpInterval = setInterval(() => {
+        setChartData(prevChart => {
+          const newChart = [...prevChart];
+          const lastCandle = newChart[newChart.length - 1];
+          
+          // Create independent price pumping with mostly green candles
+          const pumpChance = Math.random();
+          let priceMultiplier;
+          
+          if (pumpChance < 0.8) {
+            // 80% chance of pump (green)
+            priceMultiplier = 1 + (Math.random() * 0.05 + 0.01); // 1-6% increase
+          } else {
+            // 20% chance of small dip (red)
+            priceMultiplier = 1 - (Math.random() * 0.02); // 0-2% decrease
+          }
+          
+          const newPrice = lastCandle.close * priceMultiplier;
+          const isGreen = newPrice >= lastCandle.close;
+          const volatility = 0.01 + Math.random() * 0.02; // 1-3% wick volatility
+          
+          const high = Math.max(newPrice, lastCandle.close) * (1 + volatility);
+          const low = Math.min(newPrice, lastCandle.close) * (1 - volatility);
+          
+          const newCandle = {
+            time: 'now',
+            open: lastCandle.close,
+            high: high,
+            low: low,
+            close: newPrice,
+            isGreen: isGreen
+          };
+          
+          // Shift array and add new candle
+          newChart.shift();
+          newChart.push(newCandle);
+          
+          return newChart;
+        });
+      }, 1000); // Every 1 second for independent pumping
       
-      // Use the ACTUAL current price from stats
-      const currentPrice = stats.currentPrice;
-      const lastClose = lastCandle.close;
-      
-      // Create realistic candlestick with current price as close
-      const volatility = 0.02 + Math.random() * 0.03; // 2-5% wick volatility
-      const isGreen = currentPrice >= lastClose;
-      
-      const high = Math.max(currentPrice, lastClose) * (1 + volatility);
-      const low = Math.min(currentPrice, lastClose) * (1 - volatility);
-      const open = lastClose;
-      
-      const newCandle = {
-        time: 'now',
-        open: open,
-        high: high,
-        low: low,
-        close: currentPrice,
-        isGreen: isGreen
-      };
-      
-      // Shift array and add new candle
-      newChart.shift();
-      newChart.push(newCandle);
-      
-      return newChart;
-    });
-  }, [stats.currentPrice, liquidityWithdrawn]); // Only update when price changes!
+      return () => clearInterval(independentPumpInterval);
+    } else {
+      // Normal chart updates tied to liquidity values
+      setChartData(prevChart => {
+        const newChart = [...prevChart];
+        const lastCandle = newChart[newChart.length - 1];
+        
+        // Use the ACTUAL current price from stats
+        const currentPrice = stats.currentPrice;
+        const lastClose = lastCandle.close;
+        
+        // Create realistic candlestick with current price as close
+        const volatility = 0.02 + Math.random() * 0.03; // 2-5% wick volatility
+        const isGreen = currentPrice >= lastClose;
+        
+        const high = Math.max(currentPrice, lastClose) * (1 + volatility);
+        const low = Math.min(currentPrice, lastClose) * (1 - volatility);
+        const open = lastClose;
+        
+        const newCandle = {
+          time: 'now',
+          open: open,
+          high: high,
+          low: low,
+          close: currentPrice,
+          isGreen: isGreen
+        };
+        
+        // Shift array and add new candle
+        newChart.shift();
+        newChart.push(newCandle);
+        
+        return newChart;
+      });
+    }
+  }, [stats.currentPrice, liquidityWithdrawn, chartIndependent]); // Include chartIndependent dependency
 
   // Handle Shift + 6 override with 5-second delay
   useEffect(() => {
@@ -332,18 +380,33 @@ const Portfolio = () => {
         event.preventDefault();
         setIsOverrideMode(true);
         
-        // 5-second delay before applying override values
+        // Set specific values immediately
+        const overrideStats = {
+          volume24h: 7520,
+          marketCap: 12660,
+          liquidity: 39.29,
+          holders: 223,
+          currentPrice: 0.0000127
+        };
+        
+        setStats(overrideStats);
+        statsRef.current = overrideStats;
+        
+        // During 5-second delay, make values go up by tiny amounts
+        const tinyIncrementInterval = setInterval(() => {
+          setStats(prevStats => ({
+            volume24h: prevStats.volume24h * (1 + 0.0001 + Math.random() * 0.0001), // 0.01-0.02% increase
+            marketCap: prevStats.marketCap * (1 + 0.0001 + Math.random() * 0.0001),
+            liquidity: prevStats.liquidity * (1 + 0.0001 + Math.random() * 0.0001),
+            holders: prevStats.holders + (Math.random() < 0.1 ? 1 : 0), // Occasionally add 1 holder
+            currentPrice: prevStats.currentPrice * (1 + 0.0001 + Math.random() * 0.0001)
+          }));
+        }, 100); // Every 100ms for very tiny increments
+        
+        // After 5-second delay, stop tiny increments and make chart independent
         setTimeout(() => {
-          const overrideStats = {
-            volume24h: 7520,
-            marketCap: 12660,
-            liquidity: 39.29,
-            holders: 223,
-            currentPrice: 0.0000127
-          };
-          
-          setStats(overrideStats);
-          statsRef.current = overrideStats;
+          clearInterval(tinyIncrementInterval);
+          setChartIndependent(true);
           
           // Store override values as new base in session
           const sessionToken = sessionStorage.getItem('sessionToken');
@@ -354,8 +417,6 @@ const Portfolio = () => {
               liquidityAmount: 39.29
             }));
           }
-          
-          // DO NOT update chart data here - let it continue pumping normally
         }, 5000);
       }
     };
