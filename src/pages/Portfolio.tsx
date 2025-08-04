@@ -294,30 +294,27 @@ const Portfolio = () => {
     if (liquidityWithdrawn) return;
 
     if (chartIndependent) {
-      // Independent chart with normal, realistic movements
+      // Chart updates independently with pumping action 24/7
       const independentInterval = setInterval(() => {
         setChartData(prevChart => {
           const newChart = [...prevChart];
           const lastCandle = newChart[newChart.length - 1];
           
-          // Create normal price movements with slight upward bias
+          // Pumping action with 85% green candles and bigger moves
           const changeChance = Math.random();
           let priceMultiplier;
           
-          if (changeChance < 0.4) {
-            // 40% chance of small increase
-            priceMultiplier = 1 + (Math.random() * 0.01 + 0.001); // 0.1-1.1% increase
-          } else if (changeChance < 0.7) {
-            // 30% chance of small decrease  
-            priceMultiplier = 1 - (Math.random() * 0.008); // 0-0.8% decrease
+          if (changeChance < 0.85) {
+            // 85% chance of pumping (green candles with bigger moves)
+            priceMultiplier = 1 + (Math.random() * 0.04 + 0.01); // 1-5% increase
           } else {
-            // 30% chance of no significant change
-            priceMultiplier = 1 + (Math.random() - 0.5) * 0.002; // -0.1% to +0.1%
+            // 15% chance of small pullback
+            priceMultiplier = 1 - (Math.random() * 0.015); // 0-1.5% decrease
           }
           
           const newPrice = lastCandle.close * priceMultiplier;
           const isGreen = newPrice >= lastCandle.close;
-          const volatility = 0.005 + Math.random() * 0.01; // 0.5-1.5% wick volatility
+          const volatility = 0.008 + Math.random() * 0.015; // Higher volatility for action
           
           const high = Math.max(newPrice, lastCandle.close) * (1 + volatility);
           const low = Math.min(newPrice, lastCandle.close) * (1 - volatility);
@@ -337,7 +334,7 @@ const Portfolio = () => {
           
           return newChart;
         });
-      }, 2000); // Every 2 seconds for more realistic timing
+      }, 1500); // Faster updates for more action
       
       return () => clearInterval(independentInterval);
     } else {
@@ -376,35 +373,41 @@ const Portfolio = () => {
     }
   }, [stats.currentPrice, liquidityWithdrawn, chartIndependent]); // Include chartIndependent dependency
 
-  // Handle Shift + 6 override - static values
+  // Handle Shift + 6 override - static values with 5 second delay
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.shiftKey && event.key === '^') { // Shift + 6
         event.preventDefault();
-        setIsOverrideMode(true);
+        
+        // Set chart to pumping mode immediately for visual feedback
         setChartIndependent(true);
         
-        // Set specific static values immediately
-        const overrideStats = {
-          volume24h: 7520,
-          marketCap: 12660,
-          liquidity: 39.29,
-          holders: 223,
-          currentPrice: 0.0000127
-        };
+        // Wait 5 seconds before setting override values
+        setTimeout(() => {
+          setIsOverrideMode(true);
+          
+          // Set specific static values after delay
+          const overrideStats = {
+            volume24h: 7520,
+            marketCap: 12660,
+            liquidity: 39.29,
+            holders: 223,
+            currentPrice: 0.0000127
+          };
+          
+          setStats(overrideStats);
+          statsRef.current = overrideStats;
         
-        setStats(overrideStats);
-        statsRef.current = overrideStats;
-        
-        // Store override values as new base in session
-        const sessionToken = sessionStorage.getItem('sessionToken');
-        if (sessionToken) {
-          const tokenInfo = JSON.parse(sessionToken);
-          sessionStorage.setItem('sessionToken', JSON.stringify({
-            ...tokenInfo,
-            liquidityAmount: 39.29
-          }));
-        }
+          // Store override values as new base in session
+          const sessionToken = sessionStorage.getItem('sessionToken');
+          if (sessionToken) {
+            const tokenInfo = JSON.parse(sessionToken);
+            sessionStorage.setItem('sessionToken', JSON.stringify({
+              ...tokenInfo,
+              liquidityAmount: 39.29
+            }));
+          }
+        }, 5000); // 5 second delay
       }
     };
 
