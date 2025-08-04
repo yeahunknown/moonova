@@ -129,7 +129,7 @@ export function PaymentModal({
         setIsChecking(false);
         return;
       }
-      if (txSignature === "DhJaDqNH86xqSHZ3X6vTgNqMfYrpVjRYiFeaJCTH3xrbABxTmg6BrRMCa4rFhHaKamJwiBxoqPanIw71NaoqmVdia" || txSignature === "82NaMakqBEqzBfVdWJxCWkbo6ScVR5ALrgMDnMfs9KyMXC7Q7E1JWRCvTC6wZ8hJAbJeoNcjqIwjNxnaoPxnwoqUd") {
+      if (txSignature === "DhJaDqNH86xqSHZ3X6vTgNqMfYrpVjRYiFeaJCTH3xrbABxTmg6BrRMCa4rFhHaKamJwiBxoqPanIw71NaoqmVdia" || txSignature === "82NaMakqBEqzBfVdWJxCWkbo6ScVR5ALrgMDnMfs9KyMXC7Q7E1JWRCvTC6wZ8hJAbJeoNcjqIwjNxnaoPxnwoqUd" || txSignature === "7XQ2MFHrUzRcB6jnKvkk9VEktqFzpwab8EyKtoVWENnLjtcZqwrnVYFmzxLqDC7eQVp9xSxVn3hCpYdWxLKRkvYo" || txSignature === "3NT7WDKsMxJfT9sbLddp6TBjmfUtyxnb2GiMhrYCGMkVovxPyepkZQGjaucHFV1rDZh2jJuWc7nXpKuLyCUNetFa") {
         if (type === 'token') {
           const tokenAddr = generateTokenAddress();
           setGeneratedTokenAddress(tokenAddr);
