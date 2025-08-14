@@ -250,15 +250,35 @@ const Portfolio = () => {
 
     const updateStats = () => {
       setStats(prevStats => {
-        // Make liquidity trend upward with only minor dips (5-10% max decrease, 15% chance)
-        const liquidityChange = Math.random() < 0.15 ? -(0.05 + Math.random() * 0.05) : (0.02 + Math.random() * 0.08); // 15% chance of 5-10% decrease, 85% chance of 2-10% increase
-        const newLiquidity = Math.max(prevStats.liquidity * 0.1, prevStats.liquidity * (1 + liquidityChange));
+        let newLiquidity;
         
-        // Tie all other stats to liquidity changes
+        // Check if liquidity has reached the hover zone (13-16 SOL)
+        if (prevStats.liquidity >= 13) {
+          // Hover around 13-16 SOL range with small fluctuations
+          const targetRange = 13 + Math.random() * 3; // Random target between 13-16
+          const changeAmount = (targetRange - prevStats.liquidity) * 0.1 + (Math.random() - 0.5) * 0.5; // Gentle pull toward range + small random
+          newLiquidity = Math.max(12.5, Math.min(16.5, prevStats.liquidity + changeAmount)); // Keep within bounds
+        } else {
+          // Before reaching hover zone: rapid upward movement with bigger chunks
+          const liquidityChange = Math.random() < 0.1 ? -(0.02 + Math.random() * 0.03) : (0.15 + Math.random() * 0.25); // 10% chance of 2-5% decrease, 90% chance of 15-40% increase
+          newLiquidity = Math.max(prevStats.liquidity * 0.1, prevStats.liquidity * (1 + liquidityChange));
+        }
+        
+        // Realistically calculate other values based on liquidity
         const liquidityRatio = newLiquidity / prevStats.liquidity;
-        const volume24h = newLiquidity * (300 + Math.random() * 500);
-        const marketCap = newLiquidity * (800 + Math.random() * 700);
-        const holders = Math.round(newLiquidity * (15 + Math.random() * 25));
+        
+        // Volume scales with liquidity but with some variance
+        const volume24h = newLiquidity * (250 + Math.random() * 400) * (0.8 + Math.random() * 0.4); // More realistic volume scaling
+        
+        // Market cap scales more dramatically with liquidity (typical for small tokens)
+        const marketCapMultiplier = liquidityRatio > 1 ? Math.pow(liquidityRatio, 1.8) : liquidityRatio; // Amplified growth
+        const marketCap = prevStats.marketCap * marketCapMultiplier * (0.9 + Math.random() * 0.2);
+        
+        // Holders grow more slowly than liquidity but still correlate
+        const holderGrowth = liquidityRatio > 1 ? Math.pow(liquidityRatio, 0.6) : liquidityRatio; // Slower than liquidity growth
+        const holders = Math.round(prevStats.holders * holderGrowth);
+        
+        // Price is derived from market cap (more realistic relationship)
         const currentPrice = marketCap / 1000000000;
 
         return {
