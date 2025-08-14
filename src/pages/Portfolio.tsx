@@ -530,40 +530,40 @@ const Portfolio = () => {
                     <CardContent className="p-0">
                       {/* Header Section */}
                       <div className="p-8 border-b border-border/50">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-6">
-                             <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-glow overflow-hidden ${
-                               tokenData.image && tokenData.image.startsWith('data:') 
-                                 ? '' 
-                                 : 'bg-gradient-primary'
-                             }`}>
-                               {tokenData.image && tokenData.image.startsWith('data:') ? (
-                                 <img src={tokenData.image} alt="Token logo" className="w-20 h-20 object-contain" />
-                               ) : (
-                                 <span className="text-3xl font-bold text-white">
-                                   {tokenData.name.charAt(0).toUpperCase()}
-                                 </span>
-                               )}
-                             </div>
-                            <div>
-                              <h2 className="text-3xl font-bold">{tokenData.name}</h2>
-                              <p className="text-xl text-muted-foreground">${tokenData.symbol}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-green-400">Live</span>
+                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                           <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+                              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shadow-glow overflow-hidden flex-shrink-0 ${
+                                tokenData.image && tokenData.image.startsWith('data:') 
+                                  ? '' 
+                                  : 'bg-gradient-primary'
+                              }`}>
+                                {tokenData.image && tokenData.image.startsWith('data:') ? (
+                                  <img src={tokenData.image} alt="Token logo" className="w-16 h-16 sm:w-20 sm:h-20 object-contain" />
+                                ) : (
+                                  <span className="text-2xl sm:text-3xl font-bold text-white">
+                                    {tokenData.name.charAt(0).toUpperCase()}
+                                  </span>
+                                )}
                               </div>
-                            </div>
-                          </div>
-                          
-                          <div className="text-right">
-                            <div className="text-4xl font-bold">
-                              ${stats.currentPrice.toFixed(6)}
-                            </div>
-                            <div className={`text-lg font-semibold ${liquidityWithdrawn ? 'text-red-400' : 'text-green-400'}`}>
-                              {liquidityWithdrawn ? '-99.7%' : '+6.95%'}
-                            </div>
-                          </div>
-                        </div>
+                             <div className="min-w-0 flex-1">
+                               <h2 className="text-2xl sm:text-3xl font-bold truncate">{tokenData.name}</h2>
+                               <p className="text-lg sm:text-xl text-muted-foreground truncate">${tokenData.symbol}</p>
+                               <div className="flex items-center gap-2 mt-1">
+                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                 <span className="text-sm text-green-400">Live</span>
+                               </div>
+                             </div>
+                           </div>
+                           
+                           <div className="text-left sm:text-right flex-shrink-0">
+                             <div className="text-2xl sm:text-4xl font-bold break-all">
+                               ${stats.currentPrice.toFixed(6)}
+                             </div>
+                             <div className={`text-base sm:text-lg font-semibold ${liquidityWithdrawn ? 'text-red-400' : 'text-green-400'}`}>
+                               {liquidityWithdrawn ? '-99.7%' : '+6.95%'}
+                             </div>
+                           </div>
+                         </div>
                       </div>
 
                       <div className="grid lg:grid-cols-5 gap-0">
