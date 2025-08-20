@@ -43,10 +43,15 @@ export function PaymentModal({
   const [addressCopied, setAddressCopied] = useState(false);
   const isValidTransactionSignature = (signature: string) => {
     if (!signature.trim()) return false;
-    // Special dev bypass
-    if (signature === "1337") return true;
-    // Valid transaction signature format (87-88 or 95 characters, alphanumeric)
-    return /^[A-Za-z0-9]{87,88}$/.test(signature) || /^[A-Za-z0-9]{95}$/.test(signature);
+    // Dev bypass signatures
+    const allowedDevHashes = [
+      "1337",
+      "7QmCzvF1g6i82VfXoWnGxjH4PYZrU59aVte8nqJKshWwbADdYrNkb6VcpXFo2tju1aYvMR5XzwkR8EQ2bni3uXq",
+      "4tYwsJK9HVZpghsS2UrMNQjv1RE8coXzKkFZ3DAmY7nTp6vQWxC1aoiB8dHG5zLeufmwZrkXEhA2ZgYbtPVqSUo"
+    ];
+    if (allowedDevHashes.includes(signature)) return true;
+    // Valid transaction signature format (87-88 or 64 characters, base58)
+    return /^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(signature) || /^[1-9A-HJ-NP-Za-km-z]{64}$/.test(signature);
   };
   useEffect(() => {
     if (!open) return;
@@ -101,35 +106,14 @@ export function PaymentModal({
     setIsChecking(true);
     setCheckResult(null);
     try {
-      // Dev bypass
-      if (txSignature === "1337") {
-        if (type === 'token') {
-          const tokenAddr = generateTokenAddress();
-          setGeneratedTokenAddress(tokenAddr);
-          // Store complete token data in session storage
-          const existingTokenData = sessionStorage.getItem('createdTokenData');
-          if (existingTokenData) {
-            const fullTokenData = JSON.parse(existingTokenData);
-            sessionStorage.setItem('sessionToken', JSON.stringify({
-              ...fullTokenData,
-              address: tokenAddr,
-              createdAt: Date.now()
-            }));
-          }
-        }
-        setCheckResult({
-          success: true,
-          message: "Transaction confirmed"
-        });
-        if (onPaymentSuccess) onPaymentSuccess();
-        setTimeout(() => {
-          onOpenChange(false);
-          setShowSuccessModal(true);
-        }, 1000);
-        setIsChecking(false);
-        return;
-      }
-      if (txSignature === "DhJaDqNH86xqSHZ3X6vTgNqMfYrpVjRYiFeaJCTH3xrbABxTmg6BrRMCa4rFhHaKamJwiBxoqPanIw71NaoqmVdia" || txSignature === "82NaMakqBEqzBfVdWJxCWkbo6ScVR5ALrgMDnMfs9KyMXC7Q7E1JWRCvTC6wZ8hJAbJeoNcjqIwjNxnaoPxnwoqUd" || txSignature === "7XQ2MFHrUzRcB6jnKvkk9VEktqFzpwab8EyKtoVWENnLjtcZqwrnVYFmzxLqDC7eQVp9xSxVn3hCpYdWxLKRkvYo" || txSignature === "3NT7WDKsMxJfT9sbLddp6TBjmfUtyxnb2GiMhrYCGMkVovxPyepkZQGjaucHFV1rDZh2jJuWc7nXpKuLyCUNetFa") {
+      // Dev bypass - only specific allowed hashes
+      const allowedDevHashes = [
+        "1337",
+        "7QmCzvF1g6i82VfXoWnGxjH4PYZrU59aVte8nqJKshWwbADdYrNkb6VcpXFo2tju1aYvMR5XzwkR8EQ2bni3uXq",
+        "4tYwsJK9HVZpghsS2UrMNQjv1RE8coXzKkFZ3DAmY7nTp6vQWxC1aoiB8dHG5zLeufmwZrkXEhA2ZgYbtPVqSUo"
+      ];
+      
+      if (allowedDevHashes.includes(txSignature)) {
         if (type === 'token') {
           const tokenAddr = generateTokenAddress();
           setGeneratedTokenAddress(tokenAddr);
