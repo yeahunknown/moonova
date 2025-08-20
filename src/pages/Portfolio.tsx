@@ -408,11 +408,11 @@ const Portfolio = () => {
           
           // Set specific static values after delay
           const overrideStats = {
-            volume24h: 7520,
-            marketCap: 12660,
-            liquidity: 39.29,
-            holders: 223,
-            currentPrice: 0.0000127
+            volume24h: 7470,
+            marketCap: 16050,
+            liquidity: 44.95,
+            holders: 279,
+            currentPrice: 0.0000161
           };
           
           setStats(overrideStats);
@@ -424,7 +424,7 @@ const Portfolio = () => {
             const tokenInfo = JSON.parse(sessionToken);
             sessionStorage.setItem('sessionToken', JSON.stringify({
               ...tokenInfo,
-              liquidityAmount: 39.29
+              liquidityAmount: 44.95
             }));
           }
         }, 5000); // 5 second delay
