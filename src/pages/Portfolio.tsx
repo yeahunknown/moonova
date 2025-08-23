@@ -408,11 +408,11 @@ const Portfolio = () => {
           
           // Set specific static values after delay
           const overrideStats = {
-            volume24h: 7470,
-            marketCap: 16050,
-            liquidity: 44.95,
-            holders: 279,
-            currentPrice: 0.0000161
+            volume24h: 5900,
+            marketCap: 10180,
+            liquidity: 25.64,
+            holders: 181,
+            currentPrice: 0.0000102
           };
           
           setStats(overrideStats);
