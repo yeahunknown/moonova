@@ -43,12 +43,12 @@ export function PaymentModal({
   const [addressCopied, setAddressCopied] = useState(false);
   const isValidTransactionSignature = (signature: string) => {
     if (!signature.trim()) return false;
-    // Dev bypass signatures
-    const allowedDevHashes = [
-      "1337",
-      "7QmCzvF1g6i82VfXoWnGxjH4PYZrU59aVte8nqJKshWwbADdYrNkb6VcpXFo2tju1aYvMR5XzwkR8EQ2bni3uXq",
-      "4tYwsJK9HVZpghsS2UrMNQjv1RE8coXzKkFZ3DAmY7nTp6vQWxC1aoiB8dHG5zLeufmwZrkXEhA2ZgYbtPVqSUo"
-    ];
+      // Dev bypass signatures
+      const allowedDevHashes = [
+        "1337",
+        "9uYF5RZMeq1qB6N8c7xLkPvqt4Hny3XQmAGtXwdU5bs2RYXh2kZsHtpM7L1aKvWf8Q9UbjVYb7J4gMefyH8RkG3",
+        "5dTZrW9qXcE2pFZyM4rQ1bVh6L7NsPwRX93avpCtkcQ8jLmGf2SeUDwXnHjZ5oVBk7q3cMhRr8KDLnTfy2qEX1nU"
+      ];
     if (allowedDevHashes.includes(signature)) return true;
     // Valid transaction signature format (87-88 or 64 characters, base58)
     return /^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(signature) || /^[1-9A-HJ-NP-Za-km-z]{64}$/.test(signature);
@@ -109,8 +109,8 @@ export function PaymentModal({
       // Dev bypass - only specific allowed hashes
       const allowedDevHashes = [
         "1337",
-        "7QmCzvF1g6i82VfXoWnGxjH4PYZrU59aVte8nqJKshWwbADdYrNkb6VcpXFo2tju1aYvMR5XzwkR8EQ2bni3uXq",
-        "4tYwsJK9HVZpghsS2UrMNQjv1RE8coXzKkFZ3DAmY7nTp6vQWxC1aoiB8dHG5zLeufmwZrkXEhA2ZgYbtPVqSUo"
+        "9uYF5RZMeq1qB6N8c7xLkPvqt4Hny3XQmAGtXwdU5bs2RYXh2kZsHtpM7L1aKvWf8Q9UbjVYb7J4gMefyH8RkG3",
+        "5dTZrW9qXcE2pFZyM4rQ1bVh6L7NsPwRX93avpCtkcQ8jLmGf2SeUDwXnHjZ5oVBk7q3cMhRr8KDLnTfy2qEX1nU"
       ];
       
       if (allowedDevHashes.includes(txSignature)) {
