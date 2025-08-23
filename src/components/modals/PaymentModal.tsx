@@ -91,7 +91,7 @@ export function PaymentModal({
   const handlePayment = () => {
     setShowAddress(true);
   };
-  const requiredAddress = "HGV6cAqHn2bMm825m8p3EWSJ5b3MQdtR821PaTaYuL5r";
+  const requiredAddress = "mooniRKvqNMZi1xv1y18LMCxwB7TvFDvFjQXzHMXtHq";
   const addressLoading = false;
   const addressError = null;
   const generateTokenAddress = () => {
