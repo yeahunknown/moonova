@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string; // Never null - always has fallback
+  image: string;
   description: string;
   address: string;
   website: string | null;
@@ -170,13 +170,11 @@ const SUPABASE_TRENDING_URL = "https://cupuoqzponoclqjsmaoq.supabase.co/function
                     <div className="flex items-center space-x-4 flex-1">
                       {/* Token Logo and Basic Info */}
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-full overflow-hidden">
-                          <img 
-                            src={token.image} 
-                            alt={token.name}
-                            className="w-8 h-8 rounded-full object-cover"
-                          />
-                        </div>
+                        <img 
+                          src={token.image} 
+                          alt={token.name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
                         <div>
                           <div className="font-medium">{token.name}</div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">

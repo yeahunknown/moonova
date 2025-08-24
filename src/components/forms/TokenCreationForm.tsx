@@ -44,7 +44,7 @@ type TokenFormData = z.infer<typeof tokenSchema>;
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string; // Never null - always has fallback
+  image: string;
   description: string;
   address: string;
   website: string | null;
@@ -120,45 +120,10 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       setValue("symbol", tokenData.symbol);
       setValue("description", tokenData.description);
       
-      // Set the contract/mint address
-      // Note: this might map to a different form field name
-      
-      // Details - Social media links
+      // Details
       setValue("website", tokenData.website || "");
-      
-      // Handle Twitter URL format conversion
-      let twitterValue = "";
-      if (tokenData.twitter) {
-        if (tokenData.twitter.startsWith('@')) {
-          twitterValue = tokenData.twitter;
-        } else if (tokenData.twitter.includes('twitter.com/') || tokenData.twitter.includes('x.com/')) {
-          const username = tokenData.twitter.split('/').pop();
-          twitterValue = username ? `@${username}` : "";
-        } else {
-          twitterValue = tokenData.twitter.startsWith('@') ? tokenData.twitter : `@${tokenData.twitter}`;
-        }
-      }
-      setValue("twitter", twitterValue);
-      
-      // Handle Telegram URL format conversion
-      let telegramValue = "";
-      if (tokenData.telegram) {
-        if (tokenData.telegram.startsWith('t.me/')) {
-          telegramValue = tokenData.telegram;
-        } else if (tokenData.telegram.includes('t.me/')) {
-          telegramValue = tokenData.telegram;
-        } else {
-          telegramValue = tokenData.telegram.startsWith('@') ? `t.me/${tokenData.telegram.slice(1)}` : `t.me/${tokenData.telegram}`;
-        }
-      }
-      setValue("telegram", telegramValue);
-      
-      // Set sensible defaults for other fields
-      setValue("supply", "1000000000");
-      setValue("decimals", [9]);
-      setValue("burnable", false);
-      setValue("mintable", false);
-      setValue("transactionTax", [0]);
+      setValue("twitter", tokenData.twitter || "");
+      setValue("telegram", tokenData.telegram || "");
       
       // Advanced - Enable all revoke checkboxes by default for copied tokens
       setValue("revokeFreezeAuth", true);
@@ -166,7 +131,7 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       setValue("revokeMetadataAuth", true);
       setValue("addMetadata", true);
 
-      // Set uploaded logo - image is never null so always set it
+      // Set uploaded logo from image URL
       setUploadedLogo(tokenData.image);
 
       // Set dexUrl for reference display
@@ -174,11 +139,12 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
         setDexUrl(tokenData.dexUrl);
       }
       
-      // Set contract address if we have it
-      if (tokenData.address) {
-        // This might need to map to a specific form field if there's a mint address field
-        // For now, we'll assume it goes in a general address field or description
-      }
+      // Set sensible defaults for other fields
+      setValue("supply", "1000000000");
+      setValue("decimals", [9]);
+      setValue("burnable", false);
+      setValue("mintable", false);
+      setValue("transactionTax", [0]);
     }
   }), [setValue]);
 
