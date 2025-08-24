@@ -64,11 +64,14 @@ export function TrendingTokensModal({
 
       if (error) throw error;
 
-      if (data?.tokens) {
-        setTokens(data.tokens);
+      // Handle both { tokens: [...] } and [...] response formats
+      const tokensArray = data?.tokens || data || [];
+      setTokens(tokensArray);
+      
+      if (tokensArray.length > 0) {
         toast({
           title: "Success",
-          description: `Imported ${data.tokens.length} trending tokens (6h)`,
+          description: `Loaded ${tokensArray.length} trending tokens`,
         });
       }
     } catch (err: any) {

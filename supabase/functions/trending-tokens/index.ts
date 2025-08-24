@@ -83,8 +83,8 @@ function isRateLimited(ip: string): boolean {
 
 async function fetchTrendingTokens(timeframe: string, limit: number, chain: string): Promise<TrendingToken[]> {
   try {
-    // Try DexScreener API first
-    const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/trending/${timeframe}?chain=${chain}&limit=${limit}`);
+    // Use DexScreener pairs API for trending data
+    const response = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${chain}`);
     
     if (!response.ok) {
       throw new Error('DexScreener API failed');
@@ -92,37 +92,41 @@ async function fetchTrendingTokens(timeframe: string, limit: number, chain: stri
     
     const data = await response.json();
     
-    if (!data.tokens || !Array.isArray(data.tokens)) {
+    if (!data.pairs || !Array.isArray(data.pairs)) {
       throw new Error('Invalid response format');
     }
     
-    // Process and deduplicate tokens
+    // Sort by trending score and volume, deduplicate by baseToken address
     const tokenMap = new Map<string, any>();
     
-    for (const token of data.tokens) {
-      const tokenAddress = token.address || token.tokenAddress;
-      if (!tokenAddress) continue;
+    for (const pair of data.pairs) {
+      if (!pair.baseToken?.address) continue;
       
-      if (!tokenMap.has(tokenAddress) || 
-          (token.trendingScoreH6 || 0) > (tokenMap.get(tokenAddress)?.trendingScoreH6 || 0)) {
-        tokenMap.set(tokenAddress, token);
+      const tokenAddress = pair.baseToken.address;
+      const currentPair = tokenMap.get(tokenAddress);
+      
+      // Keep the pair with higher volume or trending score
+      if (!currentPair || 
+          (pair.volume?.h24 || 0) > (currentPair.volume?.h24 || 0)) {
+        tokenMap.set(tokenAddress, pair);
       }
     }
     
     const processedTokens: TrendingToken[] = Array.from(tokenMap.values())
+      .sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))
       .slice(0, limit)
-      .map(token => ({
-        symbol: token.symbol || 'TOKEN',
-        name: token.name || 'Unknown Token',
-        image: token.image || token.logo || '/placeholder-token.png',
-        description: token.description || generateDescription(token.name || 'Unknown Token'),
+      .map(pair => ({
+        symbol: pair.baseToken?.symbol || 'TOKEN',
+        name: pair.baseToken?.name || 'Unknown Token',
+        image: pair.info?.imageUrl || '/placeholder-token.png',
+        description: generateDescription(pair.baseToken?.name || 'Unknown Token'),
         metadata: {
-          website: token.website || token.url || '',
-          twitter: token.twitter || (token.socials?.find((s: any) => s.type === 'twitter')?.url) || '',
-          telegram: token.telegram || (token.socials?.find((s: any) => s.type === 'telegram')?.url) || '',
-          discord: token.discord || (token.socials?.find((s: any) => s.type === 'discord')?.url) || '',
+          website: pair.info?.websites?.[0]?.url || '',
+          twitter: pair.info?.socials?.find((s: any) => s.type === 'twitter')?.url || '',
+          telegram: pair.info?.socials?.find((s: any) => s.type === 'telegram')?.url || '',
+          discord: pair.info?.socials?.find((s: any) => s.type === 'discord')?.url || '',
         },
-        tokenAddress: token.address || token.tokenAddress,
+        tokenAddress: pair.baseToken.address,
         chain,
         randomized: generateRandomizedFields(),
       }));
@@ -209,13 +213,13 @@ serve(async (req) => {
     
     // Update cache
     cache = {
-      data: tokens,
+      data: { tokens },
       timestamp: Date.now(),
     };
 
     console.log(`Successfully fetched ${tokens.length} trending tokens`);
     
-    return new Response(JSON.stringify(tokens), {
+    return new Response(JSON.stringify({ tokens }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
