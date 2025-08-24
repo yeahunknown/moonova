@@ -39,28 +39,17 @@ export const TrendingTokensModal = ({
     try {
       console.log('Fetching top 10 trending tokens...');
       
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(
-        'https://cupuoqzponoclqjsmaoq.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1cHVvcXpwb25vY2xxanNtYW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5OTUxMjUsImV4cCI6MjA3MTU3MTEyNX0.q5VU33UtcunKsuVFDIy0vPGweMQNJSMSMpC2hf1ueuk'
-      );
+      const response = await fetch("https://cupuoqzponoclqjsmaoq.supabase.co/functions/v1/trending");
       
-      const { data, error } = await supabase.functions.invoke('birdeye-trending');
-      
-      if (error) {
-        console.error('Supabase function error:', error);
-        const errorMessage = error.message || 'Function invocation failed';
-        throw new Error(errorMessage);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
       
-      // Check if data contains an error response from the function
-      if (data && typeof data === 'object' && 'error' in data) {
-        console.error('Function returned error:', data);
-        throw new Error(data.error || 'Function returned an error');
-      }
+      const data = await response.json();
       
-      if (!data || !Array.isArray(data)) {
-        console.error('Invalid response from function:', data);
+      if (!Array.isArray(data)) {
+        console.error('Invalid response from trending API:', data);
         throw new Error('Invalid response format from server');
       }
       

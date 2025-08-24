@@ -1,4 +1,4 @@
 project_id = "cupuoqzponoclqjsmaoq"
 
-[functions.birdeye-trending]
+[functions.trending]
 verify_jwt = false
