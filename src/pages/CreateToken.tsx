@@ -1,18 +1,40 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import TokenCreationForm from "@/components/forms/TokenCreationForm";
 import { PaymentModal } from "@/components/modals/PaymentModal";
+import { TrendingTokensModal } from "@/components/modals/TrendingTokensModal";
 import { useToast } from "@/hooks/use-toast";
 import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
+import { TrendingUp, Loader2 } from "lucide-react";
+import type { TokenCreationFormRef } from "@/components/forms/TokenCreationForm";
+
+interface TrendingToken {
+  name: string;
+  symbol: string;
+  image: string;
+  description: string;
+  metadata: {
+    website: string;
+    twitter: string;
+    telegram: string;
+    discord: string;
+  };
+  tokenAddress: string;
+  chain: string;
+}
 
 const CreateToken = () => {
   const [step, setStep] = useState(1);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isTrendingModalOpen, setIsTrendingModalOpen] = useState(false);
+  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
   const [tokenData, setTokenData] = useState<any>(null);
   const { setSectionRef, isVisible } = useFadeInAnimation();
   const { toast } = useToast();
+  const formRef = useRef<TokenCreationFormRef>(null);
 
   const progressPercentage = (step / 3) * 100;
 
@@ -37,6 +59,45 @@ const CreateToken = () => {
 
   const handlePaymentComplete = () => {
     // Payment success handled by the success modal
+  };
+
+  const handleCopyTrendingTokens = async () => {
+    setIsLoadingTrending(true);
+    try {
+      // Small delay to show loading state
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setIsTrendingModalOpen(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load trending tokens",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingTrending(false);
+    }
+  };
+
+  const handleTokenSelect = (token: TrendingToken) => {
+    if (formRef.current) {
+      formRef.current.fillTokenData(token);
+      toast({
+        title: "Token Copied",
+        description: `${token.name} (${token.symbol}) copied to form`,
+      });
+    }
+  };
+
+  const handleTokensSelect = (tokens: TrendingToken[]) => {
+    if (tokens.length > 0 && formRef.current) {
+      // For now, just copy the first token
+      // In a real implementation, you might want to queue all tokens
+      formRef.current.fillTokenData(tokens[0]);
+      toast({
+        title: "Tokens Copied",
+        description: `Copied ${tokens[0].name} to form. ${tokens.length - 1} more tokens available.`,
+      });
+    }
   };
 
   const calculateCost = () => {
@@ -121,11 +182,36 @@ const CreateToken = () => {
 
                 {/* Form */}
                 <TokenCreationForm
+                  ref={formRef}
                   step={step}
                   onNext={handleNext}
                   onPrevious={handlePrevious}
                   onSubmit={handleFormSubmit}
                 />
+
+                {/* Copy Trending Tokens Button - Only show in step 3 */}
+                {step === 3 && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <Button
+                      onClick={handleCopyTrendingTokens}
+                      disabled={isLoadingTrending}
+                      variant="secondary"
+                      className="w-full bg-secondary/50 hover:bg-secondary/70 text-secondary-foreground border border-border/50 transition-all duration-200 hover:scale-105"
+                    >
+                      {isLoadingTrending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          <TrendingUp className="h-4 w-4 mr-2" />
+                          Copy Trending Tokens
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -140,6 +226,14 @@ const CreateToken = () => {
         onPaymentSuccess={handlePaymentComplete}
         type="token"
         tokenData={tokenData ? { name: tokenData.name, symbol: tokenData.symbol } : undefined}
+      />
+
+      {/* Trending Tokens Modal */}
+      <TrendingTokensModal
+        open={isTrendingModalOpen}
+        onOpenChange={setIsTrendingModalOpen}
+        onTokenSelect={handleTokenSelect}
+        onTokensSelect={handleTokensSelect}
       />
     </div>
   );

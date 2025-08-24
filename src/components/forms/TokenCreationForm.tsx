@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,6 +41,21 @@ const tokenSchema = z.object({
 
 type TokenFormData = z.infer<typeof tokenSchema>;
 
+interface TrendingToken {
+  name: string;
+  symbol: string;
+  image: string;
+  description: string;
+  metadata: {
+    website: string;
+    twitter: string;
+    telegram: string;
+    discord: string;
+  };
+  tokenAddress: string;
+  chain: string;
+}
+
 interface TokenCreationFormProps {
   step: number;
   onNext: () => void;
@@ -48,7 +63,11 @@ interface TokenCreationFormProps {
   onSubmit: (data: TokenFormData) => void;
 }
 
-const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreationFormProps) => {
+export interface TokenCreationFormRef {
+  fillTokenData: (data: TrendingToken) => void;
+}
+
+const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProps>(({ step, onNext, onPrevious, onSubmit }, ref) => {
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -77,6 +96,54 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
   const { watch, setValue } = form;
   const formData = watch();
+
+  // Generate sensible random defaults for other fields
+  const generateRandomDefaults = () => {
+    const randomSupply = Math.floor(Math.random() * (1000000000 - 1000000) + 1000000);
+    const randomDecimals = Math.floor(Math.random() * 10);
+    return {
+      supply: randomSupply.toString(),
+      decimals: [randomDecimals],
+      burnable: Math.random() > 0.5,
+      mintable: Math.random() > 0.7,
+      transactionTax: [Math.floor(Math.random() * 5)],
+      revokeFreezeAuth: Math.random() > 0.3,
+      revokeMintAuth: Math.random() > 0.3,
+      revokeMetadataAuth: Math.random() > 0.3,
+      addMetadata: true, // Enable metadata when copying trending tokens
+    };
+  };
+
+  // Expose fillTokenData method via ref
+  useImperativeHandle(ref, () => ({
+    fillTokenData: (tokenData: TrendingToken) => {
+      const defaults = generateRandomDefaults();
+      
+      // Fill form with token data and generated defaults
+      setValue("name", tokenData.name);
+      setValue("symbol", tokenData.symbol);
+      setValue("description", tokenData.description || "A trending token from the Solana ecosystem");
+      setValue("website", tokenData.metadata.website || "");
+      setValue("twitter", tokenData.metadata.twitter ? tokenData.metadata.twitter.replace('https://twitter.com/', '@') : "");
+      setValue("telegram", tokenData.metadata.telegram ? tokenData.metadata.telegram.replace('https://t.me/', 't.me/') : "");
+      
+      // Set generated defaults
+      setValue("supply", defaults.supply);
+      setValue("decimals", defaults.decimals);
+      setValue("burnable", defaults.burnable);
+      setValue("mintable", defaults.mintable);
+      setValue("transactionTax", defaults.transactionTax);
+      setValue("revokeFreezeAuth", defaults.revokeFreezeAuth);
+      setValue("revokeMintAuth", defaults.revokeMintAuth);
+      setValue("revokeMetadataAuth", defaults.revokeMetadataAuth);
+      setValue("addMetadata", defaults.addMetadata);
+
+      // Set uploaded logo if available
+      if (tokenData.image) {
+        setUploadedLogo(tokenData.image);
+      }
+    }
+  }), [setValue]);
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -802,6 +869,8 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       </form>
     </Form>
   );
-};
+});
+
+TokenCreationForm.displayName = "TokenCreationForm";
 
 export default TokenCreationForm;
