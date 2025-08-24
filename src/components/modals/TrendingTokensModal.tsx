@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Copy, Globe, Twitter, MessageCircle, ExternalLink } from "lucide-react";
@@ -46,86 +46,46 @@ export const TrendingTokensModal = ({
     setError(null);
     
     try {
-      const response = await fetch('https://public-api.birdeye.so/defi/token_trending?chain=solana&offset=0&limit=100');
+      console.log('Fetching trending tokens from Birdeye via edge function...');
       
-      if (!response.ok) {
-        throw new Error(`Failed to fetch trending tokens: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Extract and normalize the first 10 valid tokens
-      const normalizedTokens: TrendingToken[] = [];
-      
-      if (data.data && Array.isArray(data.data)) {
-        for (const item of data.data) {
-          // Skip tokens without basic info
-          if (!item.symbol || !item.address || normalizedTokens.length >= 10) {
-            continue;
-          }
-          
-          // Extract metadata safely
-          const extractMetadata = () => {
-            const metadata = {
-              website: "",
-              twitter: "",
-              telegram: "",
-              discord: ""
-            };
-            
-            // Try to get website from various places
-            if (item.extensions?.website) {
-              metadata.website = item.extensions.website;
-            }
-            
-            // Try to extract social links
-            if (item.extensions) {
-              if (item.extensions.twitter) {
-                metadata.twitter = item.extensions.twitter.startsWith('http') 
-                  ? item.extensions.twitter 
-                  : `https://twitter.com/${item.extensions.twitter.replace('@', '')}`;
-              }
-              if (item.extensions.telegram) {
-                metadata.telegram = item.extensions.telegram.startsWith('http') 
-                  ? item.extensions.telegram 
-                  : `https://t.me/${item.extensions.telegram}`;
-              }
-              if (item.extensions.discord) {
-                metadata.discord = item.extensions.discord;
-              }
-            }
-            
-            return metadata;
-          };
-          
-          const normalizedToken: TrendingToken = {
-            name: item.name || item.symbol || "Unknown Token",
-            symbol: item.symbol || "",
-            image: item.logoURI || item.extensions?.coingeckoId ? `https://assets.coingecko.com/coins/images/${item.extensions.coingeckoId}/large/logo.png` : "",
-            description: item.extensions?.description || "",
-            metadata: extractMetadata(),
-            tokenAddress: item.address || "",
-            chain: "solana",
-            price: item.price || undefined,
-            liquidity: item.liquidity?.usd || undefined,
-            volume24h: item.v24hUSD || undefined
-          };
-          
-          normalizedTokens.push(normalizedToken);
-        }
-      }
-      
-      // Remove duplicates by token address
-      const uniqueTokens = normalizedTokens.filter((token, index, self) => 
-        index === self.findIndex(t => t.tokenAddress === token.tokenAddress)
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        'https://cupuoqzponoclqjsmaoq.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1cHVvcXpwb25vY2xxanNtYW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5OTUxMjUsImV4cCI6MjA3MTU3MTEyNX0.q5VU33UtcunKsuVFDIy0vPGweMQNJSMSMpC2hf1ueuk'
       );
       
-      setTokens(uniqueTokens);
+      const { data, error } = await supabase.functions.invoke('birdeye-trending', {
+        body: { 
+          chain: 'solana',
+          limit: 10
+        }
+      });
       
-      if (uniqueTokens.length > 0) {
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`Function error: ${error.message}`);
+      }
+      
+      if (!data || !Array.isArray(data)) {
+        console.error('Invalid response from function:', data);
+        throw new Error('Invalid response format from server');
+      }
+      
+      console.log(`Received ${data.length} tokens from edge function`);
+      
+      // Filter out any invalid tokens and ensure we have the required fields
+      const validTokens = data.filter(token => 
+        token.symbol && 
+        token.tokenAddress && 
+        token.name
+      );
+      
+      setTokens(validTokens);
+      
+      if (validTokens.length > 0) {
         toast({
           title: "Success",
-          description: `Imported ${uniqueTokens.length} trending tokens from Birdeye`,
+          description: `Loaded ${validTokens.length} trending tokens from Birdeye`,
         });
       } else {
         toast({
@@ -137,6 +97,7 @@ export const TrendingTokensModal = ({
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch trending tokens";
+      console.error('Error fetching trending tokens:', err);
       setError(errorMessage);
       toast({
         title: "Error",
@@ -186,9 +147,14 @@ export const TrendingTokensModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <DialogTitle className="text-xl font-semibold">
-            Trending Tokens (Solana, Live)
-          </DialogTitle>
+          <div>
+            <DialogTitle className="text-xl font-semibold">
+              Trending Tokens (Solana, Live)
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground mt-1">
+              Real-time trending tokens from Birdeye API
+            </DialogDescription>
+          </div>
           <div className="flex gap-2">
             {tokens.length > 0 && (
               <Button
