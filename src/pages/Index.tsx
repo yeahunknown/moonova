@@ -4,13 +4,33 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import { HeroAnimation } from "@/components/HeroAnimation";
 import { StatsBar } from "@/components/StatsBar";
-import { Rocket, Shield, TrendingUp } from "lucide-react";
+import { TrendingTokensModal } from "@/components/modals/TrendingTokensModal";
+import { Rocket, Shield, TrendingUp, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+interface TrendingToken {
+  name: string;
+  symbol: string;
+  image: string;
+  description: string;
+  metadata: {
+    website: string;
+    twitter: string;
+    telegram: string;
+    discord: string;
+  };
+  tokenAddress: string;
+  chain: string;
+}
 
 const Index = () => {
   const navigate = useNavigate();
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
+  const [isTrendingModalOpen, setIsTrendingModalOpen] = useState(false);
+  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+  const { toast } = useToast();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -39,6 +59,45 @@ const Index = () => {
     sectionRefs.current[id] = el;
   };
 
+  const handleCopyTrendingTokens = async () => {
+    setIsLoadingTrending(true);
+    try {
+      // Small delay to show loading state
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setIsTrendingModalOpen(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load trending tokens",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingTrending(false);
+    }
+  };
+
+  const handleTokenSelect = (token: TrendingToken) => {
+    // Store token data and navigate to create page
+    sessionStorage.setItem('selectedTrendingToken', JSON.stringify(token));
+    navigate("/create");
+    toast({
+      title: "Token Selected",
+      description: `${token.name} (${token.symbol}) will be loaded in the form`,
+    });
+  };
+
+  const handleTokensSelect = (tokens: TrendingToken[]) => {
+    if (tokens.length > 0) {
+      // Store first token and navigate to create page
+      sessionStorage.setItem('selectedTrendingToken', JSON.stringify(tokens[0]));
+      navigate("/create");
+      toast({
+        title: "Tokens Selected",
+        description: `${tokens[0].name} will be loaded. ${tokens.length - 1} more available.`,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-dark">
       <Navigation />
@@ -65,14 +124,36 @@ const Index = () => {
                 no-code token creation platform on Solana.
               </p>
               
-              <Button 
-                size="lg"
-                onClick={() => navigate("/create")}
-                className="bg-gradient-primary hover:opacity-90 transition-all hover:scale-105 shadow-glow text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto min-h-[48px]"
-              >
-                <Rocket className="mr-2 h-5 w-5" />
-                Create Token Now
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Button 
+                  size="lg"
+                  onClick={() => navigate("/create")}
+                  className="bg-gradient-primary hover:opacity-90 transition-all hover:scale-105 shadow-glow text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto min-h-[48px]"
+                >
+                  <Rocket className="mr-2 h-5 w-5" />
+                  Create Token Now
+                </Button>
+
+                <Button 
+                  size="lg"
+                  variant="secondary"
+                  onClick={handleCopyTrendingTokens}
+                  disabled={isLoadingTrending}
+                  className="bg-secondary/50 hover:bg-secondary/70 text-secondary-foreground border border-border/50 transition-all duration-200 hover:scale-105 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto min-h-[48px]"
+                >
+                  {isLoadingTrending ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="mr-2 h-5 w-5" />
+                      Copy Trending Tokens
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
             
             <div className="flex justify-center lg:justify-end">
@@ -177,6 +258,14 @@ const Index = () => {
           </Card>
         </div>
       </div>
+
+      {/* Trending Tokens Modal */}
+      <TrendingTokensModal
+        open={isTrendingModalOpen}
+        onOpenChange={setIsTrendingModalOpen}
+        onTokenSelect={handleTokenSelect}
+        onTokensSelect={handleTokensSelect}
+      />
     </div>
   );
 };
