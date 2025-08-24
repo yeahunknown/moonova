@@ -12,8 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText, Sparkles, TrendingUp, Loader2 } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { TrendingTokensPreview } from "@/components/TrendingTokensPreview";
-import { supabase } from "@/integrations/supabase/client";
+import { TrendingTokensModal } from "@/components/modals/TrendingTokensModal";
 
 const tokenSchema = z.object({
   name: z.string()
@@ -81,8 +80,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [trendingTokens, setTrendingTokens] = useState<TrendingToken[]>([]);
-  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
+  const [isTrendingModalOpen, setIsTrendingModalOpen] = useState(false);
 
   const form = useForm<TokenFormData>({
     resolver: zodResolver(tokenSchema),
@@ -244,33 +242,6 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
     }
   };
 
-  const fetchTrendingTokens = async () => {
-    setIsLoadingTrending(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('trending-tokens', {
-        body: { 
-          timeframe: '6h', 
-          limit: 10, 
-          chain: 'solana' 
-        }
-      });
-
-      if (error) throw error;
-
-      if (Array.isArray(data)) {
-        setTrendingTokens(data);
-        toast.success("Imported 10 trending tokens (6h)");
-      } else {
-        throw new Error("Invalid response format");
-      }
-    } catch (error) {
-      console.error('Error fetching trending tokens:', error);
-      toast.error("Couldn't load trending tokens. Try again.");
-    } finally {
-      setIsLoadingTrending(false);
-    }
-  };
-
   const handleUseToken = (token: TrendingToken) => {
     // Set form values from token
     form.setValue('name', token.name);
@@ -286,28 +257,26 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       form.setValue('discord', token.metadata.discord);
     }
     
-    // Set randomized values
+    // Set randomized values with all revokes enabled
     form.setValue('supply', token.randomized.supply);
     form.setValue('decimals', [token.randomized.decimals]);
     form.setValue('burnable', token.randomized.burnable);
     form.setValue('mintable', token.randomized.mintable);
     form.setValue('transactionTax', [token.randomized.transactionTax]);
-    form.setValue('revokeFreezeAuth', token.randomized.revokeFreezeAuth);
-    form.setValue('revokeMintAuth', token.randomized.revokeMintAuth);
-    form.setValue('revokeMetadataAuth', token.randomized.revokeMetadataAuth);
+    form.setValue('revokeFreezeAuth', true);
+    form.setValue('revokeMintAuth', true);
+    form.setValue('revokeMetadataAuth', true);
     
     // Set logo if available
     if (token.image && token.image !== '/placeholder-token.png') {
       setUploadedLogo(token.image);
     }
-    
-    toast.success(`Token data copied: ${token.name}`);
   };
 
-  const handleUseAll = () => {
-    if (trendingTokens.length > 0) {
-      handleUseToken(trendingTokens[0]);
-      toast.success(`Bulk creation not implemented yet. Used first token: ${trendingTokens[0].name}`);
+  const handleUseAll = (tokens: TrendingToken[]) => {
+    if (tokens.length > 0) {
+      handleUseToken(tokens[0]);
+      toast.success(`Using first token: ${tokens[0].name}. Advanced settings have all revokes enabled.`);
     }
   };
 
@@ -885,27 +854,21 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
           <Button
             type="button"
             variant="ghost"
-            onClick={fetchTrendingTokens}
-            disabled={isLoadingTrending}
+            onClick={() => setIsTrendingModalOpen(true)}
             className="w-full bg-secondary/50 hover:bg-secondary/70 border border-border transition-all duration-200 hover:scale-105 min-h-[44px]"
           >
-            {isLoadingTrending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <TrendingUp className="mr-2 h-4 w-4" />
-            )}
+            <TrendingUp className="mr-2 h-4 w-4" />
             Copy Trending Tokens
           </Button>
         </div>
 
-        {/* Trending Tokens Preview */}
-        {trendingTokens.length > 0 && (
-          <TrendingTokensPreview
-            tokens={trendingTokens}
-            onUseToken={handleUseToken}
-            onUseAll={handleUseAll}
-          />
-        )}
+        {/* Trending Tokens Modal */}
+        <TrendingTokensModal
+          open={isTrendingModalOpen}
+          onOpenChange={setIsTrendingModalOpen}
+          onTokenSelect={handleUseToken}
+          onUseAll={handleUseAll}
+        />
 
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 lg:pt-8">
