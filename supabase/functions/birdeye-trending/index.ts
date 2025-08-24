@@ -5,9 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const APIFY_TASK_ID = 'ecriminal/moonova-trending-tokens-list';
-const APIFY_TOKEN = 'apify_api_nKKbTqF874eJ0RpShoAnA78rHtfW9R0YwDoz';
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -17,37 +14,41 @@ serve(async (req) => {
   try {
     console.log('Fetching trending tokens from Apify Task...');
     
+    // Get environment variables from Supabase secrets
+    const APIFY_TASK_ID = Deno.env.get('APIFY_TASK_ID');
+    const APIFY_TOKEN = Deno.env.get('APIFY_TOKEN');
+    
     // Check if required environment variables are available
     if (!APIFY_TASK_ID || !APIFY_TOKEN) {
       console.error('Missing APIFY environment variables');
       return new Response(JSON.stringify({ 
-        error: 'Missing APIFY environment variables',
-        details: 'APIFY_TASK_ID or APIFY_TOKEN not configured'
+        error: 'Missing APIFY environment variables - APIFY_TASK_ID or APIFY_TOKEN not configured'
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     
-    const limit = 50; // Always fetch top 50 tokens
+    console.log(`Using Apify Task: ${APIFY_TASK_ID}`);
     
     // POST to Apify run-sync-get-dataset-items endpoint
-    const apifyResponse = await fetch(
-      `https://api.apify.com/v2/actor-tasks/${encodeURIComponent(APIFY_TASK_ID)}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&format=json&clean=1`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          blockchain: 'solana',
-          timeframe: '24h',
-          filter: '?rankBy=trendingScoreH24&order=desc',
-          fromPage: 1,
-          toPage: 5
-        })
-      }
-    );
+    const apifyUrl = `https://api.apify.com/v2/actor-tasks/${encodeURIComponent(APIFY_TASK_ID)}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&format=json&clean=1`;
+    
+    const apifyResponse = await fetch(apifyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        blockchain: 'solana',
+        timeframe: '24h',
+        filter: '?rankBy=trendingScoreH24&order=desc',
+        fromPage: 1,
+        toPage: 5
+      })
+    });
+    
+    console.log(`Apify response status: ${apifyResponse.status}`);
     
     if (!apifyResponse.ok) {
       const errorText = await apifyResponse.text();
@@ -68,7 +69,7 @@ serve(async (req) => {
     let tokens = [];
     
     if (Array.isArray(apifyData)) {
-      tokens = apifyData.slice(0, limit).map((item: any) => ({
+      tokens = apifyData.slice(0, 50).map((item: any) => ({
         name: item.name || item.tokenName || item.title || 'Unknown Token',
         symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
         image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
@@ -89,7 +90,7 @@ serve(async (req) => {
     } else if (apifyData && typeof apifyData === 'object') {
       // Handle single object or nested structure
       const dataArray = apifyData.items || apifyData.tokens || apifyData.results || apifyData.data || [apifyData];
-      tokens = dataArray.slice(0, limit).map((item: any) => ({
+      tokens = dataArray.slice(0, 50).map((item: any) => ({
         name: item.name || item.tokenName || item.title || 'Unknown Token',
         symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
         image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
@@ -134,8 +135,8 @@ serve(async (req) => {
       ];
     }
     
-    // Take only the requested number of tokens 
-    const limitedTokens = tokens.slice(0, limit);
+    // Take only the first 50 tokens 
+    const limitedTokens = tokens.slice(0, 50);
     
     console.log(`Successfully fetched ${limitedTokens.length} trending tokens from Apify`);
     
