@@ -136,15 +136,16 @@ export function TrendingTokensModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
-        <DialogContent className="p-0 gap-0 bg-card border border-border max-w-md rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
-          <div className="p-6 relative text-center">
+        <DialogContent className="max-w-md p-0 border-0 bg-transparent shadow-none">
+          <div className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
+            <div className="text-center space-y-6">
             {/* Header with Icon */}
             <div className="flex flex-col items-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                <TrendingUp className="h-8 w-8 text-primary-foreground" />
+              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4 shadow-lg">
+                <TrendingUp className="h-8 w-8 text-white" />
               </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">Copy Trending Tokens</h2>
-              <p className="text-muted-foreground text-sm">Select tokens to import into your creation form</p>
+              <h2 className="text-2xl font-bold text-white">Copy Trending Tokens</h2>
+              <p className="text-gray-300 text-sm">Select tokens to import into your creation form</p>
             </div>
 
             {/* Content */}
@@ -255,6 +256,7 @@ export function TrendingTokensModal({
               </div>
             )}
           </div>
+        </div>
         </DialogContent>
       </DialogPortal>
     </Dialog>
