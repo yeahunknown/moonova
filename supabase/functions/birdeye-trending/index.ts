@@ -5,6 +5,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const APIFY_TASK_ID = 'ecriminal/moonova-trending-tokens-list';
+const APIFY_TOKEN = 'apify_api_nKKbTqF874eJ0RpShoAnA78rHtfW9R0YwDoz';
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -12,71 +15,93 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Fetching trending tokens from Apify API...');
+    console.log('Fetching trending tokens from Apify Task...');
     
     const url = new URL(req.url);
-    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const limit = parseInt(url.searchParams.get('limit') || '50');
     
-    // Fetch from Apify API
-    const apifyResponse = await fetch('https://api.apify.com/v2/key-value-stores/cXgkWQuSHdCb1v1wy/records/INPUT?token=apify_api_nKKbTqF874eJ0RpShoAnA78rHtfW9R0YwDoz');
+    // Calculate pages needed to get the required number of tokens
+    const tokensPerPage = 10; // Apify typically returns 10 tokens per page
+    const pages = Math.ceil(limit / tokensPerPage);
+    const toPage = Math.min(pages, 5); // Maximum 5 pages (50 tokens)
+    
+    // POST to Apify run-sync-get-dataset-items endpoint
+    const apifyResponse = await fetch(
+      `https://api.apify.com/v2/actor-tasks/${APIFY_TASK_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&format=json&clean=1`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          blockchain: 'solana',
+          timeframe: '24h',
+          filter: '?rankBy=trendingScoreH24&order=desc',
+          fromPage: 1,
+          toPage: toPage
+        })
+      }
+    );
     
     if (!apifyResponse.ok) {
       throw new Error(`Apify API failed with status: ${apifyResponse.status}`);
     }
     
     const apifyData = await apifyResponse.json();
-    console.log('Apify API response received');
+    console.log('Apify API response received, data type:', typeof apifyData);
     
     // Parse and transform the Apify data to our token format
     let tokens = [];
     
     if (Array.isArray(apifyData)) {
       tokens = apifyData.slice(0, limit).map((item: any) => ({
-        name: item.name || item.token_name || item.title || 'Unknown Token',
-        symbol: item.symbol || item.ticker || item.token_symbol || 'N/A',
-        image: item.image || item.logo || item.icon || item.avatar || 'https://via.placeholder.com/64',
-        description: item.description || item.summary || item.about || 'No description available',
+        name: item.name || item.tokenName || item.title || 'Unknown Token',
+        symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
+        image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
+        description: item.description || item.summary || item.about || 'Trending Solana token',
         metadata: {
           website: item.website || item.url || item.homepage || '',
-          twitter: item.twitter || item.social?.twitter || '',
-          telegram: item.telegram || item.social?.telegram || '',
-          discord: item.discord || item.social?.discord || ''
+          twitter: item.twitter || item.social?.twitter || item.twitterUrl || '',
+          telegram: item.telegram || item.social?.telegram || item.telegramUrl || '',
+          discord: item.discord || item.social?.discord || item.discordUrl || ''
         },
-        tokenAddress: item.address || item.contract_address || item.token_address || item.mint || 'N/A',
-        chain: item.chain || item.blockchain || 'solana',
-        price: parseFloat(item.price || item.current_price || 0),
-        liquidity: parseInt(item.liquidity || item.market_cap || 0),
-        volume24h: parseInt(item.volume_24h || item.daily_volume || 0)
+        tokenAddress: item.address || item.contractAddress || item.tokenAddress || item.mint || 'N/A',
+        chain: 'solana',
+        price: parseFloat(item.price || item.currentPrice || item.priceUsd || 0),
+        liquidity: parseInt(item.liquidity || item.marketCap || item.liquidityUsd || 0),
+        volume24h: parseInt(item.volume24h || item.dailyVolume || item.volume || 0),
+        trendingScore: parseFloat(item.trendingScoreH24 || item.trendingScore || 0)
       }));
     } else if (apifyData && typeof apifyData === 'object') {
       // Handle single object or nested structure
-      const dataArray = apifyData.tokens || apifyData.results || apifyData.data || [apifyData];
+      const dataArray = apifyData.items || apifyData.tokens || apifyData.results || apifyData.data || [apifyData];
       tokens = dataArray.slice(0, limit).map((item: any) => ({
-        name: item.name || item.token_name || item.title || 'Unknown Token',
-        symbol: item.symbol || item.ticker || item.token_symbol || 'N/A',
-        image: item.image || item.logo || item.icon || item.avatar || 'https://via.placeholder.com/64',
-        description: item.description || item.summary || item.about || 'No description available',
+        name: item.name || item.tokenName || item.title || 'Unknown Token',
+        symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
+        image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
+        description: item.description || item.summary || item.about || 'Trending Solana token',
         metadata: {
           website: item.website || item.url || item.homepage || '',
-          twitter: item.twitter || item.social?.twitter || '',
-          telegram: item.telegram || item.social?.telegram || '',
-          discord: item.discord || item.social?.discord || ''
+          twitter: item.twitter || item.social?.twitter || item.twitterUrl || '',
+          telegram: item.telegram || item.social?.telegram || item.telegramUrl || '',
+          discord: item.discord || item.social?.discord || item.discordUrl || ''
         },
-        tokenAddress: item.address || item.contract_address || item.token_address || item.mint || 'N/A',
-        chain: item.chain || item.blockchain || 'solana',
-        price: parseFloat(item.price || item.current_price || 0),
-        liquidity: parseInt(item.liquidity || item.market_cap || 0),
-        volume24h: parseInt(item.volume_24h || item.daily_volume || 0)
+        tokenAddress: item.address || item.contractAddress || item.tokenAddress || item.mint || 'N/A',
+        chain: 'solana',
+        price: parseFloat(item.price || item.currentPrice || item.priceUsd || 0),
+        liquidity: parseInt(item.liquidity || item.marketCap || item.liquidityUsd || 0),
+        volume24h: parseInt(item.volume24h || item.dailyVolume || item.volume || 0),
+        trendingScore: parseFloat(item.trendingScoreH24 || item.trendingScore || 0)
       }));
     }
     
-    // Fallback mock data if API doesn't return expected format
+    // Fallback if no data received
     if (!tokens || tokens.length === 0) {
-      console.log('Apify API data format unexpected, using fallback mock data');
+      console.log('No tokens received from Apify, providing fallback data');
       tokens = [
         {
           name: "Solana",
-          symbol: "SOL",
+          symbol: "SOL", 
           image: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
           description: "Fast, decentralized blockchain built for scale",
           metadata: {
@@ -89,21 +114,22 @@ serve(async (req) => {
           chain: "solana",
           price: 245.67,
           liquidity: 500000000,
-          volume24h: 1500000000
+          volume24h: 1500000000,
+          trendingScore: 100
         }
       ];
     }
     
-    // Take only the requested number of tokens (default 10)
+    // Take only the requested number of tokens 
     const limitedTokens = tokens.slice(0, limit);
     
-    console.log(`Successfully fetched ${limitedTokens.length} trending tokens from Apify API`);
+    console.log(`Successfully fetched ${limitedTokens.length} trending tokens from Apify`);
     
     return new Response(JSON.stringify(limitedTokens), {
       headers: { 
         ...corsHeaders, 
         'Content-Type': 'application/json',
-        'X-Source': 'apify-api'
+        'X-Source': 'apify-task'
       },
     });
     

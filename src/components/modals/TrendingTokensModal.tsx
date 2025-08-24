@@ -21,6 +21,7 @@ interface TrendingToken {
   price?: number;
   liquidity?: number;
   volume24h?: number;
+  trendingScore?: number;
 }
 
 interface TrendingTokensModalProps {
@@ -46,7 +47,7 @@ export const TrendingTokensModal = ({
     setError(null);
     
     try {
-      console.log('Fetching trending tokens from Birdeye via edge function...');
+      console.log('Fetching top 50 trending tokens from Apify...');
       
       const { createClient } = await import('@supabase/supabase-js');
       const supabase = createClient(
@@ -56,8 +57,7 @@ export const TrendingTokensModal = ({
       
       const { data, error } = await supabase.functions.invoke('birdeye-trending', {
         body: { 
-          chain: 'solana',
-          limit: 10
+          limit: 50
         }
       });
       
@@ -71,7 +71,7 @@ export const TrendingTokensModal = ({
         throw new Error('Invalid response format from server');
       }
       
-      console.log(`Received ${data.length} tokens from edge function`);
+      console.log(`Received ${data.length} tokens from Apify via edge function`);
       
       // Filter out any invalid tokens and ensure we have the required fields
       const validTokens = data.filter(token => 
@@ -85,7 +85,7 @@ export const TrendingTokensModal = ({
       if (validTokens.length > 0) {
         toast({
           title: "Success",
-          description: `Loaded ${validTokens.length} trending tokens from Birdeye`,
+          description: `Loaded ${validTokens.length} trending Solana tokens from Apify`,
         });
       } else {
         toast({
@@ -149,21 +149,21 @@ export const TrendingTokensModal = ({
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div>
             <DialogTitle className="text-xl font-semibold">
-              Trending Tokens (Solana, Live)
+              Top 50 Trending Solana Tokens
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground mt-1">
-              Real-time trending tokens from Apify API
+              24h trending ranked by score. Click copy to prefill token creation form.
             </DialogDescription>
           </div>
           <div className="flex gap-2">
             {tokens.length > 0 && (
               <Button
                 onClick={handleCopyAll}
-                variant="outline"
                 size="sm"
-                className="bg-gradient-primary hover:bg-gradient-primary/90 text-white border-primary/20"
+                style={{ backgroundColor: '#ccbe43', color: 'black' }}
+                className="hover:opacity-90"
               >
-                Copy All {tokens.length}
+                Copy First Token
               </Button>
             )}
             <Button
@@ -182,7 +182,7 @@ export const TrendingTokensModal = ({
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Loading trending tokens from Birdeye...</p>
+                <p className="text-muted-foreground">Loading trending tokens from Apify...</p>
               </div>
             </div>
           ) : error && tokens.length === 0 ? (
@@ -200,11 +200,9 @@ export const TrendingTokensModal = ({
             </div>
           ) : (
             <div className="space-y-3">
-              {tokens.length < 10 && (
-                <div className="text-sm text-muted-foreground mb-4">
-                  Showing {tokens.length} token{tokens.length !== 1 ? 's' : ''}
-                </div>
-              )}
+              <div className="text-sm text-muted-foreground mb-4">
+                Showing {tokens.length} trending tokens from Apify
+              </div>
               
               {tokens.map((token, index) => (
                 <div
@@ -242,16 +240,18 @@ export const TrendingTokensModal = ({
                         </div>
                       </div>
 
-                      {/* Price and Liquidity */}
+                      {/* Price and 24h Score */}
                       <div className="hidden md:flex items-center space-x-4 text-sm">
                         <div>
                           <div className="text-muted-foreground">Price</div>
                           <div>{formatPrice(token.price)}</div>
                         </div>
-                        <div>
-                          <div className="text-muted-foreground">Liquidity</div>
-                          <div>{formatLiquidity(token.liquidity)}</div>
-                        </div>
+                        {token.trendingScore && token.trendingScore > 0 && (
+                          <div>
+                            <div className="text-muted-foreground">24h Score</div>
+                            <div style={{ color: '#ccbe43' }}>{token.trendingScore.toFixed(1)}</div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -297,7 +297,8 @@ export const TrendingTokensModal = ({
                       <Button
                         onClick={() => handleCopyToken(token)}
                         size="sm"
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                        style={{ backgroundColor: '#ccbe43', color: 'black' }}
+                        className="hover:opacity-90"
                       >
                         <Copy className="h-4 w-4 mr-1" />
                         Copy
