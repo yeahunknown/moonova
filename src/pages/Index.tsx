@@ -9,20 +9,6 @@ import { Rocket, Shield, TrendingUp, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-interface TrendingToken {
-  name: string;
-  symbol: string;
-  image: string;
-  description: string;
-  metadata: {
-    website: string;
-    twitter: string;
-    telegram: string;
-    discord: string;
-  };
-  tokenAddress: string;
-  chain: string;
-}
 
 const Index = () => {
   const navigate = useNavigate();
@@ -76,27 +62,6 @@ const Index = () => {
     }
   };
 
-  const handleTokenSelect = (token: TrendingToken) => {
-    // Store token data and navigate to create page
-    sessionStorage.setItem('selectedTrendingToken', JSON.stringify(token));
-    navigate("/create");
-    toast({
-      title: "Token Selected",
-      description: `${token.name} (${token.symbol}) will be loaded in the form`,
-    });
-  };
-
-  const handleTokensSelect = (tokens: TrendingToken[]) => {
-    if (tokens.length > 0) {
-      // Store first token and navigate to create page
-      sessionStorage.setItem('selectedTrendingToken', JSON.stringify(tokens[0]));
-      navigate("/create");
-      toast({
-        title: "Tokens Selected",
-        description: `${tokens[0].name} will be loaded. ${tokens.length - 1} more available.`,
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-dark">

@@ -32,6 +32,8 @@ export const TrendingTokensModal = ({
   const { toast } = useToast();
   const navigate = useNavigate();
 
+const SUPABASE_TRENDING_URL = "https://cupuoqzponoclqjsmaoq.supabase.co/functions/v1/trending";
+
   const fetchTrendingTokens = async () => {
     setLoading(true);
     setError(null);
@@ -39,7 +41,7 @@ export const TrendingTokensModal = ({
     try {
       console.log('Fetching top 10 trending tokens...');
       
-      const response = await fetch("https://cupuoqzponoclqjsmaoq.supabase.co/functions/v1/trending");
+      const response = await fetch(SUPABASE_TRENDING_URL);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
@@ -76,7 +78,7 @@ export const TrendingTokensModal = ({
       setError(errorMessage);
       toast({
         title: "Error",
-        description: "Couldn't load trending tokens. Try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -173,17 +175,20 @@ export const TrendingTokensModal = ({
                             <img 
                               src={token.image} 
                               alt={token.name}
-                              className="w-full h-full object-cover"
+                              className="w-8 h-8 rounded-full object-cover"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
                                 target.nextElementSibling?.classList.remove('hidden');
                               }}
                             />
-                          ) : null}
-                          <div className={`text-white text-xs font-bold ${token.image ? 'hidden' : ''}`}>
-                            {token.symbol.slice(0, 2)}
-                          </div>
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                              <div className="text-muted-foreground text-xs font-bold">
+                                {token.symbol.slice(0, 2)}
+                              </div>
+                            </div>
+                          )}
                         </div>
                         <div>
                           <div className="font-medium">{token.name}</div>
@@ -251,15 +256,15 @@ export const TrendingTokensModal = ({
                         </Button>
                       )}
                       
-                      <Button
-                        onClick={() => handleCopyToken(token)}
-                        size="sm"
-                        style={{ backgroundColor: '#ccbe43', color: 'black' }}
-                        className="hover:opacity-90"
-                      >
-                        <Copy className="h-4 w-4 mr-1" />
-                        Copy
-                      </Button>
+                        <Button
+                          onClick={() => handleCopyToken(token)}
+                          size="sm"
+                          style={{ backgroundColor: '#ccbe43', color: 'black' }}
+                          className="hover:opacity-90"
+                        >
+                          <Copy className="h-4 w-4 mr-1" />
+                          Copy
+                        </Button>
                     </div>
                   </div>
 

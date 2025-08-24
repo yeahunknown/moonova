@@ -86,30 +86,6 @@ const CreateToken = () => {
     // Payment success handled by the success modal
   };
 
-  // Check for selected trending token on component mount
-  useEffect(() => {
-    const selectedToken = sessionStorage.getItem('selectedTrendingToken');
-    if (selectedToken && formRef.current) {
-      try {
-        const tokenData = JSON.parse(selectedToken);
-        // Small delay to ensure form is ready
-        setTimeout(() => {
-          if (formRef.current) {
-            formRef.current.fillTokenData(tokenData);
-            toast({
-              title: "Token Loaded",
-              description: `${tokenData.name} (${tokenData.symbol}) has been loaded into the form`,
-            });
-          }
-        }, 100);
-        // Clear the session storage after loading
-        sessionStorage.removeItem('selectedTrendingToken');
-      } catch (error) {
-        console.error('Failed to parse selected token data:', error);
-        sessionStorage.removeItem('selectedTrendingToken');
-      }
-    }
-  }, [formRef, toast]);
 
   const calculateCost = () => {
     if (!tokenData) return "0.1";

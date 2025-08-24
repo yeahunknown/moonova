@@ -121,8 +121,33 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       setValue("symbol", tokenData.symbol);
       setValue("description", tokenData.description || "A trending token from the Solana ecosystem");
       setValue("website", tokenData.website || "");
-      setValue("twitter", tokenData.twitter ? tokenData.twitter.replace('https://twitter.com/', '@') : "");
-      setValue("telegram", tokenData.telegram ? tokenData.telegram.replace('https://t.me/', 't.me/') : "");
+      
+      // Handle Twitter URL format conversion
+      let twitterValue = "";
+      if (tokenData.twitter) {
+        if (tokenData.twitter.startsWith('@')) {
+          twitterValue = tokenData.twitter;
+        } else if (tokenData.twitter.includes('twitter.com/') || tokenData.twitter.includes('x.com/')) {
+          const username = tokenData.twitter.split('/').pop();
+          twitterValue = username ? `@${username}` : "";
+        } else {
+          twitterValue = tokenData.twitter.startsWith('@') ? tokenData.twitter : `@${tokenData.twitter}`;
+        }
+      }
+      setValue("twitter", twitterValue);
+      
+      // Handle Telegram URL format conversion
+      let telegramValue = "";
+      if (tokenData.telegram) {
+        if (tokenData.telegram.startsWith('t.me/')) {
+          telegramValue = tokenData.telegram;
+        } else if (tokenData.telegram.includes('t.me/')) {
+          telegramValue = tokenData.telegram;
+        } else {
+          telegramValue = tokenData.telegram.startsWith('@') ? `t.me/${tokenData.telegram.slice(1)}` : `t.me/${tokenData.telegram}`;
+        }
+      }
+      setValue("telegram", telegramValue);
       
       // Set generated defaults
       setValue("supply", defaults.supply);
