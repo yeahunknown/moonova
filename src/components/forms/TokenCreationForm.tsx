@@ -69,6 +69,7 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [dexUrl, setDexUrl] = useState<string | null>(null);
 
   const form = useForm<TokenFormData>({
     resolver: zodResolver(tokenSchema),
@@ -114,12 +115,12 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
   // Expose fillTokenData method via ref
   useImperativeHandle(ref, () => ({
     fillTokenData: (tokenData: TrendingToken) => {
-      const defaults = generateRandomDefaults();
-      
-      // Fill form with token data and generated defaults
+      // Fill Basic Info
       setValue("name", tokenData.name);
       setValue("symbol", tokenData.symbol);
       setValue("description", tokenData.description || "A trending token from the Solana ecosystem");
+      
+      // Fill Details - Social media links
       setValue("website", tokenData.website || "");
       
       // Handle Twitter URL format conversion
@@ -149,20 +150,27 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       }
       setValue("telegram", telegramValue);
       
-      // Set generated defaults
-      setValue("supply", defaults.supply);
-      setValue("decimals", defaults.decimals);
-      setValue("burnable", defaults.burnable);
-      setValue("mintable", defaults.mintable);
-      setValue("transactionTax", defaults.transactionTax);
-      setValue("revokeFreezeAuth", defaults.revokeFreezeAuth);
-      setValue("revokeMintAuth", defaults.revokeMintAuth);
-      setValue("revokeMetadataAuth", defaults.revokeMetadataAuth);
-      setValue("addMetadata", defaults.addMetadata);
+      // Set sensible defaults for other fields
+      setValue("supply", "1000000000");
+      setValue("decimals", [9]);
+      setValue("burnable", false);
+      setValue("mintable", false);
+      setValue("transactionTax", [0]);
+      
+      // Advanced - Enable all revoke checkboxes by default for copied tokens
+      setValue("revokeFreezeAuth", true);
+      setValue("revokeMintAuth", true);
+      setValue("revokeMetadataAuth", true);
+      setValue("addMetadata", true);
 
       // Set uploaded logo if available
       if (tokenData.image) {
         setUploadedLogo(tokenData.image);
+      }
+
+      // Set dexUrl for reference display
+      if (tokenData.dexUrl) {
+        setDexUrl(tokenData.dexUrl);
       }
     }
   }), [setValue]);
@@ -664,6 +672,22 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
                   className="mt-3 transition-all duration-300 hover:scale-105"
                 />
               </div>
+
+              {dexUrl && (
+                <div className="mb-4">
+                  <Label className="text-sm text-muted-foreground">Reference/Dex URL</Label>
+                  <div className="mt-1 p-3 bg-muted/30 border border-border rounded-lg">
+                    <a 
+                      href={dexUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline break-all"
+                    >
+                      {dexUrl}
+                    </a>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-center">Authority Revokes</h3>
