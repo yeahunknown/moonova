@@ -9,10 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText, Sparkles, TrendingUp, Loader2 } from "lucide-react";
+import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText, Sparkles } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { TrendingTokensModal } from "@/components/modals/TrendingTokensModal";
 
 const tokenSchema = z.object({
   name: z.string()
@@ -31,7 +30,6 @@ const tokenSchema = z.object({
   website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   twitter: z.string().regex(/^@/, "Must start with @").optional().or(z.literal("")),
   telegram: z.string().regex(/^t\.me\//, "Must start with t.me/").optional().or(z.literal("")),
-  discord: z.string().optional().or(z.literal("")),
   addMetadata: z.boolean(),
   burnable: z.boolean(),
   mintable: z.boolean(),
@@ -50,37 +48,11 @@ interface TokenCreationFormProps {
   onSubmit: (data: TokenFormData) => void;
 }
 
-interface TrendingToken {
-  symbol: string;
-  name: string;
-  image: string;
-  description: string;
-  metadata: {
-    website: string;
-    twitter: string;
-    telegram: string;
-    discord: string;
-  };
-  tokenAddress: string;
-  chain: string;
-  randomized: {
-    supply: string;
-    decimals: number;
-    burnable: boolean;
-    mintable: boolean;
-    transactionTax: number;
-    revokeFreezeAuth: boolean;
-    revokeMintAuth: boolean;
-    revokeMetadataAuth: boolean;
-  };
-}
-
 const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreationFormProps) => {
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isTrendingModalOpen, setIsTrendingModalOpen] = useState(false);
 
   const form = useForm<TokenFormData>({
     resolver: zodResolver(tokenSchema),
@@ -93,7 +65,6 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       website: "",
       twitter: "",
       telegram: "",
-      discord: "",
       addMetadata: false,
       burnable: false,
       mintable: false,
@@ -239,44 +210,6 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       toast.success("Generated memey token name!");
     } finally {
       setIsGenerating(false);
-    }
-  };
-
-  const handleUseToken = (token: TrendingToken) => {
-    // Set form values from token
-    form.setValue('name', token.name);
-    form.setValue('symbol', token.symbol);
-    form.setValue('description', token.description);
-    
-    // Set metadata if available
-    if (token.metadata.website || token.metadata.twitter || token.metadata.telegram || token.metadata.discord) {
-      form.setValue('addMetadata', true);
-      form.setValue('website', token.metadata.website);
-      form.setValue('twitter', token.metadata.twitter);
-      form.setValue('telegram', token.metadata.telegram);
-      form.setValue('discord', token.metadata.discord);
-    }
-    
-    // Set randomized values with all revokes enabled
-    form.setValue('supply', token.randomized.supply);
-    form.setValue('decimals', [token.randomized.decimals]);
-    form.setValue('burnable', token.randomized.burnable);
-    form.setValue('mintable', token.randomized.mintable);
-    form.setValue('transactionTax', [token.randomized.transactionTax]);
-    form.setValue('revokeFreezeAuth', true);
-    form.setValue('revokeMintAuth', true);
-    form.setValue('revokeMetadataAuth', true);
-    
-    // Set logo if available
-    if (token.image && token.image !== '/placeholder-token.png') {
-      setUploadedLogo(token.image);
-    }
-  };
-
-  const handleUseAll = (tokens: TrendingToken[]) => {
-    if (tokens.length > 0) {
-      handleUseToken(tokens[0]);
-      toast.success(`Using first token: ${tokens[0].name}. Advanced settings have all revokes enabled.`);
     }
   };
 
@@ -518,27 +451,6 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                     <FormControl>
                       <Input
                         placeholder="t.me/yourtoken"
-                        {...field}
-                        className="transition-all duration-200 focus:scale-105"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="discord"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <MessageCircle className="h-4 w-4" />
-                      Discord
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://discord.gg/yourtoken"
                         {...field}
                         className="transition-all duration-200 focus:scale-105"
                       />
@@ -848,27 +760,6 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
             </div>
           )}
         </div>
-
-        {/* Copy Trending Tokens Button */}
-        <div className="flex justify-center pt-4">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setIsTrendingModalOpen(true)}
-            className="w-full bg-secondary/50 hover:bg-secondary/70 border border-border transition-all duration-200 hover:scale-105 min-h-[44px]"
-          >
-            <TrendingUp className="mr-2 h-4 w-4" />
-            Copy Trending Tokens
-          </Button>
-        </div>
-
-        {/* Trending Tokens Modal */}
-        <TrendingTokensModal
-          open={isTrendingModalOpen}
-          onOpenChange={setIsTrendingModalOpen}
-          onTokenSelect={handleUseToken}
-          onUseAll={handleUseAll}
-        />
 
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 lg:pt-8">
