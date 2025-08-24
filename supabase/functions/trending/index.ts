@@ -45,19 +45,58 @@ serve(async (req: Request) => {
     })
   }
 
-  const data = await res.json()
+const data = await res.json()
 
-  const normalized = (data || []).slice(0, 10).map((item: any) => ({
-    name: item.name || item.tokenName || item.baseToken?.name || "",
-    symbol: item.symbol || item.tokenSymbol || item.baseToken?.symbol || "",
-    image: item.image || item.logo || item.info?.imageUrl || item.baseToken?.logo || null,
-    description: item.info?.description || item.description || "",
-    address: item.address || item.tokenAddress || item.baseToken?.address || item.info?.address || "",
-    website: item.info?.websites?.[0] || item.websites?.[0] || null,
-    twitter: item.info?.socials?.twitter || item.socials?.twitter || null,
-    telegram: item.info?.socials?.telegram || item.socials?.telegram || null,
-    dexUrl: item.url || item.dexUrl || item.info?.url || null,
-  }))
+const normalized = (data || []).slice(0, 10).map((item: any) => {
+  // Normalize name - never empty
+  let name = (item.name || item.tokenName || item.baseToken?.name || "").trim()
+  if (!name) {
+    name = item.symbol || item.tokenSymbol || item.baseToken?.symbol || "Unknown"
+  }
+  
+  // Normalize symbol - never empty
+  let symbol = (item.symbol || item.tokenSymbol || item.baseToken?.symbol || "").trim()
+  if (!symbol) {
+    // Derive from name - take first letters
+    symbol = name.split(' ').map(word => word.charAt(0)).join('').toUpperCase() || "TOKEN"
+  }
+  
+  // Normalize image - never null, always has fallback
+  let image = item.image || item.logo || item.info?.imageUrl || item.baseToken?.logo || ""
+  if (!image) {
+    // Generate placeholder using initials
+    image = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(symbol || name)}`
+  }
+  
+  // Normalize description - never empty
+  let description = (item.info?.description || item.description || "").trim()
+  if (!description) {
+    description = "Trending on Dexscreener (24h). Prefilled via Moonova."
+  }
+  // Truncate extremely long descriptions
+  if (description.length > 600) {
+    description = description.substring(0, 600) + "..."
+  }
+  
+  // Normalize other fields
+  const address = (item.address || item.tokenAddress || item.baseToken?.address || item.info?.address || "").trim()
+  const website = (item.info?.websites?.[0] || item.websites?.[0] || "").trim() || null
+  const twitter = (item.info?.socials?.twitter || item.socials?.twitter || "").trim() || null
+  const telegram = (item.info?.socials?.telegram || item.socials?.telegram || "").trim() || null
+  const dexUrl = (item.url || item.dexUrl || item.info?.url || "").trim() || null
+  
+  return {
+    name,
+    symbol,
+    image,
+    description,
+    address,
+    website,
+    twitter,
+    telegram,
+    dexUrl,
+  }
+})
 
   return new Response(JSON.stringify(normalized), {
     headers: { "Content-Type": "application/json", ...corsHeaders },

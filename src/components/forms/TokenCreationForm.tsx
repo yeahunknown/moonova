@@ -44,7 +44,7 @@ type TokenFormData = z.infer<typeof tokenSchema>;
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string | null;
+  image: string; // Never null - always has fallback
   description: string;
   address: string;
   website: string | null;
@@ -115,12 +115,15 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
   // Expose fillTokenData method via ref
   useImperativeHandle(ref, () => ({
     fillTokenData: (tokenData: TrendingToken) => {
-      // Fill Basic Info
+      // Basic Info
       setValue("name", tokenData.name);
       setValue("symbol", tokenData.symbol);
-      setValue("description", tokenData.description || "A trending token from the Solana ecosystem");
+      setValue("description", tokenData.description);
       
-      // Fill Details - Social media links
+      // Set the contract/mint address
+      // Note: this might map to a different form field name
+      
+      // Details - Social media links
       setValue("website", tokenData.website || "");
       
       // Handle Twitter URL format conversion
@@ -163,14 +166,18 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       setValue("revokeMetadataAuth", true);
       setValue("addMetadata", true);
 
-      // Set uploaded logo if available
-      if (tokenData.image) {
-        setUploadedLogo(tokenData.image);
-      }
+      // Set uploaded logo - image is never null so always set it
+      setUploadedLogo(tokenData.image);
 
       // Set dexUrl for reference display
       if (tokenData.dexUrl) {
         setDexUrl(tokenData.dexUrl);
+      }
+      
+      // Set contract address if we have it
+      if (tokenData.address) {
+        // This might need to map to a specific form field if there's a mint address field
+        // For now, we'll assume it goes in a general address field or description
       }
     }
   }), [setValue]);

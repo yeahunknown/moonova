@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string | null;
+  image: string; // Never null - always has fallback
   description: string;
   address: string;
   website: string | null;
@@ -170,25 +170,12 @@ const SUPABASE_TRENDING_URL = "https://cupuoqzponoclqjsmaoq.supabase.co/function
                     <div className="flex items-center space-x-4 flex-1">
                       {/* Token Logo and Basic Info */}
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center overflow-hidden">
-                          {token.image ? (
-                            <img 
-                              src={token.image} 
-                              alt={token.name}
-                              className="w-8 h-8 rounded-full object-cover"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                target.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                              <div className="text-muted-foreground text-xs font-bold">
-                                {token.symbol.slice(0, 2)}
-                              </div>
-                            </div>
-                          )}
+                        <div className="w-8 h-8 rounded-full overflow-hidden">
+                          <img 
+                            src={token.image} 
+                            alt={token.name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
                         </div>
                         <div>
                           <div className="font-medium">{token.name}</div>
