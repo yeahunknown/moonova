@@ -44,16 +44,13 @@ type TokenFormData = z.infer<typeof tokenSchema>;
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string;
+  image: string | null;
   description: string;
-  metadata: {
-    website: string;
-    twitter: string;
-    telegram: string;
-    discord: string;
-  };
-  tokenAddress: string;
-  chain: string;
+  address: string;
+  website: string | null;
+  twitter: string | null;
+  telegram: string | null;
+  dexUrl: string | null;
 }
 
 interface TokenCreationFormProps {
@@ -123,9 +120,9 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       setValue("name", tokenData.name);
       setValue("symbol", tokenData.symbol);
       setValue("description", tokenData.description || "A trending token from the Solana ecosystem");
-      setValue("website", tokenData.metadata.website || "");
-      setValue("twitter", tokenData.metadata.twitter ? tokenData.metadata.twitter.replace('https://twitter.com/', '@') : "");
-      setValue("telegram", tokenData.metadata.telegram ? tokenData.metadata.telegram.replace('https://t.me/', 't.me/') : "");
+      setValue("website", tokenData.website || "");
+      setValue("twitter", tokenData.twitter ? tokenData.twitter.replace('https://twitter.com/', '@') : "");
+      setValue("telegram", tokenData.telegram ? tokenData.telegram.replace('https://t.me/', 't.me/') : "");
       
       // Set generated defaults
       setValue("supply", defaults.supply);

@@ -263,8 +263,6 @@ const Index = () => {
       <TrendingTokensModal
         open={isTrendingModalOpen}
         onOpenChange={setIsTrendingModalOpen}
-        onTokenSelect={handleTokenSelect}
-        onTokensSelect={handleTokensSelect}
       />
     </div>
   );

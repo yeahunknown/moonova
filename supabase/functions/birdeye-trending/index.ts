@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Fetching trending tokens from Apify Task...');
+    console.log('Fetching top 10 trending tokens from Apify Task...');
     
     // Get environment variables from Supabase secrets
     const APIFY_TASK_ID = Deno.env.get('APIFY_TASK_ID');
@@ -22,7 +22,7 @@ serve(async (req) => {
     if (!APIFY_TASK_ID || !APIFY_TOKEN) {
       console.error('Missing APIFY environment variables');
       return new Response(JSON.stringify({ 
-        error: 'Missing APIFY environment variables - APIFY_TASK_ID or APIFY_TOKEN not configured'
+        error: 'Missing APIFY_TASK_ID or APIFY_TOKEN'
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -54,8 +54,7 @@ serve(async (req) => {
       const errorText = await apifyResponse.text();
       console.error('Apify API error:', errorText);
       return new Response(JSON.stringify({ 
-        error: errorText || `Apify API failed with status: ${apifyResponse.status}`,
-        status: apifyResponse.status
+        error: `${apifyResponse.status}: ${errorText}`
       }), {
         status: apifyResponse.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -63,50 +62,36 @@ serve(async (req) => {
     }
     
     const apifyData = await apifyResponse.json();
-    console.log('Apify API response received, data type:', typeof apifyData);
+    console.log('Apify API response received, processing data...');
     
-    // Parse and transform the Apify data to our token format
+    // Parse and transform the Apify data to our normalized token format
     let tokens = [];
     
     if (Array.isArray(apifyData)) {
       tokens = apifyData.slice(0, 10).map((item: any) => ({
-        name: item.name || item.tokenName || item.title || 'Unknown Token',
-        symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
-        image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
-        description: item.description || item.summary || item.about || 'Trending Solana token',
-        metadata: {
-          website: item.website || item.url || item.homepage || '',
-          twitter: item.twitter || item.social?.twitter || item.twitterUrl || '',
-          telegram: item.telegram || item.social?.telegram || item.telegramUrl || '',
-          discord: item.discord || item.social?.discord || item.discordUrl || ''
-        },
-        tokenAddress: item.address || item.contractAddress || item.tokenAddress || item.mint || 'N/A',
-        chain: 'solana',
-        price: parseFloat(item.price || item.currentPrice || item.priceUsd || 0),
-        liquidity: parseInt(item.liquidity || item.marketCap || item.liquidityUsd || 0),
-        volume24h: parseInt(item.volume24h || item.dailyVolume || item.volume || 0),
-        trendingScore: parseFloat(item.trendingScoreH24 || item.trendingScore || 0)
+        name: item.name || item.tokenName || item.baseToken?.name || "",
+        symbol: item.symbol || item.tokenSymbol || item.baseToken?.symbol || "", 
+        image: item.image || item.logo || item.info?.imageUrl || item.baseToken?.logo || null,
+        description: item.info?.description || item.description || "",
+        address: item.address || item.tokenAddress || item.baseToken?.address || item.info?.address || "",
+        website: item.info?.websites?.[0] || item.websites?.[0] || null,
+        twitter: item.info?.socials?.twitter || item.socials?.twitter || null,
+        telegram: item.info?.socials?.telegram || item.socials?.telegram || null,
+        dexUrl: item.url || item.dexUrl || item.info?.url || null
       }));
     } else if (apifyData && typeof apifyData === 'object') {
       // Handle single object or nested structure
       const dataArray = apifyData.items || apifyData.tokens || apifyData.results || apifyData.data || [apifyData];
       tokens = dataArray.slice(0, 10).map((item: any) => ({
-        name: item.name || item.tokenName || item.title || 'Unknown Token',
-        symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
-        image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
-        description: item.description || item.summary || item.about || 'Trending Solana token',
-        metadata: {
-          website: item.website || item.url || item.homepage || '',
-          twitter: item.twitter || item.social?.twitter || item.twitterUrl || '',
-          telegram: item.telegram || item.social?.telegram || item.telegramUrl || '',
-          discord: item.discord || item.social?.discord || item.discordUrl || ''
-        },
-        tokenAddress: item.address || item.contractAddress || item.tokenAddress || item.mint || 'N/A',
-        chain: 'solana',
-        price: parseFloat(item.price || item.currentPrice || item.priceUsd || 0),
-        liquidity: parseInt(item.liquidity || item.marketCap || item.liquidityUsd || 0),
-        volume24h: parseInt(item.volume24h || item.dailyVolume || item.volume || 0),
-        trendingScore: parseFloat(item.trendingScoreH24 || item.trendingScore || 0)
+        name: item.name || item.tokenName || item.baseToken?.name || "",
+        symbol: item.symbol || item.tokenSymbol || item.baseToken?.symbol || "",
+        image: item.image || item.logo || item.info?.imageUrl || item.baseToken?.logo || null,
+        description: item.info?.description || item.description || "",
+        address: item.address || item.tokenAddress || item.baseToken?.address || item.info?.address || "",
+        website: item.info?.websites?.[0] || item.websites?.[0] || null,
+        twitter: item.info?.socials?.twitter || item.socials?.twitter || null,
+        telegram: item.info?.socials?.telegram || item.socials?.telegram || null,
+        dexUrl: item.url || item.dexUrl || item.info?.url || null
       }));
     }
     
@@ -119,18 +104,11 @@ serve(async (req) => {
           symbol: "SOL", 
           image: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
           description: "Fast, decentralized blockchain built for scale",
-          metadata: {
-            website: "https://solana.com",
-            twitter: "https://twitter.com/solana",
-            telegram: "https://t.me/solana",
-            discord: "https://discord.gg/solana"
-          },
-          tokenAddress: "So11111111111111111111111111111111111111112",
-          chain: "solana",
-          price: 245.67,
-          liquidity: 500000000,
-          volume24h: 1500000000,
-          trendingScore: 100
+          address: "So11111111111111111111111111111111111111112",
+          website: "https://solana.com",
+          twitter: "https://twitter.com/solana",
+          telegram: "https://t.me/solana",
+          dexUrl: null
         }
       ];
     }
@@ -138,13 +116,12 @@ serve(async (req) => {
     // Take only the first 10 tokens 
     const limitedTokens = tokens.slice(0, 10);
     
-    console.log(`Successfully fetched ${limitedTokens.length} trending tokens from Apify`);
+    console.log(`Successfully processed ${limitedTokens.length} trending tokens`);
     
     return new Response(JSON.stringify(limitedTokens), {
       headers: { 
         ...corsHeaders, 
-        'Content-Type': 'application/json',
-        'X-Source': 'apify-task'
+        'Content-Type': 'application/json'
       },
     });
     
@@ -152,8 +129,7 @@ serve(async (req) => {
     console.error('Error in trending function:', error);
     
     return new Response(JSON.stringify({ 
-      error: error.message || 'Failed to fetch trending tokens',
-      details: 'Check function logs for more information'
+      error: error.message || 'Failed to fetch trending tokens'
     }), {
       status: 500,
       headers: { 

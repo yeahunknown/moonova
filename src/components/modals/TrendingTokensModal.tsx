@@ -1,53 +1,43 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Copy, Globe, Twitter, MessageCircle, ExternalLink } from "lucide-react";
+import { Loader2, Copy, Globe, Twitter, MessageCircle, RefreshCw, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string;
+  image: string | null;
   description: string;
-  metadata: {
-    website: string;
-    twitter: string;
-    telegram: string;
-    discord: string;
-  };
-  tokenAddress: string;
-  chain: string;
-  price?: number;
-  liquidity?: number;
-  volume24h?: number;
-  trendingScore?: number;
+  address: string;
+  website: string | null;
+  twitter: string | null;
+  telegram: string | null;
+  dexUrl: string | null;
 }
 
 interface TrendingTokensModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onTokenSelect: (token: TrendingToken) => void;
-  onTokensSelect: (tokens: TrendingToken[]) => void;
 }
 
 export const TrendingTokensModal = ({ 
   open, 
-  onOpenChange, 
-  onTokenSelect, 
-  onTokensSelect 
+  onOpenChange
 }: TrendingTokensModalProps) => {
   const [tokens, setTokens] = useState<TrendingToken[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fetchTrendingTokens = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      console.log('Fetching top 10 trending tokens from Apify...');
+      console.log('Fetching top 10 trending tokens...');
       
       const { createClient } = await import('@supabase/supabase-js');
       const supabase = createClient(
@@ -55,18 +45,12 @@ export const TrendingTokensModal = ({
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1cHVvcXpwb25vY2xxanNtYW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5OTUxMjUsImV4cCI6MjA3MTU3MTEyNX0.q5VU33UtcunKsuVFDIy0vPGweMQNJSMSMpC2hf1ueuk'
       );
       
-      const { data, error } = await supabase.functions.invoke('birdeye-trending', {
-        body: { 
-          limit: 10
-        }
-      });
+      const { data, error } = await supabase.functions.invoke('birdeye-trending');
       
       if (error) {
         console.error('Supabase function error:', error);
-        // If the error response has structured error info, use it
         const errorMessage = error.message || 'Function invocation failed';
-        const errorDetails = error.details || '';
-        throw new Error(`${errorMessage}${errorDetails ? ': ' + errorDetails : ''}`);
+        throw new Error(errorMessage);
       }
       
       // Check if data contains an error response from the function
@@ -80,21 +64,14 @@ export const TrendingTokensModal = ({
         throw new Error('Invalid response format from server');
       }
       
-      console.log(`Received ${data.length} tokens from Apify via edge function`);
+      console.log(`Received ${data.length} tokens from trending API`);
       
-      // Filter out any invalid tokens and ensure we have the required fields
-      const validTokens = data.filter(token => 
-        token.symbol && 
-        token.tokenAddress && 
-        token.name
-      );
+      setTokens(data);
       
-      setTokens(validTokens);
-      
-      if (validTokens.length > 0) {
+      if (data.length > 0) {
         toast({
           title: "Success",
-          description: `Loaded ${validTokens.length} trending Solana tokens from Apify`,
+          description: `Loaded ${data.length} trending Solana tokens`,
         });
       } else {
         toast({
@@ -125,31 +102,24 @@ export const TrendingTokensModal = ({
   }, [open]);
 
   const handleCopyToken = (token: TrendingToken) => {
-    onTokenSelect(token);
+    // Save to localStorage for prefilling
+    localStorage.setItem('createPrefill', JSON.stringify(token));
+    
+    // Navigate to create page
+    navigate('/create');
     onOpenChange(false);
+    
+    toast({
+      title: "Token copied",
+      description: `${token.name} data copied to create form`,
+    });
   };
 
-  const handleCopyAll = () => {
-    onTokensSelect(tokens);
-    onOpenChange(false);
-  };
-
-  const formatAddress = (address: string) => {
-    if (!address || address.length < 8) return address;
-    return `${address.slice(0, 4)}...${address.slice(-4)}`;
-  };
-
-  const formatPrice = (price?: number) => {
-    if (!price) return "N/A";
-    if (price < 0.01) return `$${price.toFixed(6)}`;
-    return `$${price.toFixed(4)}`;
-  };
-
-  const formatLiquidity = (liquidity?: number) => {
-    if (!liquidity) return "N/A";
-    if (liquidity >= 1000000) return `$${(liquidity / 1000000).toFixed(1)}M`;
-    if (liquidity >= 1000) return `$${(liquidity / 1000).toFixed(1)}K`;
-    return `$${liquidity.toFixed(0)}`;
+  const truncateMiddle = (text: string, maxLength: number = 30) => {
+    if (!text || text.length <= maxLength) return text;
+    const start = text.slice(0, Math.floor(maxLength / 2));
+    const end = text.slice(-Math.floor(maxLength / 2));
+    return `${start}...${end}`;
   };
 
   return (
@@ -165,23 +135,14 @@ export const TrendingTokensModal = ({
             </DialogDescription>
           </div>
           <div className="flex gap-2">
-            {tokens.length > 0 && (
-              <Button
-                onClick={handleCopyAll}
-                size="sm"
-                style={{ backgroundColor: '#ccbe43', color: 'black' }}
-                className="hover:opacity-90"
-              >
-                Copy First Token
-              </Button>
-            )}
             <Button
               onClick={fetchTrendingTokens}
               variant="outline"
               size="sm"
               disabled={loading}
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Refresh"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              Refresh
             </Button>
           </div>
         </DialogHeader>
@@ -191,7 +152,7 @@ export const TrendingTokensModal = ({
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Loading trending tokens from Apify...</p>
+                <p className="text-muted-foreground">Loading trending tokens...</p>
               </div>
             </div>
           ) : error && tokens.length === 0 ? (
@@ -208,21 +169,17 @@ export const TrendingTokensModal = ({
               <p className="text-muted-foreground">No trending tokens found</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              <div className="text-sm text-muted-foreground mb-4">
-                Showing {tokens.length} trending tokens from Apify
-              </div>
-              
+            <div className="space-y-3">              
               {tokens.map((token, index) => (
                 <div
-                  key={`${token.tokenAddress}-${index}`}
+                  key={`${token.address}-${index}`}
                   className="border border-border rounded-lg p-4 hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 flex-1">
                       {/* Token Logo and Basic Info */}
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center overflow-hidden">
+                        <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center overflow-hidden">
                           {token.image ? (
                             <img 
                               src={token.image} 
@@ -235,7 +192,7 @@ export const TrendingTokensModal = ({
                               }}
                             />
                           ) : null}
-                          <div className={`text-white text-sm font-bold ${token.image ? 'hidden' : ''}`}>
+                          <div className={`text-white text-xs font-bold ${token.image ? 'hidden' : ''}`}>
                             {token.symbol.slice(0, 2)}
                           </div>
                         </div>
@@ -243,62 +200,64 @@ export const TrendingTokensModal = ({
                           <div className="font-medium">{token.name}</div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>${token.symbol}</span>
-                            <span>•</span>
-                            <span>{formatAddress(token.tokenAddress)}</span>
+                            {(token.website || token.dexUrl) && (
+                              <>
+                                <span>•</span>
+                                <span>{truncateMiddle(token.website || token.dexUrl || '')}</span>
+                              </>
+                            )}
                           </div>
                         </div>
-                      </div>
-
-                      {/* Price and 24h Score */}
-                      <div className="hidden md:flex items-center space-x-4 text-sm">
-                        <div>
-                          <div className="text-muted-foreground">Price</div>
-                          <div>{formatPrice(token.price)}</div>
-                        </div>
-                        {token.trendingScore && token.trendingScore > 0 && (
-                          <div>
-                            <div className="text-muted-foreground">24h Score</div>
-                            <div style={{ color: '#ccbe43' }}>{token.trendingScore.toFixed(1)}</div>
-                          </div>
-                        )}
                       </div>
                     </div>
 
-                    {/* Metadata Links */}
+                    {/* Social Links and Copy Button */}
                     <div className="flex items-center space-x-2">
-                      {token.metadata.website && (
+                      {token.website && (
                         <Button
                           variant="ghost"
                           size="sm"
                           asChild
                           className="h-8 w-8 p-0"
                         >
-                          <a href={token.metadata.website} target="_blank" rel="noopener noreferrer">
+                          <a href={token.website} target="_blank" rel="noopener noreferrer">
                             <Globe className="h-4 w-4" />
                           </a>
                         </Button>
                       )}
-                      {token.metadata.twitter && (
+                      {token.twitter && (
                         <Button
                           variant="ghost"
                           size="sm"
                           asChild
                           className="h-8 w-8 p-0"
                         >
-                          <a href={token.metadata.twitter} target="_blank" rel="noopener noreferrer">
+                          <a href={token.twitter} target="_blank" rel="noopener noreferrer">
                             <Twitter className="h-4 w-4" />
                           </a>
                         </Button>
                       )}
-                      {token.metadata.telegram && (
+                      {token.telegram && (
                         <Button
                           variant="ghost"
                           size="sm"
                           asChild
                           className="h-8 w-8 p-0"
                         >
-                          <a href={token.metadata.telegram} target="_blank" rel="noopener noreferrer">
+                          <a href={token.telegram} target="_blank" rel="noopener noreferrer">
                             <MessageCircle className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      )}
+                      {token.dexUrl && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="h-8 w-8 p-0"
+                        >
+                          <a href={token.dexUrl} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
                           </a>
                         </Button>
                       )}

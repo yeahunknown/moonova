@@ -13,16 +13,13 @@ import type { TokenCreationFormRef } from "@/components/forms/TokenCreationForm"
 interface TrendingToken {
   name: string;
   symbol: string;
-  image: string;
+  image: string | null;
   description: string;
-  metadata: {
-    website: string;
-    twitter: string;
-    telegram: string;
-    discord: string;
-  };
-  tokenAddress: string;
-  chain: string;
+  address: string;
+  website: string | null;
+  twitter: string | null;
+  telegram: string | null;
+  dexUrl: string | null;
 }
 
 const CreateToken = () => {
@@ -32,6 +29,37 @@ const CreateToken = () => {
   const { setSectionRef, isVisible } = useFadeInAnimation();
   const { toast } = useToast();
   const formRef = useRef<TokenCreationFormRef>(null);
+
+  // Handle localStorage prefill on mount
+  useEffect(() => {
+    const prefillData = localStorage.getItem('createPrefill');
+    if (prefillData && formRef.current) {
+      try {
+        const token: TrendingToken = JSON.parse(prefillData);
+        formRef.current.fillTokenData({
+          name: token.name,
+          symbol: token.symbol,
+          image: token.image,
+          description: token.description,
+          address: token.address,
+          website: token.website,
+          twitter: token.twitter,
+          telegram: token.telegram,
+          dexUrl: token.dexUrl
+        });
+        // Remove from localStorage after prefilling
+        localStorage.removeItem('createPrefill');
+        
+        toast({
+          title: "Form prefilled",
+          description: `Token data for ${token.name} has been loaded`,
+        });
+      } catch (error) {
+        console.error('Error parsing prefill data:', error);
+        localStorage.removeItem('createPrefill');
+      }
+    }
+  }, [toast]);
 
   const progressPercentage = (step / 3) * 100;
 
