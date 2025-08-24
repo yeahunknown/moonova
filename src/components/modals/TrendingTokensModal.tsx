@@ -152,7 +152,7 @@ export const TrendingTokensModal = ({
               Trending Tokens (Solana, Live)
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground mt-1">
-              Real-time trending tokens from Birdeye API
+              Real-time trending tokens from Apify API
             </DialogDescription>
           </div>
           <div className="flex gap-2">

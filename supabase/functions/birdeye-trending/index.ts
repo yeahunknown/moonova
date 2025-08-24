@@ -12,159 +12,76 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Fetching trending tokens from Birdeye API...');
+    console.log('Fetching trending tokens from Apify API...');
     
     const url = new URL(req.url);
-    const chain = url.searchParams.get('chain') || 'solana';
     const limit = parseInt(url.searchParams.get('limit') || '10');
     
-    // Try multiple endpoints and approaches
+    // Use the provided Apify API endpoint
+    const apifyUrl = 'https://api.apify.com/v2/actor-runs/iTTwDgQmiWSFaHwfV?token=apify_api_nKKbTqF874eJ0RpShoAnA78rHtfW9R0YwDoz';
+    
+    console.log('Calling Apify API:', apifyUrl);
+    
     let response;
     let data;
     
-    // Approach 1: Try the trending endpoint without authentication first (public API)
     try {
-      console.log('Trying public trending endpoint...');
-      response = await fetch(`https://public-api.birdeye.so/defi/token_trending?chain=${chain}&offset=0&limit=100`, {
+      response = await fetch(apifyUrl, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'Mozilla/5.0 (compatible; Trending-Bot/1.0)'
         }
       });
       
-      if (response.ok) {
-        data = await response.json();
-        console.log('Success with public trending endpoint');
-      } else {
-        console.log(`Public trending endpoint failed: ${response.status}`);
-        throw new Error(`Trending endpoint failed: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`Apify API error: ${response.status} ${response.statusText}`);
       }
-    } catch (trendingError) {
-      console.log('Trending endpoint failed, trying token list...');
       
-      // Approach 2: Try the token list endpoint 
-      try {
-        response = await fetch(`https://public-api.birdeye.so/defi/tokenlist?sort_by=v24hUSD&sort_type=desc&offset=0&limit=${limit}`, {
-          headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (compatible; Trending-Bot/1.0)'
-          }
-        });
-        
-        if (response.ok) {
-          data = await response.json();
-          console.log('Success with token list endpoint');
-        } else {
-          console.log(`Token list endpoint failed: ${response.status}`);
-          throw new Error(`Token list endpoint failed: ${response.status}`);
-        }
-      } catch (tokenListError) {
-        console.log('Token list failed, trying alternative endpoint...');
-        
-        // Approach 3: Try a different structure
-        try {
-          response = await fetch(`https://public-api.birdeye.so/defi/price?list_address=So11111111111111111111111111111111111111112`, {
-            headers: {
-              'Accept': 'application/json',
-              'User-Agent': 'Mozilla/5.0 (compatible; Trending-Bot/1.0)'
-            }
-          });
-          
-          if (response.ok) {
-            // If this works, we'll create mock trending data as a fallback
-            console.log('Using fallback approach with mock trending data');
-            data = { success: true, fallback: true };
-          } else {
-            throw new Error('All endpoints failed');
-          }
-        } catch (finalError) {
-          throw new Error(`All Birdeye endpoints failed. Last error: ${finalError.message}`);
-        }
-      }
+      data = await response.json();
+      console.log('Apify API response status:', response.status);
+      console.log('Apify API response structure:', JSON.stringify(data, null, 2).slice(0, 2000));
+      
+    } catch (fetchError) {
+      console.error('Network error calling Apify API:', fetchError);
+      throw new Error(`Failed to connect to Apify API: ${fetchError.message}`);
     }
     
-    // If we got here with fallback flag, create some realistic mock data
-    if (data.fallback) {
-      console.log('Creating mock trending tokens as fallback...');
-      
-      const mockTokens = [
-        {
-          address: "So11111111111111111111111111111111111111112",
-          name: "Wrapped SOL",
-          symbol: "SOL",
-          logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
-          price: 245.67,
-          volume24h: 1500000000,
-          liquidity: { usd: 500000000 }
-        },
-        {
-          address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-          name: "USD Coin",
-          symbol: "USDC",
-          logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
-          price: 1.00,
-          volume24h: 2000000000,
-          liquidity: { usd: 800000000 }
-        },
-        {
-          address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-          name: "Tether USD",
-          symbol: "USDT",
-          logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg",
-          price: 1.00,
-          volume24h: 1800000000,
-          liquidity: { usd: 600000000 }
-        }
-      ];
-      
-      // Add more mock tokens to reach 10
-      for (let i = 4; i <= 10; i++) {
-        mockTokens.push({
-          address: `Mock${i}Address${Math.random().toString(36).substr(2, 9)}`,
-          name: `Trending Token ${i}`,
-          symbol: `TT${i}`,
-          logoURI: `https://via.placeholder.com/64x64/6366f1/ffffff?text=T${i}`,
-          price: Math.random() * 100,
-          volume24h: Math.random() * 10000000,
-          liquidity: { usd: Math.random() * 1000000 }
-        });
-      }
-      
-      data = { data: mockTokens };
-    }
-    
-    console.log('Raw API response structure:', JSON.stringify(data, null, 2).slice(0, 1000));
-    
-    // Extract and normalize tokens
+    // Extract and normalize tokens from Apify response
     const normalizedTokens: any[] = [];
     
-    // Handle different response structures
+    // Handle different possible response structures from Apify
     let tokenList: any[] = [];
+    
     if (data.data && Array.isArray(data.data)) {
       tokenList = data.data;
+    } else if (data.items && Array.isArray(data.items)) {
+      tokenList = data.items;
+    } else if (data.results && Array.isArray(data.results)) {
+      tokenList = data.results;
     } else if (data.tokens && Array.isArray(data.tokens)) {
       tokenList = data.tokens;
     } else if (Array.isArray(data)) {
       tokenList = data;
     } else {
-      console.error('Unexpected API response structure:', data);
-      throw new Error('Invalid API response format');
+      console.error('Unexpected Apify response structure:', data);
+      throw new Error('Invalid API response format from Apify');
     }
     
-    console.log(`Processing ${tokenList.length} tokens from API...`);
+    console.log(`Processing ${tokenList.length} tokens from Apify API...`);
     
     for (const item of tokenList) {
       // Skip tokens without basic info
-      if (!item.symbol || !item.address) {
+      if (!item.symbol && !item.name && !item.address && !item.tokenAddress) {
         continue;
       }
       
-      // Stop when we have enough tokens
+      // Stop when we have enough tokens (limit to 10)
       if (normalizedTokens.length >= limit) {
         break;
       }
       
-      // Extract metadata safely
+      
+      // Extract metadata safely from various possible field structures
       const extractMetadata = () => {
         const metadata = {
           website: "",
@@ -173,22 +90,25 @@ serve(async (req) => {
           discord: ""
         };
         
-        // Handle various metadata structures
-        const extensions = item.extensions || item.info || {};
+        // Handle various metadata structures from Apify
+        const extensions = item.extensions || item.info || item.metadata || {};
+        const links = item.links || item.socialLinks || item.urls || [];
         
         // Website
         if (extensions.website) {
           metadata.website = extensions.website;
+        } else if (item.website) {
+          metadata.website = item.website;
         } else if (extensions.websites && Array.isArray(extensions.websites) && extensions.websites.length > 0) {
           metadata.website = extensions.websites[0];
         }
         
-        // Social links
-        const socials = extensions.socials || extensions.social || [];
+        // Social links - handle arrays or objects
+        const socials = extensions.socials || extensions.social || links || [];
         if (Array.isArray(socials)) {
           for (const social of socials) {
-            const type = social.type?.toLowerCase() || social.platform?.toLowerCase() || '';
-            const url = social.url || social.link || '';
+            const type = (social.type || social.platform || social.name || '').toLowerCase();
+            const url = social.url || social.link || social.href || '';
             
             if (type.includes('twitter') || type.includes('x')) {
               metadata.twitter = url;
@@ -201,35 +121,37 @@ serve(async (req) => {
         }
         
         // Handle direct social properties
-        if (extensions.twitter) {
-          metadata.twitter = extensions.twitter.startsWith('http') 
-            ? extensions.twitter 
-            : `https://twitter.com/${extensions.twitter.replace('@', '')}`;
+        if (extensions.twitter || item.twitter) {
+          const twitterHandle = extensions.twitter || item.twitter;
+          metadata.twitter = twitterHandle.startsWith('http') 
+            ? twitterHandle 
+            : `https://twitter.com/${twitterHandle.replace('@', '')}`;
         }
-        if (extensions.telegram) {
-          metadata.telegram = extensions.telegram.startsWith('http') 
-            ? extensions.telegram 
-            : `https://t.me/${extensions.telegram}`;
+        if (extensions.telegram || item.telegram) {
+          const telegramHandle = extensions.telegram || item.telegram;
+          metadata.telegram = telegramHandle.startsWith('http') 
+            ? telegramHandle 
+            : `https://t.me/${telegramHandle}`;
         }
-        if (extensions.discord) {
-          metadata.discord = extensions.discord;
+        if (extensions.discord || item.discord) {
+          metadata.discord = extensions.discord || item.discord;
         }
         
         return metadata;
       };
       
-      // Normalize token data
+      // Normalize token data - handle multiple possible field names
       const normalizedToken = {
-        name: item.name || item.symbol || "Unknown Token",
-        symbol: item.symbol || "",
-        image: item.logoURI || item.logo || item.image || "",
-        description: (item.extensions?.description || item.info?.description || item.description || "").slice(0, 200),
+        name: item.name || item.tokenName || item.symbol || "Unknown Token",
+        symbol: item.symbol || item.ticker || item.tokenSymbol || "",
+        image: item.logoURI || item.logo || item.image || item.icon || item.thumbnail || "",
+        description: (item.description || item.info?.description || item.extensions?.description || "").slice(0, 200),
         metadata: extractMetadata(),
-        tokenAddress: item.address || "",
-        chain: chain,
-        price: item.price || item.priceUsd || undefined,
-        liquidity: item.liquidity?.usd || item.liquidityUsd || undefined,
-        volume24h: item.v24hUSD || item.volume24h || undefined
+        tokenAddress: item.address || item.tokenAddress || item.contractAddress || "",
+        chain: "solana",
+        price: item.price || item.priceUsd || item.currentPrice || undefined,
+        liquidity: item.liquidity?.usd || item.liquidityUsd || item.totalLiquidity || undefined,
+        volume24h: item.v24hUSD || item.volume24h || item.dailyVolume || undefined
       };
       
       normalizedTokens.push(normalizedToken);
