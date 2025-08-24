@@ -17,17 +17,23 @@ serve(async (req) => {
   try {
     console.log('Fetching trending tokens from Apify Task...');
     
-    const url = new URL(req.url);
-    const limit = parseInt(url.searchParams.get('limit') || '50');
+    // Check if required environment variables are available
+    if (!APIFY_TASK_ID || !APIFY_TOKEN) {
+      console.error('Missing APIFY environment variables');
+      return new Response(JSON.stringify({ 
+        error: 'Missing APIFY environment variables',
+        details: 'APIFY_TASK_ID or APIFY_TOKEN not configured'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
-    // Calculate pages needed to get the required number of tokens
-    const tokensPerPage = 10; // Apify typically returns 10 tokens per page
-    const pages = Math.ceil(limit / tokensPerPage);
-    const toPage = Math.min(pages, 5); // Maximum 5 pages (50 tokens)
+    const limit = 50; // Always fetch top 50 tokens
     
     // POST to Apify run-sync-get-dataset-items endpoint
     const apifyResponse = await fetch(
-      `https://api.apify.com/v2/actor-tasks/${APIFY_TASK_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&format=json&clean=1`,
+      `https://api.apify.com/v2/actor-tasks/${encodeURIComponent(APIFY_TASK_ID)}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&format=json&clean=1`,
       {
         method: 'POST',
         headers: {
@@ -38,13 +44,21 @@ serve(async (req) => {
           timeframe: '24h',
           filter: '?rankBy=trendingScoreH24&order=desc',
           fromPage: 1,
-          toPage: toPage
+          toPage: 5
         })
       }
     );
     
     if (!apifyResponse.ok) {
-      throw new Error(`Apify API failed with status: ${apifyResponse.status}`);
+      const errorText = await apifyResponse.text();
+      console.error('Apify API error:', errorText);
+      return new Response(JSON.stringify({ 
+        error: errorText || `Apify API failed with status: ${apifyResponse.status}`,
+        status: apifyResponse.status
+      }), {
+        status: apifyResponse.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
     
     const apifyData = await apifyResponse.json();

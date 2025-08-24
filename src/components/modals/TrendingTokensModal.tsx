@@ -63,7 +63,16 @@ export const TrendingTokensModal = ({
       
       if (error) {
         console.error('Supabase function error:', error);
-        throw new Error(`Function error: ${error.message}`);
+        // If the error response has structured error info, use it
+        const errorMessage = error.message || 'Function invocation failed';
+        const errorDetails = error.details || '';
+        throw new Error(`${errorMessage}${errorDetails ? ': ' + errorDetails : ''}`);
+      }
+      
+      // Check if data contains an error response from the function
+      if (data && typeof data === 'object' && 'error' in data) {
+        console.error('Function returned error:', data);
+        throw new Error(data.error || 'Function returned an error');
       }
       
       if (!data || !Array.isArray(data)) {
