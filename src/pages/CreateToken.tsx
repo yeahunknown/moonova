@@ -4,33 +4,13 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import TokenCreationForm from "@/components/forms/TokenCreationForm";
 import { PaymentModal } from "@/components/modals/PaymentModal";
-import TrendingTokensPreview from "@/components/TrendingTokensPreview";
 import { useToast } from "@/hooks/use-toast";
 import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
-import { supabase } from "@/integrations/supabase/client";
-
-interface TrendingToken {
-  name: string;
-  symbol: string;
-  image: string;
-  description: string;
-  metadata: {
-    website?: string;
-    twitter?: string;
-    telegram?: string;
-    discord?: string;
-  };
-  chain: string;
-  tokenAddress: string;
-}
 
 const CreateToken = () => {
   const [step, setStep] = useState(1);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [tokenData, setTokenData] = useState<any>(null);
-  const [showTrendingTokens, setShowTrendingTokens] = useState(false);
-  const [trendingTokens, setTrendingTokens] = useState<TrendingToken[]>([]);
-  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
   const { setSectionRef, isVisible } = useFadeInAnimation();
   const { toast } = useToast();
 
@@ -57,97 +37,6 @@ const CreateToken = () => {
 
   const handlePaymentComplete = () => {
     // Payment success handled by the success modal
-  };
-
-  const handleCopyTrendingTokens = async () => {
-    setIsLoadingTrending(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('trending-tokens-api', {
-        body: {
-          chain: 'solana',
-          timeframe: '6h', 
-          limit: 10
-        }
-      });
-      
-      if (error) {
-        console.error('Error fetching trending tokens:', error);
-        toast({
-          title: "Error",
-          description: "Couldn't load trending tokens. Try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data && Array.isArray(data) && data.length > 0) {
-        setTrendingTokens(data);
-        setShowTrendingTokens(true);
-        toast({
-          title: "Success",
-          description: `Imported ${data.length} trending tokens (6h)`,
-        });
-      } else {
-        toast({
-          title: "No data",
-          description: "No trending tokens found at the moment.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching trending tokens:', error);
-      toast({
-        title: "Error",
-        description: "Couldn't load trending tokens. Try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingTrending(false);
-    }
-  };
-
-  const handleUseToken = (token: TrendingToken) => {
-    // Generate sensible random defaults for other form fields
-    const randomSupply = Math.floor(Math.random() * 900000000) + 100000000; // 100M - 1B
-    const randomDecimals = Math.floor(Math.random() * 4) + 6; // 6-9 decimals
-    const randomTax = Math.floor(Math.random() * 3); // 0-2% tax
-    
-    // Update form data with selected token plus random defaults
-    setTokenData((prev: any) => ({
-      ...prev,
-      name: token.name,
-      symbol: token.symbol,
-      description: token.description,
-      website: token.metadata.website || "",
-      twitter: token.metadata.twitter || "",
-      telegram: token.metadata.telegram || "",
-      supply: randomSupply.toString(),
-      decimals: [randomDecimals],
-      transactionTax: [randomTax],
-      burnable: Math.random() > 0.7, // 30% chance
-      mintable: Math.random() > 0.8, // 20% chance
-      addMetadata: !!(token.metadata.website || token.metadata.twitter || token.metadata.telegram),
-      revokeFreezeAuth: Math.random() > 0.6, // 40% chance
-      revokeMintAuth: Math.random() > 0.5, // 50% chance
-      revokeMetadataAuth: Math.random() > 0.7, // 30% chance
-    }));
-    
-    setShowTrendingTokens(false);
-    
-    toast({
-      title: "Token Data Applied",
-      description: `${token.name} data copied with randomized defaults`,
-    });
-  };
-
-  const handleUseAllTokens = () => {
-    // For bulk import, we could store all tokens and let user select which ones to create
-    // For now, we'll just show a message that bulk import is prepared
-    toast({
-      title: "Bulk Import Ready",
-      description: `${trendingTokens.length} tokens are ready for creation. You can now create them one by one.`,
-    });
-    setShowTrendingTokens(false);
   };
 
   const calculateCost = () => {
@@ -236,7 +125,6 @@ const CreateToken = () => {
                   onNext={handleNext}
                   onPrevious={handlePrevious}
                   onSubmit={handleFormSubmit}
-                  onCopyTrendingTokens={handleCopyTrendingTokens}
                 />
               </CardContent>
             </Card>
@@ -253,18 +141,6 @@ const CreateToken = () => {
         type="token"
         tokenData={tokenData ? { name: tokenData.name, symbol: tokenData.symbol } : undefined}
       />
-
-      {/* Trending Tokens Preview */}
-      {showTrendingTokens && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <TrendingTokensPreview
-            tokens={trendingTokens}
-            onUseToken={handleUseToken}
-            onUseAll={handleUseAllTokens}
-            onClose={() => setShowTrendingTokens(false)}
-          />
-        </div>
-      )}
     </div>
   );
 };

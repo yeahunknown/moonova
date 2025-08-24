@@ -14,73 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
-      rate_limiting: {
-        Row: {
-          created_at: string
-          endpoint: string
-          id: string
-          ip_address: unknown
-          request_count: number
-          window_start: string
-        }
-        Insert: {
-          created_at?: string
-          endpoint: string
-          id?: string
-          ip_address: unknown
-          request_count?: number
-          window_start?: string
-        }
-        Update: {
-          created_at?: string
-          endpoint?: string
-          id?: string
-          ip_address?: unknown
-          request_count?: number
-          window_start?: string
-        }
-        Relationships: []
-      }
-      trending_tokens_cache: {
-        Row: {
-          chain: string
-          created_at: string
-          data: Json
-          fetched_at: string
-          id: string
-          timeframe: string
-        }
-        Insert: {
-          chain?: string
-          created_at?: string
-          data: Json
-          fetched_at?: string
-          id?: string
-          timeframe?: string
-        }
-        Update: {
-          chain?: string
-          created_at?: string
-          data?: Json
-          fetched_at?: string
-          id?: string
-          timeframe?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      cleanup_trending_tokens_cache: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      prune_trending_cache: {
-        Args: { max_age_minutes?: number }
-        Returns: undefined
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
