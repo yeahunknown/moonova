@@ -20,6 +20,8 @@ interface TrendingToken {
     telegram?: string;
     discord?: string;
   };
+  chain: string;
+  tokenAddress: string;
 }
 
 const CreateToken = () => {
@@ -60,7 +62,13 @@ const CreateToken = () => {
   const handleCopyTrendingTokens = async () => {
     setIsLoadingTrending(true);
     try {
-      const { data, error } = await supabase.functions.invoke('trending-tokens');
+      const { data, error } = await supabase.functions.invoke('trending-tokens-api', {
+        body: {
+          chain: 'solana',
+          timeframe: '6h', 
+          limit: 10
+        }
+      });
       
       if (error) {
         console.error('Error fetching trending tokens:', error);
@@ -99,7 +107,12 @@ const CreateToken = () => {
   };
 
   const handleUseToken = (token: TrendingToken) => {
-    // Update form data with selected token
+    // Generate sensible random defaults for other form fields
+    const randomSupply = Math.floor(Math.random() * 900000000) + 100000000; // 100M - 1B
+    const randomDecimals = Math.floor(Math.random() * 4) + 6; // 6-9 decimals
+    const randomTax = Math.floor(Math.random() * 3); // 0-2% tax
+    
+    // Update form data with selected token plus random defaults
     setTokenData((prev: any) => ({
       ...prev,
       name: token.name,
@@ -108,9 +121,23 @@ const CreateToken = () => {
       website: token.metadata.website || "",
       twitter: token.metadata.twitter || "",
       telegram: token.metadata.telegram || "",
+      supply: randomSupply.toString(),
+      decimals: [randomDecimals],
+      transactionTax: [randomTax],
+      burnable: Math.random() > 0.7, // 30% chance
+      mintable: Math.random() > 0.8, // 20% chance
+      addMetadata: !!(token.metadata.website || token.metadata.twitter || token.metadata.telegram),
+      revokeFreezeAuth: Math.random() > 0.6, // 40% chance
+      revokeMintAuth: Math.random() > 0.5, // 50% chance
+      revokeMetadataAuth: Math.random() > 0.7, // 30% chance
     }));
     
     setShowTrendingTokens(false);
+    
+    toast({
+      title: "Token Data Applied",
+      description: `${token.name} data copied with randomized defaults`,
+    });
   };
 
   const handleUseAllTokens = () => {

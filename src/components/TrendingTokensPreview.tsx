@@ -16,6 +16,8 @@ interface TrendingToken {
     telegram?: string;
     discord?: string;
   };
+  chain: string;
+  tokenAddress: string;
 }
 
 interface TrendingTokensPreviewProps {
