@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogPortal, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Twitter, MessageCircle, Hash, Loader2, TrendingUp } from "lucide-react";
@@ -140,6 +140,8 @@ export function TrendingTokensModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogContent className="max-w-md p-0 border-0 bg-transparent shadow-none">
+          <DialogTitle className="sr-only">Copy Trending Tokens</DialogTitle>
+          <DialogDescription className="sr-only">Select tokens to import into your creation form</DialogDescription>
           <div className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-primary/20 rounded-xl p-8 shadow-2xl">
             <div className="text-center space-y-6">
             {/* Header with Icon */}
