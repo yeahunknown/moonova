@@ -44,7 +44,7 @@ serve(async (req) => {
         timeframe: '24h',
         filter: '?rankBy=trendingScoreH24&order=desc',
         fromPage: 1,
-        toPage: 5
+        toPage: 1
       })
     });
     
@@ -69,7 +69,7 @@ serve(async (req) => {
     let tokens = [];
     
     if (Array.isArray(apifyData)) {
-      tokens = apifyData.slice(0, 50).map((item: any) => ({
+      tokens = apifyData.slice(0, 10).map((item: any) => ({
         name: item.name || item.tokenName || item.title || 'Unknown Token',
         symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
         image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
@@ -90,7 +90,7 @@ serve(async (req) => {
     } else if (apifyData && typeof apifyData === 'object') {
       // Handle single object or nested structure
       const dataArray = apifyData.items || apifyData.tokens || apifyData.results || apifyData.data || [apifyData];
-      tokens = dataArray.slice(0, 50).map((item: any) => ({
+      tokens = dataArray.slice(0, 10).map((item: any) => ({
         name: item.name || item.tokenName || item.title || 'Unknown Token',
         symbol: item.symbol || item.ticker || item.tokenSymbol || 'N/A',
         image: item.image || item.logo || item.icon || item.logoUrl || 'https://via.placeholder.com/64',
@@ -135,8 +135,8 @@ serve(async (req) => {
       ];
     }
     
-    // Take only the first 50 tokens 
-    const limitedTokens = tokens.slice(0, 50);
+    // Take only the first 10 tokens 
+    const limitedTokens = tokens.slice(0, 10);
     
     console.log(`Successfully fetched ${limitedTokens.length} trending tokens from Apify`);
     

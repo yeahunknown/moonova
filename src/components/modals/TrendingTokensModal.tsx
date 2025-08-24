@@ -47,7 +47,7 @@ export const TrendingTokensModal = ({
     setError(null);
     
     try {
-      console.log('Fetching top 50 trending tokens from Apify...');
+      console.log('Fetching top 10 trending tokens from Apify...');
       
       const { createClient } = await import('@supabase/supabase-js');
       const supabase = createClient(
@@ -57,7 +57,7 @@ export const TrendingTokensModal = ({
       
       const { data, error } = await supabase.functions.invoke('birdeye-trending', {
         body: { 
-          limit: 50
+          limit: 10
         }
       });
       
@@ -158,7 +158,7 @@ export const TrendingTokensModal = ({
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div>
             <DialogTitle className="text-xl font-semibold">
-              Top 50 Trending Solana Tokens
+              Top 10 Trending Solana Tokens
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground mt-1">
               24h trending ranked by score. Click copy to prefill token creation form.
