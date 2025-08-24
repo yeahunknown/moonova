@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dialog, DialogContent, DialogPortal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Twitter, MessageCircle, Hash, Loader2, Check } from "lucide-react";
+import { Globe, Twitter, MessageCircle, Hash, Loader2, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -136,64 +136,49 @@ export function TrendingTokensModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
-        <DialogContent className="p-0 gap-0 bg-[#0F0F23] border border-[#2A2D47] max-w-2xl rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
-          <div className="p-6 relative">
-            {/* Header */}
-            <div className="border-b border-[#2A2D47] pb-6 mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-xl flex items-center justify-center shadow-lg">
-                    <div className="w-5 h-5 bg-white rounded-md opacity-90"></div>
-                  </div>
-                  <span className="ml-3 text-xl font-bold text-white">Trending Tokens</span>
-                </div>
-                <div className="flex items-center gap-2 bg-[#22C55E]/10 px-3 py-1 rounded-full border border-[#22C55E]/20">
-                  <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></div>
-                  <span className="text-xs text-[#22C55E] font-semibold">LIVE DATA</span>
-                </div>
+        <DialogContent className="p-0 gap-0 bg-card border border-border max-w-md rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-300">
+          <div className="p-6 relative text-center">
+            {/* Header with Icon */}
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                <TrendingUp className="h-8 w-8 text-primary-foreground" />
               </div>
-              <div className="text-center">
-                <h2 className="text-xl font-semibold text-white mb-2">Copy Trending Tokens (6h)</h2>
-                <p className="text-[#9CA3AF] text-sm">Select tokens to import into your creation form</p>
-              </div>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Copy Trending Tokens</h2>
+              <p className="text-muted-foreground text-sm">Select tokens to import into your creation form</p>
             </div>
 
             {/* Content */}
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-12 w-12 text-[#8B5CF6] animate-spin mb-6" />
-                <div className="text-center">
-                  <p className="text-white font-semibold text-lg mb-2">Loading trending tokens...</p>
-                  <p className="text-[#9CA3AF] text-sm">Fetching live data from DexScreener</p>
-                </div>
+              <div className="flex flex-col items-center py-8">
+                <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
+                <p className="text-foreground font-medium mb-1">Loading trending tokens...</p>
+                <p className="text-muted-foreground text-sm">Fetching live data from DexScreener</p>
               </div>
             ) : error ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="w-16 h-16 bg-[#EF4444]/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                  <span className="text-[#EF4444] text-2xl">⚠</span>
+              <div className="flex flex-col items-center py-8">
+                <div className="w-12 h-12 bg-destructive/20 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-destructive text-xl">⚠</span>
                 </div>
-                <div className="text-center">
-                  <p className="text-[#EF4444] font-semibold text-lg mb-2">Failed to load tokens</p>
-                  <p className="text-[#9CA3AF] text-sm mb-4">{error}</p>
-                  <Button 
-                    onClick={fetchTrendingTokens}
-                    className="bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] hover:from-[#7C3AED] hover:to-[#0891B2] text-white"
-                  >
-                    Try Again
-                  </Button>
-                </div>
+                <p className="text-destructive font-medium mb-1">Failed to load tokens</p>
+                <p className="text-muted-foreground text-sm mb-4">{error}</p>
+                <Button 
+                  onClick={fetchTrendingTokens}
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                >
+                  Try Again
+                </Button>
               </div>
             ) : (
               <div className="space-y-4">
                 {/* Action Buttons */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <Badge variant="secondary" className="text-xs">
                     {tokens.length} tokens
                   </Badge>
                   <Button 
                     onClick={handleUseAll}
                     size="sm"
-                    className="bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] hover:from-[#7C3AED] hover:to-[#0891B2] text-white shadow-lg"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                     disabled={tokens.length === 0}
                   >
                     Use All
@@ -201,19 +186,19 @@ export function TrendingTokensModal({
                 </div>
 
                 {/* Token List */}
-                <div className="bg-[#1A1A3A] border border-[#2A2D47] rounded-xl p-4 shadow-lg max-h-96 overflow-y-auto">
-                  <div className="space-y-3">
+                <div className="bg-muted/50 border border-border rounded-lg p-3 max-h-80 overflow-y-auto">
+                  <div className="space-y-2">
                     {tokens.map((token, index) => (
                       <div 
                         key={token.tokenAddress}
-                        className="flex items-center gap-4 p-3 rounded-lg border border-[#2A2D47] bg-[#0F0F23] hover:bg-[#1A1A3A] transition-all duration-200"
+                        className="flex items-center gap-3 p-2 rounded-lg border border-border bg-background/50 hover:bg-background/70 transition-all duration-200"
                       >
                         {/* Token Image */}
                         <div className="flex-shrink-0">
                           <img 
                             src={token.image} 
                             alt={token.name}
-                            className="w-10 h-10 rounded-full object-cover bg-[#2A2D47]"
+                            className="w-8 h-8 rounded-full object-cover bg-muted"
                             onError={(e) => {
                               e.currentTarget.src = '/placeholder-token.png';
                             }}
@@ -223,33 +208,33 @@ export function TrendingTokensModal({
                         {/* Token Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-sm text-white truncate">{token.name}</h4>
-                            <Badge variant="outline" className="text-xs px-2 py-0 border-[#8B5CF6] text-[#8B5CF6]">
+                            <h4 className="font-medium text-sm text-foreground truncate">{token.name}</h4>
+                            <Badge variant="outline" className="text-xs px-1 py-0">
                               ${token.symbol}
                             </Badge>
-                            <span className="text-xs text-[#9CA3AF]">#{index + 1}</span>
+                            <span className="text-xs text-muted-foreground">#{index + 1}</span>
                           </div>
                           
-                          <p className="text-xs text-[#9CA3AF] mb-2 line-clamp-1">
-                            {truncateText(token.description, 60)}
+                          <p className="text-xs text-muted-foreground mb-1 line-clamp-1">
+                            {truncateText(token.description, 50)}
                           </p>
                           
                           {/* Metadata Links */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             {token.metadata.website && (
-                              <Globe className="w-3 h-3 text-[#9CA3AF]" />
+                              <Globe className="w-3 h-3 text-muted-foreground" />
                             )}
                             {token.metadata.twitter && (
-                              <Twitter className="w-3 h-3 text-[#9CA3AF]" />
+                              <Twitter className="w-3 h-3 text-muted-foreground" />
                             )}
                             {token.metadata.telegram && (
-                              <MessageCircle className="w-3 h-3 text-[#9CA3AF]" />
+                              <MessageCircle className="w-3 h-3 text-muted-foreground" />
                             )}
                             {token.metadata.discord && (
-                              <Hash className="w-3 h-3 text-[#9CA3AF]" />
+                              <Hash className="w-3 h-3 text-muted-foreground" />
                             )}
                             {!token.metadata.website && !token.metadata.twitter && !token.metadata.telegram && !token.metadata.discord && (
-                              <span className="text-xs text-[#9CA3AF]">No socials</span>
+                              <span className="text-xs text-muted-foreground">No socials</span>
                             )}
                           </div>
                         </div>
@@ -259,7 +244,7 @@ export function TrendingTokensModal({
                           onClick={() => handleUseToken(token)}
                           size="sm"
                           variant="outline"
-                          className="flex-shrink-0 border-[#8B5CF6] text-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white"
+                          className="flex-shrink-0"
                         >
                           Use
                         </Button>
