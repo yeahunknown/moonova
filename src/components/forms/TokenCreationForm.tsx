@@ -9,9 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText, Sparkles } from "lucide-react";
+import { Upload, ArrowLeft, ArrowRight, Rocket, Globe, Twitter, MessageCircle, Flame, Coins, Shield, ShieldOff, Lock, Unlock, FileText, Sparkles, TrendingUp, Loader2 } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
+import { TrendingTokensPreview } from "@/components/TrendingTokensPreview";
+import { supabase } from "@/integrations/supabase/client";
 
 const tokenSchema = z.object({
   name: z.string()
@@ -30,6 +32,7 @@ const tokenSchema = z.object({
   website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   twitter: z.string().regex(/^@/, "Must start with @").optional().or(z.literal("")),
   telegram: z.string().regex(/^t\.me\//, "Must start with t.me/").optional().or(z.literal("")),
+  discord: z.string().optional().or(z.literal("")),
   addMetadata: z.boolean(),
   burnable: z.boolean(),
   mintable: z.boolean(),
@@ -48,11 +51,38 @@ interface TokenCreationFormProps {
   onSubmit: (data: TokenFormData) => void;
 }
 
+interface TrendingToken {
+  symbol: string;
+  name: string;
+  image: string;
+  description: string;
+  metadata: {
+    website: string;
+    twitter: string;
+    telegram: string;
+    discord: string;
+  };
+  tokenAddress: string;
+  chain: string;
+  randomized: {
+    supply: string;
+    decimals: number;
+    burnable: boolean;
+    mintable: boolean;
+    transactionTax: number;
+    revokeFreezeAuth: boolean;
+    revokeMintAuth: boolean;
+    revokeMetadataAuth: boolean;
+  };
+}
+
 const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreationFormProps) => {
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [trendingTokens, setTrendingTokens] = useState<TrendingToken[]>([]);
+  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
 
   const form = useForm<TokenFormData>({
     resolver: zodResolver(tokenSchema),
@@ -65,6 +95,7 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       website: "",
       twitter: "",
       telegram: "",
+      discord: "",
       addMetadata: false,
       burnable: false,
       mintable: false,
@@ -210,6 +241,73 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
       toast.success("Generated memey token name!");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const fetchTrendingTokens = async () => {
+    setIsLoadingTrending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('trending-tokens', {
+        body: { 
+          timeframe: '6h', 
+          limit: 10, 
+          chain: 'solana' 
+        }
+      });
+
+      if (error) throw error;
+
+      if (Array.isArray(data)) {
+        setTrendingTokens(data);
+        toast.success("Imported 10 trending tokens (6h)");
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error('Error fetching trending tokens:', error);
+      toast.error("Couldn't load trending tokens. Try again.");
+    } finally {
+      setIsLoadingTrending(false);
+    }
+  };
+
+  const handleUseToken = (token: TrendingToken) => {
+    // Set form values from token
+    form.setValue('name', token.name);
+    form.setValue('symbol', token.symbol);
+    form.setValue('description', token.description);
+    
+    // Set metadata if available
+    if (token.metadata.website || token.metadata.twitter || token.metadata.telegram || token.metadata.discord) {
+      form.setValue('addMetadata', true);
+      form.setValue('website', token.metadata.website);
+      form.setValue('twitter', token.metadata.twitter);
+      form.setValue('telegram', token.metadata.telegram);
+      form.setValue('discord', token.metadata.discord);
+    }
+    
+    // Set randomized values
+    form.setValue('supply', token.randomized.supply);
+    form.setValue('decimals', [token.randomized.decimals]);
+    form.setValue('burnable', token.randomized.burnable);
+    form.setValue('mintable', token.randomized.mintable);
+    form.setValue('transactionTax', [token.randomized.transactionTax]);
+    form.setValue('revokeFreezeAuth', token.randomized.revokeFreezeAuth);
+    form.setValue('revokeMintAuth', token.randomized.revokeMintAuth);
+    form.setValue('revokeMetadataAuth', token.randomized.revokeMetadataAuth);
+    
+    // Set logo if available
+    if (token.image && token.image !== '/placeholder-token.png') {
+      setUploadedLogo(token.image);
+    }
+    
+    toast.success(`Token data copied: ${token.name}`);
+  };
+
+  const handleUseAll = () => {
+    if (trendingTokens.length > 0) {
+      handleUseToken(trendingTokens[0]);
+      toast.success(`Bulk creation not implemented yet. Used first token: ${trendingTokens[0].name}`);
     }
   };
 
@@ -451,6 +549,27 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
                     <FormControl>
                       <Input
                         placeholder="t.me/yourtoken"
+                        {...field}
+                        className="transition-all duration-200 focus:scale-105"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="discord"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      Discord
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://discord.gg/yourtoken"
                         {...field}
                         className="transition-all duration-200 focus:scale-105"
                       />
@@ -760,6 +879,33 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
             </div>
           )}
         </div>
+
+        {/* Copy Trending Tokens Button */}
+        <div className="flex justify-center pt-4">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={fetchTrendingTokens}
+            disabled={isLoadingTrending}
+            className="w-full bg-secondary/50 hover:bg-secondary/70 border border-border transition-all duration-200 hover:scale-105 min-h-[44px]"
+          >
+            {isLoadingTrending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <TrendingUp className="mr-2 h-4 w-4" />
+            )}
+            Copy Trending Tokens
+          </Button>
+        </div>
+
+        {/* Trending Tokens Preview */}
+        {trendingTokens.length > 0 && (
+          <TrendingTokensPreview
+            tokens={trendingTokens}
+            onUseToken={handleUseToken}
+            onUseAll={handleUseAll}
+          />
+        )}
 
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6 lg:pt-8">
