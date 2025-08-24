@@ -46,9 +46,10 @@ interface TokenCreationFormProps {
   onNext: () => void;
   onPrevious: () => void;
   onSubmit: (data: TokenFormData) => void;
+  onCopyTrendingTokens?: () => void;
 }
 
-const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreationFormProps) => {
+const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit, onCopyTrendingTokens }: TokenCreationFormProps) => {
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -790,13 +791,27 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <Button 
-              type="submit"
-              className="bg-gradient-primary hover:opacity-90 shadow-glow flex items-center justify-center transition-all duration-200 hover:scale-105 min-h-[44px] w-full sm:w-auto"
-            >
-              <Rocket className="mr-2 h-4 w-4" />
-              Create Token
-            </Button>
+            <div className="flex flex-col gap-3 w-full sm:w-auto">
+              <Button 
+                type="submit"
+                className="bg-gradient-primary hover:opacity-90 shadow-glow flex items-center justify-center transition-all duration-200 hover:scale-105 min-h-[44px] w-full"
+              >
+                <Rocket className="mr-2 h-4 w-4" />
+                Create Token Now - {calculateCost()} SOL
+              </Button>
+              
+              {onCopyTrendingTokens && (
+                <Button 
+                  type="button"
+                  variant="secondary"
+                  onClick={onCopyTrendingTokens}
+                  className="flex items-center justify-center transition-all duration-200 hover:scale-105 min-h-[44px] w-full"
+                >
+                  <Flame className="mr-2 h-4 w-4" />
+                  Copy Trending Tokens
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </form>
