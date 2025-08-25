@@ -2,15 +2,22 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Copy, ExternalLink, TrendingUp } from "lucide-react";
+import { Copy, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const TRENDING_URL = "https://cupuoqzponoclqjsmaoq.functions.supabase.co/trending";
 
 interface TrendingToken {
   name: string;
   symbol: string;
-  logo: string;
+  imageUrl?: string;
+  logo?: string;
   address: string;
-  description: string;
+  description?: string;
+  info?: {
+    imageUrl?: string;
+    description?: string;
+  };
   price: number;
   liquidity: number;
   volume24h: number;
@@ -24,23 +31,37 @@ interface TrendingTokensModalProps {
 export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProps) => {
   const [tokens, setTokens] = useState<TrendingToken[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchTrendingTokens = async () => {
     if (tokens.length > 0) return; // Don't fetch if already loaded
     
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(import.meta.env.VITE_NEXT_PUBLIC_TRENDING_URL || '');
-      if (!response.ok) throw new Error('Failed to fetch trending tokens');
+      const response = await fetch(TRENDING_URL);
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorJson.error || errorMessage;
+        } catch {
+          if (errorText) errorMessage = errorText;
+        }
+        throw new Error(errorMessage);
+      }
       
       const data = await response.json();
       setTokens(data.slice(0, 10)); // Ensure max 10 items
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       console.error('Error fetching trending tokens:', error);
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "Failed to load trending tokens. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -49,11 +70,14 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
   };
 
   const handleCopyToForm = async (token: TrendingToken) => {
+    const imageUrl = token.info?.imageUrl || token.imageUrl || token.logo || '';
+    const description = token.info?.description || token.description || '';
+    
     const tokenData = {
       name: token.name,
       symbol: token.symbol,
-      logo: token.logo,
-      description: token.description,
+      imageUrl,
+      description,
       address: token.address,
     };
 
@@ -113,7 +137,24 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-moonova"></div>
-              <span className="ml-3 text-muted-foreground">Loading trending tokens...</span>
+              <span className="ml-3 text-muted-foreground">Loading trending tokens…</span>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <p className="text-destructive font-semibold mb-2">Error loading trending tokens</p>
+                <p className="text-muted-foreground text-sm">{error}</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setTokens([]);
+                    fetchTrendingTokens();
+                  }}
+                  className="mt-4"
+                >
+                  Try Again
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="space-y-3">
@@ -124,7 +165,7 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
                       {/* Token Logo */}
                       <div className="flex-shrink-0">
                         <img 
-                          src={token.logo} 
+                          src={token.info?.imageUrl || token.imageUrl || token.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(token.symbol)}`} 
                           alt={`${token.name} logo`}
                           className="w-12 h-12 rounded-full border border-border"
                           onError={(e) => {
@@ -148,7 +189,7 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
                         )}
                         
                         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                          {token.description}
+                          {token.info?.description || token.description || 'No description available'}
                         </p>
 
                         {/* Token Metrics */}
@@ -156,19 +197,19 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
                           <div>
                             <span className="text-muted-foreground">Price:</span>
                             <div className="font-semibold text-foreground">
-                              {formatCurrency(token.price)}
+                              {token.price ? formatCurrency(token.price) : 'N/A'}
                             </div>
                           </div>
                           <div>
                             <span className="text-muted-foreground">Liquidity:</span>
                             <div className="font-semibold text-foreground">
-                              {formatCurrency(token.liquidity)}
+                              {token.liquidity ? formatCurrency(token.liquidity) : 'N/A'}
                             </div>
                           </div>
                           <div>
                             <span className="text-muted-foreground">24h Volume:</span>
                             <div className="font-semibold text-foreground">
-                              {formatCurrency(token.volume24h)}
+                              {token.volume24h ? formatCurrency(token.volume24h) : 'N/A'}
                             </div>
                           </div>
                         </div>
