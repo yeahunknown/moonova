@@ -25,7 +25,12 @@ interface TrendingTokenRaw {
   symbol?: string;
   address?: string;
   pairName?: string;
+  pairSymbol?: string;
   imageUrl?: string;
+  tokenImageUrl?: string;
+  tokenLogo?: string;
+  logo?: string;
+  image?: string;
   description?: string;
   info?: {
     imageUrl?: string;
@@ -103,15 +108,15 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
       
       // Map and compute values with fallbacks
       const mappedTokens: TrendingToken[] = rawData.slice(0, 10).map(item => ({
-        name: item.baseToken?.name || item.token?.name || item.name || item.pairName || 'Unknown Token',
-        symbol: item.baseToken?.symbol || item.token?.symbol || item.symbol || 'UNKNOWN',
+        name: item.baseToken?.name || item.token?.name || item.pairName?.split("/")?.[0] || item.pairName?.split("-")?.[0] || item.name || 'Unknown Token',
+        symbol: item.baseToken?.symbol || item.token?.symbol || item.pairSymbol || (item.pairName?.match(/([^\/\-]+)[\/\-]([^\/\-]+)/)?.[1]) || item.symbol || 'UNKNOWN',
         address: item.baseToken?.address || item.token?.address || item.address || '',
-        imageUrl: item.info?.imageUrl || item.imageUrl || item.baseToken?.imageUrl,
+        imageUrl: item.info?.imageUrl || item.imageUrl || item.baseToken?.imageUrl || item.tokenImageUrl || item.tokenLogo || item.logo || item.image,
         description: item.info?.description || item.description || item.baseToken?.description,
-        priceUsd: item.priceUsd || (item.price && item.price.usd),
-        liquidityUsd: (item.liquidity && item.liquidity.usd) || item.liquidityUsd,
-        volumeH24: (item.volume && item.volume.h24) || item.volume24h,
-        txnsH24: (item.txns && item.txns.h24) ? (item.txns.h24.buys || 0) + (item.txns.h24.sells || 0) : undefined,
+        priceUsd: item.priceUsd || item.price?.usd,
+        liquidityUsd: item.liquidity?.usd || item.liquidityUsd,
+        volumeH24: item.volume?.h24 || item.volume24h,
+        txnsH24: (item.txns?.h24) ? (item.txns.h24.buys || 0) + (item.txns.h24.sells || 0) : undefined,
       }));
       
       setTokens(mappedTokens);
