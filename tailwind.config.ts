@@ -53,6 +53,10 @@ export default {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
+				moonova: {
+					DEFAULT: 'hsl(var(--moonova-accent))',
+					foreground: 'hsl(var(--moonova-accent-foreground))'
+				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'

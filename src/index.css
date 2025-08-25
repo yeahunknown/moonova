@@ -34,6 +34,10 @@
     /* Accent colors */
     --accent: 240 12% 15%;
     --accent-foreground: 0 0% 98%;
+    
+    /* Moonova brand accent */
+    --moonova-accent: 52 79% 53%; /* #ccbe43 */
+    --moonova-accent-foreground: 0 0% 0%;
 
     /* Status colors */
     --destructive: 0 62.8% 30.6%;
