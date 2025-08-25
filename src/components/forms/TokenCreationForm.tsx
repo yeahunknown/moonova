@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState, forwardRef, useImperativeHandle } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,18 +41,6 @@ const tokenSchema = z.object({
 
 type TokenFormData = z.infer<typeof tokenSchema>;
 
-interface TrendingToken {
-  name: string;
-  symbol: string;
-  image: string;
-  description: string;
-  address: string;
-  website: string | null;
-  twitter: string | null;
-  telegram: string | null;
-  dexUrl: string | null;
-}
-
 interface TokenCreationFormProps {
   step: number;
   onNext: () => void;
@@ -60,16 +48,11 @@ interface TokenCreationFormProps {
   onSubmit: (data: TokenFormData) => void;
 }
 
-export interface TokenCreationFormRef {
-  fillTokenData: (data: TrendingToken) => void;
-}
-
-const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProps>(({ step, onNext, onPrevious, onSubmit }, ref) => {
+const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreationFormProps) => {
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [dexUrl, setDexUrl] = useState<string | null>(null);
 
   const form = useForm<TokenFormData>({
     resolver: zodResolver(tokenSchema),
@@ -94,59 +77,6 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
 
   const { watch, setValue } = form;
   const formData = watch();
-
-  // Generate sensible random defaults for other fields
-  const generateRandomDefaults = () => {
-    const randomSupply = Math.floor(Math.random() * (1000000000 - 1000000) + 1000000);
-    const randomDecimals = Math.floor(Math.random() * 10);
-    return {
-      supply: randomSupply.toString(),
-      decimals: [randomDecimals],
-      burnable: Math.random() > 0.5,
-      mintable: Math.random() > 0.7,
-      transactionTax: [Math.floor(Math.random() * 5)],
-      revokeFreezeAuth: Math.random() > 0.3,
-      revokeMintAuth: Math.random() > 0.3,
-      revokeMetadataAuth: Math.random() > 0.3,
-      addMetadata: true, // Enable metadata when copying trending tokens
-    };
-  };
-
-  // Expose fillTokenData method via ref
-  useImperativeHandle(ref, () => ({
-    fillTokenData: (tokenData: TrendingToken) => {
-      // Basic Info
-      setValue("name", tokenData.name);
-      setValue("symbol", tokenData.symbol);
-      setValue("description", tokenData.description);
-      
-      // Details
-      setValue("website", tokenData.website || "");
-      setValue("twitter", tokenData.twitter || "");
-      setValue("telegram", tokenData.telegram || "");
-      
-      // Advanced - Enable all revoke checkboxes by default for copied tokens
-      setValue("revokeFreezeAuth", true);
-      setValue("revokeMintAuth", true);
-      setValue("revokeMetadataAuth", true);
-      setValue("addMetadata", true);
-
-      // Set uploaded logo from image URL
-      setUploadedLogo(tokenData.image);
-
-      // Set dexUrl for reference display
-      if (tokenData.dexUrl) {
-        setDexUrl(tokenData.dexUrl);
-      }
-      
-      // Set sensible defaults for other fields
-      setValue("supply", "1000000000");
-      setValue("decimals", [9]);
-      setValue("burnable", false);
-      setValue("mintable", false);
-      setValue("transactionTax", [0]);
-    }
-  }), [setValue]);
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -646,22 +576,6 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
                 />
               </div>
 
-              {dexUrl && (
-                <div className="mb-4">
-                  <Label className="text-sm text-muted-foreground">Reference/Dex URL</Label>
-                  <div className="mt-1 p-3 bg-muted/30 border border-border rounded-lg">
-                    <a 
-                      href={dexUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline break-all"
-                    >
-                      {dexUrl}
-                    </a>
-                  </div>
-                </div>
-              )}
-
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-center">Authority Revokes</h3>
                 <div className="grid gap-3">
@@ -888,8 +802,6 @@ const TokenCreationForm = forwardRef<TokenCreationFormRef, TokenCreationFormProp
       </form>
     </Form>
   );
-});
-
-TokenCreationForm.displayName = "TokenCreationForm";
+};
 
 export default TokenCreationForm;

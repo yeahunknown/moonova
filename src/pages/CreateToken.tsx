@@ -1,26 +1,11 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import TokenCreationForm from "@/components/forms/TokenCreationForm";
 import { PaymentModal } from "@/components/modals/PaymentModal";
 import { useToast } from "@/hooks/use-toast";
 import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
-import { useEffect } from "react";
-import type { TokenCreationFormRef } from "@/components/forms/TokenCreationForm";
-
-interface TrendingToken {
-  name: string;
-  symbol: string;
-  image: string | null;
-  description: string;
-  address: string;
-  website: string | null;
-  twitter: string | null;
-  telegram: string | null;
-  dexUrl: string | null;
-}
 
 const CreateToken = () => {
   const [step, setStep] = useState(1);
@@ -28,38 +13,6 @@ const CreateToken = () => {
   const [tokenData, setTokenData] = useState<any>(null);
   const { setSectionRef, isVisible } = useFadeInAnimation();
   const { toast } = useToast();
-  const formRef = useRef<TokenCreationFormRef>(null);
-
-  // Handle localStorage prefill on mount
-  useEffect(() => {
-    const prefillData = localStorage.getItem('createPrefill');
-    if (prefillData && formRef.current) {
-      try {
-        const token: TrendingToken = JSON.parse(prefillData);
-        formRef.current.fillTokenData({
-          name: token.name,
-          symbol: token.symbol,
-          image: token.image,
-          description: token.description,
-          address: token.address,
-          website: token.website,
-          twitter: token.twitter,
-          telegram: token.telegram,
-          dexUrl: token.dexUrl
-        });
-        // Remove from localStorage after prefilling
-        localStorage.removeItem('createPrefill');
-        
-        toast({
-          title: "Form prefilled",
-          description: `Token data for ${token.name} has been loaded`,
-        });
-      } catch (error) {
-        console.error('Error parsing prefill data:', error);
-        localStorage.removeItem('createPrefill');
-      }
-    }
-  }, [toast]);
 
   const progressPercentage = (step / 3) * 100;
 
@@ -85,7 +38,6 @@ const CreateToken = () => {
   const handlePaymentComplete = () => {
     // Payment success handled by the success modal
   };
-
 
   const calculateCost = () => {
     if (!tokenData) return "0.1";
@@ -169,7 +121,6 @@ const CreateToken = () => {
 
                 {/* Form */}
                 <TokenCreationForm
-                  ref={formRef}
                   step={step}
                   onNext={handleNext}
                   onPrevious={handlePrevious}
