@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,6 +77,31 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
 
   const { watch, setValue } = form;
   const formData = watch();
+
+  // Listen for the moonova:prefill event
+  useEffect(() => {
+    const handlePrefillEvent = (event: CustomEvent) => {
+      const { name, symbol, imageUrl, description, address } = event.detail;
+      
+      // Fill form fields with the received data
+      if (name) setValue('name', name);
+      if (symbol) setValue('symbol', symbol);
+      if (imageUrl) {
+        setUploadedLogo(imageUrl);
+      }
+      if (description) setValue('description', description);
+      // Note: address is handled separately as it's not a form field in the current schema
+      
+      toast.success(`Pre-filled form with ${name || 'token'} data!`);
+    };
+
+    window.addEventListener('moonova:prefill', handlePrefillEvent as EventListener);
+    
+    return () => {
+      window.removeEventListener('moonova:prefill', handlePrefillEvent as EventListener);
+    };
+  }, [setValue]);
+
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
