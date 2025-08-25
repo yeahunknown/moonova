@@ -7,20 +7,61 @@ import { useToast } from "@/hooks/use-toast";
 
 const TRENDING_URL = "https://cupuoqzponoclqjsmaoq.functions.supabase.co/trending";
 
-interface TrendingToken {
-  name: string;
-  symbol: string;
+interface TrendingTokenRaw {
+  // DexScreener API fields
+  baseToken?: {
+    name?: string;
+    symbol?: string;
+    address?: string;
+    imageUrl?: string;
+    description?: string;
+  };
+  token?: {
+    name?: string;
+    symbol?: string;
+    address?: string;
+  };
+  name?: string;
+  symbol?: string;
+  address?: string;
+  pairName?: string;
   imageUrl?: string;
-  logo?: string;
-  address: string;
   description?: string;
   info?: {
     imageUrl?: string;
     description?: string;
   };
-  price: number;
-  liquidity: number;
-  volume24h: number;
+  priceUsd?: number;
+  price?: {
+    usd?: number;
+  };
+  liquidityUsd?: number;
+  liquidity?: {
+    usd?: number;
+  };
+  volumeH24?: number;
+  volume?: {
+    h24?: number;
+  };
+  volume24h?: number;
+  txns?: {
+    h24?: {
+      buys?: number;
+      sells?: number;
+    };
+  };
+}
+
+interface TrendingToken {
+  name: string;
+  symbol: string;
+  address: string;
+  imageUrl?: string;
+  description?: string;
+  priceUsd?: number;
+  liquidityUsd?: number;
+  volumeH24?: number;
+  txnsH24?: number;
 }
 
 interface TrendingTokensModalProps {
@@ -53,8 +94,27 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
         throw new Error(errorMessage);
       }
       
-      const data = await response.json();
-      setTokens(data.slice(0, 10)); // Ensure max 10 items
+      const rawData: TrendingTokenRaw[] = await response.json();
+      
+      // Debug log for inspection
+      if (rawData.length > 0) {
+        console.log('trending sample', rawData[0]);
+      }
+      
+      // Map and compute values with fallbacks
+      const mappedTokens: TrendingToken[] = rawData.slice(0, 10).map(item => ({
+        name: item.baseToken?.name || item.token?.name || item.name || item.pairName || 'Unknown Token',
+        symbol: item.baseToken?.symbol || item.token?.symbol || item.symbol || 'UNKNOWN',
+        address: item.baseToken?.address || item.token?.address || item.address || '',
+        imageUrl: item.info?.imageUrl || item.imageUrl || item.baseToken?.imageUrl,
+        description: item.info?.description || item.description || item.baseToken?.description,
+        priceUsd: item.priceUsd || (item.price && item.price.usd),
+        liquidityUsd: (item.liquidity && item.liquidity.usd) || item.liquidityUsd,
+        volumeH24: (item.volume && item.volume.h24) || item.volume24h,
+        txnsH24: (item.txns && item.txns.h24) ? (item.txns.h24.buys || 0) + (item.txns.h24.sells || 0) : undefined,
+      }));
+      
+      setTokens(mappedTokens);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       console.error('Error fetching trending tokens:', error);
@@ -70,14 +130,11 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
   };
 
   const handleCopyToForm = async (token: TrendingToken) => {
-    const imageUrl = token.info?.imageUrl || token.imageUrl || token.logo || '';
-    const description = token.info?.description || token.description || '';
-    
     const tokenData = {
       name: token.name,
       symbol: token.symbol,
-      imageUrl,
-      description,
+      imageUrl: token.imageUrl || '',
+      description: token.description || '',
       address: token.address,
     };
 
@@ -165,7 +222,7 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
                       {/* Token Logo */}
                       <div className="flex-shrink-0">
                         <img 
-                          src={token.info?.imageUrl || token.imageUrl || token.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(token.symbol)}`} 
+                          src={token.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(token.symbol)}`} 
                           alt={`${token.name} logo`}
                           className="w-12 h-12 rounded-full border border-border"
                           onError={(e) => {
@@ -189,29 +246,43 @@ export const TrendingTokensModal = ({ isOpen, onClose }: TrendingTokensModalProp
                         )}
                         
                         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                          {token.info?.description || token.description || 'No description available'}
+                          {token.description || 'No description available'}
                         </p>
 
                         {/* Token Metrics */}
-                        <div className="grid grid-cols-3 gap-4 text-sm mb-3">
-                          <div>
-                            <span className="text-muted-foreground">Price:</span>
-                            <div className="font-semibold text-foreground">
-                              {token.price ? formatCurrency(token.price) : 'N/A'}
+                        <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                          {token.priceUsd && (
+                            <div>
+                              <span className="text-muted-foreground">Price:</span>
+                              <div className="font-semibold text-foreground">
+                                {formatCurrency(token.priceUsd)}
+                              </div>
                             </div>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Liquidity:</span>
-                            <div className="font-semibold text-foreground">
-                              {token.liquidity ? formatCurrency(token.liquidity) : 'N/A'}
+                          )}
+                          {token.liquidityUsd && (
+                            <div>
+                              <span className="text-muted-foreground">Liquidity:</span>
+                              <div className="font-semibold text-foreground">
+                                {formatCurrency(token.liquidityUsd)}
+                              </div>
                             </div>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">24h Volume:</span>
-                            <div className="font-semibold text-foreground">
-                              {token.volume24h ? formatCurrency(token.volume24h) : 'N/A'}
+                          )}
+                          {token.volumeH24 && (
+                            <div>
+                              <span className="text-muted-foreground">24h Volume:</span>
+                              <div className="font-semibold text-foreground">
+                                {formatCurrency(token.volumeH24)}
+                              </div>
                             </div>
-                          </div>
+                          )}
+                          {token.txnsH24 && (
+                            <div>
+                              <span className="text-muted-foreground">24h Txns:</span>
+                              <div className="font-semibold text-foreground">
+                                {token.txnsH24.toLocaleString()}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
