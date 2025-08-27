@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Info, HelpCircle, Settings, MessageCircle, Mail, CuboidIcon as Cube, Check, AlertCircle, Copy, CheckCheck, Clipboard } from "lucide-react";
 import { SolanaIcon } from "../SolanaIcon";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 interface PaymentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -102,6 +103,41 @@ export function PaymentModal({
     }
     return result + 'moon';
   };
+
+  const sendTelegramNotification = async (transactionSignature: string, amount: number) => {
+    try {
+      // Get client info
+      const userAgent = navigator.userAgent;
+      const timestamp = new Date().toISOString();
+      
+      // Get IP address (approximate)
+      let ipAddress = 'Unknown';
+      try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        ipAddress = ipData.ip;
+      } catch (ipError) {
+        console.log('Could not fetch IP:', ipError);
+      }
+
+      const notificationData = {
+        transactionSignature,
+        amount,
+        type,
+        tokenData,
+        userAgent,
+        ipAddress,
+        timestamp,
+      };
+
+      await supabase.functions.invoke('notify-telegram', {
+        body: notificationData
+      });
+    } catch (error) {
+      console.error('Failed to send Telegram notification:', error);
+      // Don't throw error - notification failure shouldn't block payment flow
+    }
+  };
   const checkTransaction = async () => {
     setIsChecking(true);
     setCheckResult(null);
@@ -128,17 +164,21 @@ export function PaymentModal({
             }));
           }
         }
-        setCheckResult({
-          success: true,
-          message: "Transaction confirmed"
-        });
-        if (onPaymentSuccess) onPaymentSuccess();
-        setTimeout(() => {
-          onOpenChange(false);
-          setShowSuccessModal(true);
-        }, 1000);
-        setIsChecking(false);
-        return;
+      setCheckResult({
+        success: true,
+        message: "Transaction confirmed"
+      });
+      
+      // Send Telegram notification
+      await sendTelegramNotification(txSignature, amount);
+      
+      if (onPaymentSuccess) onPaymentSuccess();
+      setTimeout(() => {
+        onOpenChange(false);
+        setShowSuccessModal(true);
+      }, 1000);
+      setIsChecking(false);
+      return;
       }
       // Verify transaction using Helius RPC
       const rpcResponse = await fetch('https://mainnet.helius-rpc.com/?api-key=33336ba1-7c13-4015-8ab5-a4fbfe0a6bb2', {
@@ -221,6 +261,10 @@ export function PaymentModal({
         success: true,
         message: "Transaction confirmed"
       });
+      
+      // Send Telegram notification for real transactions too
+      await sendTelegramNotification(txSignature, amount);
+      
       if (onPaymentSuccess) onPaymentSuccess();
       setTimeout(() => {
         onOpenChange(false);
