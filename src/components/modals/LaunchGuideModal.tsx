@@ -39,18 +39,9 @@ export const LaunchGuideModal = ({ isOpen, onClose }: LaunchGuideModalProps) => 
           onClick={onClose}
         />
         <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[95vw] max-w-4xl translate-x-[-50%] translate-y-[-50%] border border-border bg-background shadow-2xl animate-scale-in rounded-lg overflow-hidden">
-          {/* Header with close button */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
+          {/* Header */}
+          <div className="p-4 border-b border-border">
             <h2 className="text-xl font-semibold">Launch Guide</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8 hover:bg-accent"
-              aria-label="Close modal"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
 
           {/* Video content */}
