@@ -56,15 +56,15 @@ export const LaunchGuideModal = ({ isOpen, onClose }: LaunchGuideModalProps) => 
           {/* Video content */}
           <div className="p-6">
             <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
-              <iframe 
-                src="https://embed.screenapp.io/app/#/shared/Xc6VttPJOd?embed=true" 
-                width="100%" 
-                height="100%" 
-                frameBorder="0" 
-                allowFullScreen
+              <video 
+                src="https://storage.googleapis.com/store-screenapp-production/vid/68bd863eee698a739d797921/c2ee6aef-eef6-4dc8-be00-84f721063364.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=GOOG1EINEQV5X2QGY62PSZMBMUR7IGGVLKNDB6ABP5GL6O6FKO76DWA2IE3SB%2F20250907%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20250907T131857Z&X-Amz-Expires=604800&X-Amz-Signature=aafe10fe27ae1a8b8a8a3451e489c71b07236a9017e0ac3483cd985aba220147&X-Amz-SignedHeaders=host&response-content-type=attachment%3B%20filename%3D%22c2ee6aef-eef6-4dc8-be00-84f721063364.mp4%22%3B%20filename%2A%3D%20UTF-8%27%27launch_guide.mp4%3B&x-amz-checksum-mode=ENABLED&x-id=GetObject#t=0"
+                controls
                 className="w-full h-full"
-                title="Launch Guide Video"
-              />
+                controlsList="nodownload"
+                preload="metadata"
+              >
+                Your browser does not support the video tag.
+              </video>
             </div>
           </div>
         </DialogContent>
