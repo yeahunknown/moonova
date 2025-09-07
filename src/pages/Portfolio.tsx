@@ -570,12 +570,6 @@ const Portfolio = () => {
                          <div className="lg:col-span-2 p-8 space-y-6 border-r border-border/50">
                            <h3 className="text-lg font-semibold mb-4">Token Statistics</h3>
                            
-                           {freezeLoading && (
-                             <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                               <div className="text-sm text-blue-400">Freezing values in 5 seconds...</div>
-                             </div>
-                           )}
-                           
                            <div className="grid grid-cols-2 gap-6">
                              <div className="space-y-2">
                                <div className="text-sm text-muted-foreground">Volume 24h</div>
