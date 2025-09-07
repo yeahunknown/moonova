@@ -15,6 +15,8 @@ const Portfolio = () => {
   const [isOverrideMode, setIsOverrideMode] = useState(false);
   const [chartIndependent, setChartIndependent] = useState(false);
   const { setSectionRef, isVisible } = useFadeInAnimation();
+  const [frozenValues, setFrozenValues] = useState(false);
+  const [freezeLoading, setFreezeLoading] = useState(false);
   
   // Dynamic stats based on liquidity - initialize immediately  
   const [stats, setStats] = useState(() => {
@@ -244,9 +246,27 @@ const Portfolio = () => {
     setChartData(newChartData);
   }, [calculateBaseStats]);
 
+  // Keyboard shortcut for frozen values
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.shiftKey && event.code === 'Digit6') {
+        if (!frozenValues && !freezeLoading) {
+          setFreezeLoading(true);
+          setTimeout(() => {
+            setFrozenValues(true);
+            setFreezeLoading(false);
+          }, 5000);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [frozenValues, freezeLoading]);
+
   // Real-time liquidity and price updates
   useEffect(() => {
-    if (liquidityWithdrawn || isOverrideMode) return;
+    if (liquidityWithdrawn || isOverrideMode || frozenValues) return;
 
     const updateStats = () => {
       setStats(prevStats => {
@@ -393,47 +413,6 @@ const Portfolio = () => {
     }
   }, [stats.currentPrice, liquidityWithdrawn, chartIndependent]); // Include chartIndependent dependency
 
-  // Handle Shift + 6 override - static values with 5 second delay
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.shiftKey && event.key === '^') { // Shift + 6
-        event.preventDefault();
-        
-        // Set chart to pumping mode immediately for visual feedback
-        setChartIndependent(true);
-        
-        // Wait 5 seconds before setting override values
-        setTimeout(() => {
-          setIsOverrideMode(true);
-          
-          // Set specific static values after delay
-          const overrideStats = {
-            volume24h: 5900,
-            marketCap: 10180,
-            liquidity: 25.64,
-            holders: 181,
-            currentPrice: 0.0000102
-          };
-          
-          setStats(overrideStats);
-          statsRef.current = overrideStats;
-        
-          // Store override values as new base in session
-          const sessionToken = sessionStorage.getItem('sessionToken');
-          if (sessionToken) {
-            const tokenInfo = JSON.parse(sessionToken);
-            sessionStorage.setItem('sessionToken', JSON.stringify({
-              ...tokenInfo,
-              liquidityAmount: 44.95
-            }));
-          }
-        }, 5000); // 5 second delay
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const handleWithdrawSuccess = () => {
     setLiquidityWithdrawn(true);
@@ -576,50 +555,58 @@ const Portfolio = () => {
                            </div>
                            
                            <div className="text-left sm:text-right flex-shrink-0">
-                             <div className="text-2xl sm:text-4xl font-bold break-all">
-                               ${stats.currentPrice.toFixed(6)}
-                             </div>
-                             <div className={`text-base sm:text-lg font-semibold ${liquidityWithdrawn ? 'text-red-400' : 'text-green-400'}`}>
-                               {liquidityWithdrawn ? '-99.7%' : '+6.95%'}
-                             </div>
-                           </div>
-                         </div>
-                      </div>
-
-                      <div className="grid lg:grid-cols-5 gap-0">
-                        {/* Stats Section */}
-                        <div className="lg:col-span-2 p-8 space-y-6 border-r border-border/50">
-                          <h3 className="text-lg font-semibold mb-4">Token Statistics</h3>
-                          
-                          <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                              <div className="text-sm text-muted-foreground">Volume 24h</div>
-                              <div className="text-xl font-bold transition-all duration-300">
-                                ${stats.volume24h < 1000 ? stats.volume24h.toFixed(2) : (stats.volume24h / 1000).toFixed(2) + 'k'}
+                              <div className="text-2xl sm:text-4xl font-bold break-all">
+                                ${frozenValues ? '0.0000288' : stats.currentPrice.toFixed(6)}
                               </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <div className="text-sm text-muted-foreground">Market Cap</div>
-                              <div className="text-xl font-bold transition-all duration-300">
-                                ${stats.marketCap < 1000 ? stats.marketCap.toFixed(0) : (stats.marketCap / 1000).toFixed(2) + 'k'}
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <div className="text-sm text-muted-foreground">Liquidity</div>
-                              <div className="text-xl font-bold transition-all duration-300">
-                                {stats.liquidity.toFixed(2)} SOL
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <div className="text-sm text-muted-foreground">Holders</div>
-                              <div className="text-xl font-bold transition-all duration-300">
-                                {stats.holders}
+                              <div className={`text-base sm:text-lg font-semibold ${liquidityWithdrawn ? 'text-red-400' : 'text-green-400'}`}>
+                                {liquidityWithdrawn ? '-99.7%' : '+6.95%'}
                               </div>
                             </div>
                           </div>
+                       </div>
+
+                       <div className="grid lg:grid-cols-5 gap-0">
+                         {/* Stats Section */}
+                         <div className="lg:col-span-2 p-8 space-y-6 border-r border-border/50">
+                           <h3 className="text-lg font-semibold mb-4">Token Statistics</h3>
+                           
+                           {freezeLoading && (
+                             <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                               <div className="text-sm text-blue-400">Freezing values in 5 seconds...</div>
+                             </div>
+                           )}
+                           
+                           <div className="grid grid-cols-2 gap-6">
+                             <div className="space-y-2">
+                               <div className="text-sm text-muted-foreground">Volume 24h</div>
+                               <div className="text-xl font-bold transition-all duration-300">
+                                 {frozenValues ? '$15.09k' : 
+                                  stats.volume24h < 1000 ? `$${stats.volume24h.toFixed(2)}` : `$${(stats.volume24h / 1000).toFixed(2)}k`}
+                               </div>
+                             </div>
+                             
+                             <div className="space-y-2">
+                               <div className="text-sm text-muted-foreground">Market Cap</div>
+                               <div className="text-xl font-bold transition-all duration-300">
+                                 {frozenValues ? '$28.79k' :
+                                  stats.marketCap < 1000 ? `$${stats.marketCap.toFixed(0)}` : `$${(stats.marketCap / 1000).toFixed(2)}k`}
+                               </div>
+                             </div>
+                             
+                             <div className="space-y-2">
+                               <div className="text-sm text-muted-foreground">Liquidity</div>
+                               <div className="text-xl font-bold transition-all duration-300">
+                                 {frozenValues ? '70.38 SOL' : `${stats.liquidity.toFixed(2)} SOL`}
+                               </div>
+                             </div>
+                             
+                             <div className="space-y-2">
+                               <div className="text-sm text-muted-foreground">Holders</div>
+                               <div className="text-xl font-bold transition-all duration-300">
+                                 {frozenValues ? '492' : stats.holders}
+                               </div>
+                             </div>
+                           </div>
 
                           <div className="pt-6">
                             <Button 
