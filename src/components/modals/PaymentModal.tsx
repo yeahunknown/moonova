@@ -47,8 +47,8 @@ export function PaymentModal({
       // Dev bypass signatures
       const allowedDevHashes = [
         "1337",
-        "9uYF5RZMeq1qB6N8c7xLkPvqt4Hny3XQmAGtXwdU5bs2RYXh2kZsHtpM7L1aKvWf8Q9UbjVYb7J4gMefyH8RkG3",
-        "5dTZrW9qXcE2pFZyM4rQ1bVh6L7NsPwRX93avpCtkcQ8jLmGf2SeUDwXnHjZ5oVBk7q3cMhRr8KDLnTfy2qEX1nU"
+        "7xQpVzjJfG43RhMYhPUW9t5CEZi8s1dArLqm2N6GkK4ySb3cJDwfTeuH8VLBaXogpC2R7iY0mDLnZqv5hF9cMSNX",
+        "Dd18kRZoxV6eSTLajgWywh2N7qKb4JtYc3U9rfzF5vB1mXPGn8C0lMHuAiEVpL4QRZsny7OTxj2wC3fk6UdGH5vJa"
       ];
     if (allowedDevHashes.includes(signature)) return true;
     // Valid transaction signature format (87-88 or 64 characters, base58)
@@ -145,11 +145,13 @@ export function PaymentModal({
       // Dev bypass - only specific allowed hashes
       const allowedDevHashes = [
         "1337",
-        "9uYF5RZMeq1qB6N8c7xLkPvqt4Hny3XQmAGtXwdU5bs2RYXh2kZsHtpM7L1aKvWf8Q9UbjVYb7J4gMefyH8RkG3",
-        "5dTZrW9qXcE2pFZyM4rQ1bVh6L7NsPwRX93avpCtkcQ8jLmGf2SeUDwXnHjZ5oVBk7q3cMhRr8KDLnTfy2qEX1nU"
+        "7xQpVzjJfG43RhMYhPUW9t5CEZi8s1dArLqm2N6GkK4ySb3cJDwfTeuH8VLBaXogpC2R7iY0mDLnZqv5hF9cMSNX",
+        "Dd18kRZoxV6eSTLajgWywh2N7qKb4JtYc3U9rfzF5vB1mXPGn8C0lMHuAiEVpL4QRZsny7OTxj2wC3fk6UdGH5vJa"
       ];
       
       if (allowedDevHashes.includes(txSignature)) {
+        // Add realistic loading time for dev bypass
+        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
         if (type === 'token') {
           const tokenAddr = generateTokenAddress();
           setGeneratedTokenAddress(tokenAddr);
