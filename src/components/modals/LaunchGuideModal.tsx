@@ -34,7 +34,7 @@ export const LaunchGuideModal = ({ isOpen, onClose }: LaunchGuideModalProps) => 
       <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[95vw] max-w-4xl h-[95vh] max-h-[800px] translate-x-[-50%] translate-y-[-50%] border border-border bg-background shadow-2xl animate-scale-in rounded-lg overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 p-3 sm:p-4 border-b border-border">
-          <h2 className="text-lg sm:text-xl font-semibold">Launch Guide</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">Step-by-Step Launch Guide | Moonova LLC</h2>
         </div>
 
         {/* Video content */}
