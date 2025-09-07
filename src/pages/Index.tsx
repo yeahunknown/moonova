@@ -13,6 +13,7 @@ const Index = () => {
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const [showLaunchGuideModal, setShowLaunchGuideModal] = useState(false);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+  const launchGuideBtnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -79,6 +80,7 @@ const Index = () => {
                 
                 <Button 
                   size="lg"
+                  ref={launchGuideBtnRef}
                   onClick={() => setShowLaunchGuideModal(true)}
                   variant="outline"
                   className="border-moonova text-moonova hover:bg-moonova hover:text-moonova-foreground transition-all hover:scale-105 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto min-h-[48px]"
@@ -195,7 +197,7 @@ const Index = () => {
       {/* Launch Guide Modal */}
       <LaunchGuideModal 
         isOpen={showLaunchGuideModal} 
-        onClose={() => setShowLaunchGuideModal(false)} 
+        onClose={() => { setShowLaunchGuideModal(false); launchGuideBtnRef.current?.focus(); }} 
       />
     </div>
   );
