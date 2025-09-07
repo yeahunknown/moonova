@@ -18,6 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        moonova: "bg-gradient-to-r from-moonova/20 to-moonova/10 border-2 border-moonova/40 text-moonova hover:from-moonova/30 hover:to-moonova/20 hover:border-moonova/60 backdrop-blur-sm shadow-[0_0_20px_hsl(var(--moonova-accent)/0.2)] hover:shadow-[0_0_30px_hsl(var(--moonova-accent)/0.4)]",
       },
       size: {
         default: "h-10 px-4 py-2",
