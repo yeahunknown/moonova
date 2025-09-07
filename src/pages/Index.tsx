@@ -4,14 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import { HeroAnimation } from "@/components/HeroAnimation";
 import { StatsBar } from "@/components/StatsBar";
-import { TrendingTokensModal } from "@/components/modals/TrendingTokensModal";
-import { Rocket, Shield, TrendingUp, Copy } from "lucide-react";
+import { LaunchGuideModal } from "@/components/modals/LaunchGuideModal";
+import { Rocket, Shield, TrendingUp, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
-  const [showTrendingModal, setShowTrendingModal] = useState(false);
+  const [showLaunchGuideModal, setShowLaunchGuideModal] = useState(false);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   useEffect(() => {
@@ -79,12 +79,12 @@ const Index = () => {
                 
                 <Button 
                   size="lg"
-                  onClick={() => setShowTrendingModal(true)}
+                  onClick={() => setShowLaunchGuideModal(true)}
                   variant="outline"
                   className="border-moonova text-moonova hover:bg-moonova hover:text-moonova-foreground transition-all hover:scale-105 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto min-h-[48px]"
                 >
-                  <Copy className="mr-2 h-5 w-5" />
-                  Copy Trending Tokens
+                  <Play className="mr-2 h-5 w-5" />
+                  Launch Guide
                 </Button>
               </div>
             </div>
@@ -192,10 +192,10 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Trending Tokens Modal */}
-      <TrendingTokensModal 
-        isOpen={showTrendingModal} 
-        onClose={() => setShowTrendingModal(false)} 
+      {/* Launch Guide Modal */}
+      <LaunchGuideModal 
+        isOpen={showLaunchGuideModal} 
+        onClose={() => setShowLaunchGuideModal(false)} 
       />
     </div>
   );
