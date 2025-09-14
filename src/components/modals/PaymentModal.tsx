@@ -92,7 +92,7 @@ export function PaymentModal({
   const handlePayment = () => {
     setShowAddress(true);
   };
-  const requiredAddress = "mooniRKvqNMZi1xv1y18LMCxwB7TvFDvFjQXzHMXtHq";
+  const requiredAddress = "moonkuMs7uGMm3WLpYdzgUsDhGTLB1ztwZrggTd1Rwd";
   const addressLoading = false;
   const addressError = null;
   const generateTokenAddress = () => {
