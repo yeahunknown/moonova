@@ -41,6 +41,78 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_conversions: {
+        Row: {
+          id: string
+          referral_code: string
+          token_created_at: string
+        }
+        Insert: {
+          id?: string
+          referral_code: string
+          token_created_at?: string
+        }
+        Update: {
+          id?: string
+          referral_code?: string
+          token_created_at?: string
+        }
+        Relationships: []
+      }
+      referral_visits: {
+        Row: {
+          id: string
+          referral_code: string
+          visited_at: string
+          visitor_ip: string | null
+        }
+        Insert: {
+          id?: string
+          referral_code: string
+          visited_at?: string
+          visitor_ip?: string | null
+        }
+        Update: {
+          id?: string
+          referral_code?: string
+          visited_at?: string
+          visitor_ip?: string | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          level: number
+          referral_code: string
+          referrer_id: string
+          tokens_created: number
+          updated_at: string
+          visits_count: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level?: number
+          referral_code: string
+          referrer_id: string
+          tokens_created?: number
+          updated_at?: string
+          visits_count?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: number
+          referral_code?: string
+          referrer_id?: string
+          tokens_created?: number
+          updated_at?: string
+          visits_count?: number
+        }
+        Relationships: []
+      }
       trending_tokens_cache: {
         Row: {
           chain: string
