@@ -6,6 +6,7 @@ import TokenCreationForm from "@/components/forms/TokenCreationForm";
 import { PaymentModal } from "@/components/modals/PaymentModal";
 import { useToast } from "@/hooks/use-toast";
 import { useFadeInAnimation } from "@/hooks/useFadeInAnimation";
+import { supabase } from "@/integrations/supabase/client";
 
 const CreateToken = () => {
   const [step, setStep] = useState(1);
@@ -35,8 +36,28 @@ const CreateToken = () => {
     setIsPaymentModalOpen(true);
   };
 
-  const handlePaymentComplete = () => {
-    // Payment success handled by the success modal
+  const handlePaymentComplete = async () => {
+    // Track referral conversion if user came from a referral link
+    const referralCode = localStorage.getItem('referral_code');
+    if (referralCode) {
+      try {
+        console.log('Tracking referral conversion for code:', referralCode);
+        
+        const { error } = await supabase.rpc('track_referral_conversion', {
+          referral_code_param: referralCode
+        });
+        
+        if (error) {
+          console.error('Error tracking referral conversion:', error);
+        } else {
+          console.log('Successfully tracked referral conversion');
+          // Clear the referral code after successful conversion
+          localStorage.removeItem('referral_code');
+        }
+      } catch (error) {
+        console.error('Error in referral conversion tracking:', error);
+      }
+    }
   };
 
   const calculateCost = () => {

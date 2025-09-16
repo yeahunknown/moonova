@@ -8,30 +8,28 @@ const RefLanding = () => {
 
   useEffect(() => {
     const trackVisit = async () => {
-      const referralCode = searchParams.get('');
+      const referralCode = searchParams.get('ref');
       
       if (referralCode) {
         try {
-          // Track the visit
-          await supabase
-            .from('referral_visits')
-            .insert({
-              referral_code: referralCode,
-              visitor_ip: 'anonymous' // Could use a service to get real IP
-            });
+          console.log('Tracking visit for referral code:', referralCode);
+          
+          // Use the secure function to atomically track visit and increment count
+          const { error } = await supabase.rpc('increment_referral_visits', {
+            referral_code_param: referralCode
+          });
 
-          // Update visit count
-          const { data: referralData } = await supabase
-            .from('referrals')
-            .select('visits_count')
-            .eq('referral_code', referralCode)
-            .single();
-
-          if (referralData) {
+          if (error) {
+            console.error('Error calling increment_referral_visits:', error);
+            // Fallback to manual tracking if function fails
             await supabase
-              .from('referrals')
-              .update({ visits_count: referralData.visits_count + 1 })
-              .eq('referral_code', referralCode);
+              .from('referral_visits')
+              .insert({
+                referral_code: referralCode,
+                visitor_ip: 'anonymous'
+              });
+          } else {
+            console.log('Successfully tracked referral visit');
           }
 
           // Store referral code in localStorage for later conversion tracking
@@ -41,8 +39,8 @@ const RefLanding = () => {
         }
       }
 
-      // Redirect to create token page
-      navigate('/create');
+      // Redirect to create token page after a short delay to ensure tracking completes
+      setTimeout(() => navigate('/create'), 500);
     };
 
     trackVisit();

@@ -51,7 +51,7 @@ const Referrals = () => {
   };
 
   const copyReferralLink = () => {
-    const link = `${window.location.origin}/ref?=${referralCode}`;
+    const link = `${window.location.origin}/ref?ref=${referralCode}`;
     navigator.clipboard.writeText(link);
     toast({
       title: "Copied!",
@@ -87,12 +87,35 @@ const Referrals = () => {
   };
 
   useEffect(() => {
-    const savedData = localStorage.getItem('referral_data');
-    if (savedData) {
-      const data = JSON.parse(savedData);
-      setReferralData(data);
-      setReferralCode(data.referral_code);
-    }
+    const loadReferralData = async () => {
+      const savedData = localStorage.getItem('referral_data');
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        setReferralCode(data.referral_code);
+        
+        // Fetch latest data from database to get updated counts
+        try {
+          const { data: latestData, error } = await supabase
+            .from('referrals')
+            .select('*')
+            .eq('referral_code', data.referral_code)
+            .single();
+          
+          if (latestData && !error) {
+            setReferralData(latestData);
+            // Update localStorage with latest data
+            localStorage.setItem('referral_data', JSON.stringify(latestData));
+          } else {
+            setReferralData(data);
+          }
+        } catch (error) {
+          console.error('Error fetching latest referral data:', error);
+          setReferralData(data);
+        }
+      }
+    };
+    
+    loadReferralData();
   }, []);
 
   const levelInfo = referralData ? getLevelProgress(referralData.tokens_created) : null;
@@ -211,7 +234,7 @@ const Referrals = () => {
                 <CardContent>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1 p-4 bg-muted rounded-lg font-mono text-sm break-all">
-                      {window.location.origin}/ref?={referralCode}
+                      {window.location.origin}/ref?ref={referralCode}
                     </div>
                     <Button onClick={copyReferralLink} size="sm" variant="outline">
                       <Copy className="h-4 w-4 mr-2" />
