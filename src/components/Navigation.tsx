@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
-import { MessageCircle, Menu, X } from "lucide-react";
+import { MessageCircle, Menu, X, User } from "lucide-react";
 import { Dialog, DialogContent, DialogPortal } from "./ui/dialog";
 import { useState } from "react";
 
@@ -15,7 +15,8 @@ const Navigation = () => {
   const navItems = [
     { path: "/", label: "Home" },
     { path: "/create", label: "Create" },
-    { path: "/liquidity", label: "Liquidity" }
+    { path: "/liquidity", label: "Liquidity" },
+    { path: "/refer", label: "Referrals" }
   ];
 
   return (
@@ -66,6 +67,16 @@ const Navigation = () => {
 
             {/* Right Side */}
             <div className="flex items-center space-x-3">
+              {/* Referral Button */}
+              <Button 
+                onClick={() => navigate("/refer")}
+                variant="outline"
+                className="border-primary/20 hover:bg-primary/10 hover:border-primary/40 transition-all duration-200"
+              >
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline ml-2">Refer</span>
+              </Button>
+
               {/* Contact Button */}
               <Button 
                 onClick={() => setShowContactModal(true)}

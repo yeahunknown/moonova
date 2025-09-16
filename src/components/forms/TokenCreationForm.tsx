@@ -175,12 +175,57 @@ const TokenCreationForm = ({ step, onNext, onPrevious, onSubmit }: TokenCreation
     }
   };
 
-  const handleSubmit = (data: TokenFormData) => {
+  const handleSubmit = async (data: TokenFormData) => {
     // Include uploaded logo in the data
     const dataWithLogo = {
       ...data,
       uploadedLogo
     };
+    
+    // Track referral conversion if there's a referral code
+    const referralCode = localStorage.getItem('referral_code');
+    if (referralCode) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(
+          import.meta.env.VITE_SUPABASE_URL!,
+          import.meta.env.VITE_SUPABASE_ANON_KEY!
+        );
+
+        // Add conversion record
+        await supabase
+          .from('referral_conversions')
+          .insert({
+            referral_code: referralCode
+          });
+
+        // Update referral stats
+        const { data: referralData } = await supabase
+          .from('referrals')
+          .select('tokens_created')
+          .eq('referral_code', referralCode)
+          .single();
+
+        if (referralData) {
+          const newTokenCount = referralData.tokens_created + 1;
+          const newLevel = Math.min(Math.floor(newTokenCount / 5) + 1, 6);
+          
+          await supabase
+            .from('referrals')
+            .update({ 
+              tokens_created: newTokenCount,
+              level: newLevel
+            })
+            .eq('referral_code', referralCode);
+        }
+
+        // Clear referral code after successful conversion
+        localStorage.removeItem('referral_code');
+      } catch (error) {
+        console.error('Error tracking referral conversion:', error);
+      }
+    }
+    
     onSubmit(dataWithLogo);
   };
 
