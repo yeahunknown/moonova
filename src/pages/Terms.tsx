@@ -175,10 +175,13 @@ const Terms = () => {
               Last updated: January 2025<br/>
               By using this platform, you acknowledge that you have read, understood, and agree to be bound by these terms in their entirety. No oral modifications or representations are binding.
             </p>
-            <p className="text-xs text-muted-foreground mt-4 opacity-80">
-              Moonova does not actually launch any Solana tokens. For joke / fun purposes only.
-            </p>
           </div>
+        </div>
+        
+        <div className="text-center pb-4">
+          <p className="text-[8px] text-muted-foreground/30">
+            Moonova does not actually launch any Solana tokens. For joke / fun purposes only.
+          </p>
         </div>
       </div>
     </div>
