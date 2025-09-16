@@ -149,8 +149,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      increment_referral_visits: {
+        Args: { referral_code_param: string }
+        Returns: undefined
+      }
       prune_trending_cache: {
         Args: { max_age_minutes?: number }
+        Returns: undefined
+      }
+      track_referral_conversion: {
+        Args: { referral_code_param: string }
         Returns: undefined
       }
     }
