@@ -177,12 +177,6 @@ const Terms = () => {
             </p>
           </div>
         </div>
-        
-        <div className="text-center pb-4">
-          <p className="text-[8px] text-muted-foreground/30">
-            Moonova does not actually launch any Solana tokens. For joke / fun purposes only.
-          </p>
-        </div>
       </div>
     </div>
   )
