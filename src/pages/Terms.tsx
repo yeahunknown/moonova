@@ -49,6 +49,7 @@ const Terms = () => {
               <li>Technical infrastructure for token operations</li>
             </ul>
             <p className="mt-4 font-bold">IMPORTANT: Payment does not guarantee successful token launch or functionality. Technical failures, blockchain network issues, user error, or market conditions may prevent or impair token deployment.</p>
+            <p className="text-[6px] text-muted-foreground/20 inline-block ml-2">Notwithstanding any payment processing completion, no assurance exists regarding operational token deployment mechanisms or functional deliverable provision thereof.</p>
           </section>
 
           <section>
