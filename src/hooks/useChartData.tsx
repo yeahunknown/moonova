@@ -26,7 +26,7 @@ export const useChartData = ({
 }: UseChartDataProps) => {
   const [chartData, setChartData] = useState<CandleData[]>([]);
 
-  // Generate initial chart data
+  // Generate initial chart data with realistic price action
   const generateInitialData = useMemo(() => {
     if (initialPrice <= 0) return [];
     
@@ -34,11 +34,14 @@ export const useChartData = ({
     let price = initialPrice;
     
     for (let i = 0; i < 50; i++) {
-      const change = (Math.random() - 0.5) * 0.1;
+      const volatility = 0.05 + Math.random() * 0.05; // 5-10% volatility
+      const trend = Math.sin(i * 0.1) * 0.02; // Subtle trend
+      const change = (Math.random() - 0.5) * volatility + trend;
+      
       const open = price;
       const close = price * (1 + change);
-      const high = Math.max(open, close) * (1 + Math.random() * 0.05);
-      const low = Math.min(open, close) * (1 - Math.random() * 0.05);
+      const high = Math.max(open, close) * (1 + Math.random() * 0.03);
+      const low = Math.min(open, close) * (1 - Math.random() * 0.03);
       
       data.push({
         time: new Date(Date.now() - (49 - i) * 60000).toISOString(),
@@ -62,7 +65,7 @@ export const useChartData = ({
     }
   }, [initialPrice, generateInitialData]);
 
-  // Handle chart updates
+  // Handle real-time chart updates
   useEffect(() => {
     if (liquidityWithdrawn || isOverrideMode || chartData.length === 0) return;
 
@@ -73,15 +76,15 @@ export const useChartData = ({
 
         let newPrice;
         if (chartIndependent) {
-          // Pumping action - more upward movement
+          // Pumping action - more upward movement with occasional dips
           const pumpChance = 0.75;
           const isPump = Math.random() < pumpChance;
           const change = isPump 
             ? Math.random() * 0.15 + 0.05  // 5-20% up
-            : (Math.random() - 0.5) * 0.1;  // Normal volatility
+            : (Math.random() - 0.5) * 0.08;  // Smaller volatility on dips
           newPrice = lastCandle.close * (1 + change);
         } else {
-          // Sync with current price if provided
+          // Sync with current price if provided with natural volatility
           const volatility = 0.02;
           const change = (Math.random() - 0.5) * volatility;
           newPrice = (currentPrice || lastCandle.close) * (1 + change);
@@ -89,8 +92,9 @@ export const useChartData = ({
 
         const open = lastCandle.close;
         const close = newPrice;
-        const high = Math.max(open, close) * (1 + Math.random() * 0.02);
-        const low = Math.min(open, close) * (1 - Math.random() * 0.02);
+        const wickMultiplier = 1 + Math.random() * 0.02;
+        const high = Math.max(open, close) * wickMultiplier;
+        const low = Math.min(open, close) * (2 - wickMultiplier);
 
         const newCandle: CandleData = {
           time: new Date().toISOString(),
@@ -101,6 +105,7 @@ export const useChartData = ({
           isGreen: close > open
         };
 
+        // Keep last 50 candles for smooth animation
         const newData = [...prevData.slice(1), newCandle];
         return newData;
       });
@@ -109,19 +114,19 @@ export const useChartData = ({
     return () => clearInterval(interval);
   }, [liquidityWithdrawn, isOverrideMode, chartIndependent, currentPrice, chartData.length]);
 
-  // Handle withdrawal crash
+  // Handle dramatic liquidity withdrawal crash
   useEffect(() => {
     if (liquidityWithdrawn && chartData.length > 0) {
       setChartData(prevData => {
         const lastCandle = prevData[prevData.length - 1];
         if (!lastCandle) return prevData;
 
-        // Create dramatic crash candle
-        const crashPrice = lastCandle.close * 0.02;
+        // Create massive crash candle
+        const crashPrice = lastCandle.close * 0.015; // 98.5% drop
         const crashCandle: CandleData = {
           time: new Date().toISOString(),
           open: lastCandle.close,
-          high: lastCandle.close,
+          high: lastCandle.close * 1.001, // Tiny upper wick
           low: crashPrice,
           close: crashPrice,
           isGreen: false
@@ -130,20 +135,26 @@ export const useChartData = ({
         return [...prevData.slice(1), crashCandle];
       });
 
-      // Continue declining after crash
+      // Continue slow decline after crash
       const declineInterval = setInterval(() => {
         setChartData(prevData => {
           const lastCandle = prevData[prevData.length - 1];
           if (!lastCandle) return prevData;
 
-          const declinePrice = lastCandle.close * (0.95 + Math.random() * 0.03);
+          // Slow decline with occasional dead cat bounces
+          const isDeadCatBounce = Math.random() < 0.1; // 10% chance
+          const change = isDeadCatBounce 
+            ? Math.random() * 0.03 + 0.01  // 1-4% bounce
+            : -(Math.random() * 0.02 + 0.005); // 0.5-2.5% decline
+
+          const declinePrice = lastCandle.close * (1 + change);
           const newCandle: CandleData = {
             time: new Date().toISOString(),
             open: lastCandle.close,
-            high: Math.max(lastCandle.close, declinePrice) * (1 + Math.random() * 0.01),
-            low: Math.min(lastCandle.close, declinePrice) * (1 - Math.random() * 0.02),
+            high: Math.max(lastCandle.close, declinePrice) * (1 + Math.random() * 0.005),
+            low: Math.min(lastCandle.close, declinePrice) * (1 - Math.random() * 0.01),
             close: declinePrice,
-            isGreen: false
+            isGreen: change > 0
           };
 
           return [...prevData.slice(1), newCandle];

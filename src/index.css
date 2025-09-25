@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Moonova LLC Design System - Dark mode crypto theme */
+/* Complete Crypto Chart Design System */
 
 @layer base {
   :root {
@@ -10,9 +10,10 @@
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
-    /* Card styling */
+    /* Card styling with blur effects */
     --card: 240 10% 5.9%;
     --card-foreground: 0 0% 98%;
+    --card-blur: 240 10% 5.9% / 0.8;
 
     /* Popover styling */
     --popover: 240 10% 5.9%;
@@ -22,6 +23,7 @@
     --primary: 263 70% 50%;
     --primary-foreground: 0 0% 98%;
     --primary-glow: 263 85% 65%;
+    --primary-dark: 263 70% 35%;
 
     /* Secondary colors */
     --secondary: 240 12% 15%;
@@ -36,11 +38,17 @@
     --accent-foreground: 0 0% 98%;
     
     /* Moonova brand accent */
-    --moonova-accent: 52 79% 53%; /* #ccbe43 */
+    --moonova-accent: 52 79% 53%;
     --moonova-accent-foreground: 0 0% 0%;
 
+    /* Chart specific colors */
+    --chart-green: 142 71% 45%;
+    --chart-red: 0 62.8% 50.6%;
+    --chart-grid: 240 12% 20% / 0.3;
+    --chart-background: 240 10% 3.9% / 0.5;
+
     /* Status colors */
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 0 0% 98%;
     --warning: 39 92% 65%;
     --warning-foreground: 0 0% 100%;
@@ -52,17 +60,22 @@
     --input: 240 12% 15%;
     --ring: 263 70% 50%;
 
-    /* Gradients */
+    /* Enhanced gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-dark: linear-gradient(135deg, hsl(240 10% 3.9%), hsl(240 12% 8%));
     --gradient-subtle: linear-gradient(180deg, hsl(240 10% 5.9%), hsl(240 12% 10%));
+    --gradient-chart: linear-gradient(180deg, hsl(240 10% 3.9% / 0.8), hsl(240 12% 8% / 0.4));
+    --gradient-glow: radial-gradient(ellipse at center, hsl(var(--primary-glow) / 0.2), transparent 70%);
 
-    /* Shadows */
+    /* Enhanced shadows */
     --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
     --shadow-card: 0 8px 32px hsl(240 10% 1% / 0.5);
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-blur: 0 8px 32px hsl(240 10% 1% / 0.8);
 
     /* Animation values */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.75rem;
 
