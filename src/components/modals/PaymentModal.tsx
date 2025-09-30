@@ -183,7 +183,7 @@ export function PaymentModal({
       return;
       }
       // Verify transaction using Helius RPC
-      const rpcResponse = await fetch('https://mainnet.helius-rpc.com/?api-key=33336ba1-7c13-4015-8ab5-a4fbfe0a6bb2', {
+      const rpcResponse = await fetch('https://mainnet.helius-rpc.com/?api-key=76e2dd69-0502-449d-b0dd-2b6b32f7631a', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
