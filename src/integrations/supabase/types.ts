@@ -14,6 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocked_domains: {
+        Row: {
+          blocked_at: string
+          blocked_reason: string | null
+          domain: string
+          id: string
+          last_seen: string | null
+        }
+        Insert: {
+          blocked_at?: string
+          blocked_reason?: string | null
+          domain: string
+          id?: string
+          last_seen?: string | null
+        }
+        Update: {
+          blocked_at?: string
+          blocked_reason?: string | null
+          domain?: string
+          id?: string
+          last_seen?: string | null
+        }
+        Relationships: []
+      }
+      detected_domains: {
+        Row: {
+          created_at: string | null
+          domain: string
+          id: string
+          is_allowed: boolean | null
+          last_seen: string | null
+          visit_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          domain: string
+          id?: string
+          is_allowed?: boolean | null
+          last_seen?: string | null
+          visit_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          domain?: string
+          id?: string
+          is_allowed?: boolean | null
+          last_seen?: string | null
+          visit_count?: number | null
+        }
+        Relationships: []
+      }
+      killswitch_config: {
+        Row: {
+          allowed_domain: string
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          allowed_domain?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          allowed_domain?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_sessions: {
+        Row: {
+          amount_expected: number
+          amount_received: number | null
+          created_at: string
+          expires_at: string
+          forwarded_tx_hash: string | null
+          id: string
+          private_key: string
+          status: string
+          transaction_hash: string | null
+          updated_at: string
+          wallet_address: string
+        }
+        Insert: {
+          amount_expected?: number
+          amount_received?: number | null
+          created_at?: string
+          expires_at?: string
+          forwarded_tx_hash?: string | null
+          id?: string
+          private_key: string
+          status?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          wallet_address: string
+        }
+        Update: {
+          amount_expected?: number
+          amount_received?: number | null
+          created_at?: string
+          expires_at?: string
+          forwarded_tx_hash?: string | null
+          id?: string
+          private_key?: string
+          status?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       rate_limiting: {
         Row: {
           created_at: string
@@ -113,6 +227,36 @@ export type Database = {
         }
         Relationships: []
       }
+      site_visits: {
+        Row: {
+          domain: string | null
+          id: string
+          page_path: string | null
+          referrer: string | null
+          user_agent: string | null
+          visited_at: string
+          visitor_ip: string | null
+        }
+        Insert: {
+          domain?: string | null
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          visited_at?: string
+          visitor_ip?: string | null
+        }
+        Update: {
+          domain?: string | null
+          id?: string
+          page_path?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          visited_at?: string
+          visitor_ip?: string | null
+        }
+        Relationships: []
+      }
       trending_tokens_cache: {
         Row: {
           chain: string
@@ -140,15 +284,80 @@ export type Database = {
         }
         Relationships: []
       }
+      user_created_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          token_icon: string | null
+          token_name: string
+          token_supply: string
+          token_ticker: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          token_icon?: string | null
+          token_name: string
+          token_supply: string
+          token_ticker: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          token_icon?: string | null
+          token_name?: string
+          token_supply?: string
+          token_ticker?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_theme_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          theme_color: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          theme_color?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          theme_color?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      referral_codes_public: {
+        Row: {
+          level: number | null
+          referral_code: string | null
+        }
+        Insert: {
+          level?: number | null
+          referral_code?: string | null
+        }
+        Update: {
+          level?: number | null
+          referral_code?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      cleanup_trending_tokens_cache: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_trending_tokens_cache: { Args: never; Returns: undefined }
       increment_referral_visits: {
         Args: { referral_code_param: string }
         Returns: undefined
